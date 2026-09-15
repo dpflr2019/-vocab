@@ -1,0 +1,2289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>영어단어장</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="영어단어장">
+<meta name="theme-color" content="#F7F6F1">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%2316233F'/%3E%3Crect x='36' y='96' width='108' height='22' rx='4' fill='%23FFDF3D'/%3E%3Ctext x='90' y='86' font-family='-apple-system,sans-serif' font-size='58' font-weight='800' fill='%23fff' text-anchor='middle'%3EVo%3C/text%3E%3C/svg%3E">
+<style>
+:root{--miss:#C8433C;
+
+  --ink:#16233F; --ink-soft:#5A6478; --paper:#F7F6F1; --card:#FFFFFF;
+  --rule:#E2E1D8; --marker:#FFDF3D; --marker-deep:#E5BE00; --done:#1F8A63;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper); color:var(--ink); padding-bottom:100px;
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased; overscroll-behavior-y:contain;
+}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px;}
+header{padding:calc(22px + env(safe-area-inset-top)) 0 14px;}
+h1{font-size:15px;font-weight:700;letter-spacing:-.01em;margin:0 0 14px;}
+h1 span{color:var(--ink-soft);font-weight:500;}
+.count{display:flex;align-items:baseline;gap:8px;}
+.count b{font-size:42px;font-weight:800;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;}
+.count i{font-style:normal;font-size:15px;color:var(--ink-soft);}
+.bar{height:10px;background:#EBEAE3;border-radius:99px;margin-top:12px;overflow:hidden;}
+.bar>i{display:block;height:100%;background:var(--marker);transition:width .35s ease;}
+.pct{margin-top:6px;font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+.seg{display:flex;gap:2px;background:#EBEAE3;border-radius:10px;padding:3px;margin:18px 0 12px;}
+.seg button{flex:1;min-width:0;border:0;background:transparent;padding:8px 2px;border-radius:8px;font:600 12.5px inherit;font-family:inherit;color:var(--ink-soft);cursor:pointer;}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(22,35,63,.12);}
+.days{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none;}
+.days::-webkit-scrollbar{display:none;}
+.chip{flex:0 0 auto;border:1px solid var(--rule);background:var(--card);border-radius:10px;padding:8px 12px 7px;cursor:pointer;text-align:left;min-width:74px;font-family:inherit;color:inherit;}
+.chip.on{border-color:var(--ink);background:var(--ink);color:#fff;}
+.chip .nm{font-size:13px;font-weight:700;display:block;letter-spacing:-.01em;}
+.chip .sb{font-size:11px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+.chip.on .sb{color:rgba(255,255,255,.72);}
+.chip .ln{display:block;height:3px;border-radius:2px;background:#EBEAE3;margin-top:6px;overflow:hidden;}
+.chip .ln i{display:block;height:100%;background:var(--marker);}
+.chip.add{display:flex;align-items:center;justify-content:center;min-width:44px;border-style:dashed;color:var(--ink-soft);font-size:18px;}
+.tools{display:flex;gap:8px;align-items:center;margin:4px 0 14px;flex-wrap:wrap;}
+.search{flex:1 1 140px;min-width:110px;border:1px solid var(--rule);background:var(--card);border-radius:9px;padding:9px 11px;font-size:16px;font-family:inherit;color:var(--ink);}
+.tg{border:1px solid var(--rule);background:var(--card);border-radius:9px;padding:9px 11px;font:600 13px inherit;font-family:inherit;color:var(--ink-soft);cursor:pointer;white-space:nowrap;}
+.tg.on{background:var(--marker);border-color:var(--marker-deep);color:var(--ink);}
+.list{background:var(--card);border:1px solid var(--rule);border-radius:14px;overflow:hidden;}
+.row{display:flex;gap:12px;padding:14px;border-bottom:1px solid var(--rule);align-items:flex-start;}
+.row:last-child{border-bottom:0;}
+.mk{flex:0 0 auto;width:26px;height:26px;border-radius:50%;border:2px solid var(--rule);background:transparent;cursor:pointer;margin-top:2px;padding:0;position:relative;}
+.mk.on{background:var(--done);border-color:var(--done);}
+.mk.on::after{content:"";position:absolute;left:7px;top:3px;width:6px;height:11px;border:solid #fff;border-width:0 2.4px 2.4px 0;transform:rotate(45deg);}
+.bd{flex:1;min-width:0;}
+.tm{font-size:17px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.tag{font-size:11px;font-weight:600;color:var(--ink-soft);border:1px solid var(--rule);border-radius:5px;padding:1px 5px;}
+.tag.srs{border-color:var(--marker-deep);color:var(--marker-deep);}
+.tag.leech{border-color:var(--miss);color:var(--miss);}
+.mn{font-size:14.5px;margin-top:4px;line-height:1.45;}
+.ex{font-size:13px;color:var(--ink-soft);margin-top:6px;line-height:1.5;}
+.ko{font-size:12.5px;color:var(--ink-soft);opacity:.85;margin-top:4px;line-height:1.5;}
+.syn{font-size:12.5px;color:var(--done);margin-top:5px;font-weight:600;line-height:1.5;cursor:pointer;}
+.synmore{color:var(--ink-soft);font-weight:500;text-decoration:underline;text-underline-offset:2px;margin-left:2px;}
+.row.known .tm{opacity:.45;} .row.known .mn,.row.known .ex,.row.known .ko,.row.known .syn{opacity:.4;}
+.mask{background:var(--marker);color:transparent;border-radius:3px;cursor:pointer;}
+.del{border:0;background:transparent;color:var(--ink-soft);font-size:18px;cursor:pointer;padding:2px 4px;font-family:inherit;}
+.edit{border:0;background:transparent;color:var(--ink-soft);font-size:15px;cursor:pointer;padding:2px 4px;font-family:inherit;}
+.exhint{font-size:12px;color:var(--ink-soft);margin-top:5px;opacity:.75;}
+.empty{background:var(--card);border:1px dashed var(--rule);border-radius:14px;padding:30px 20px;text-align:center;}
+.empty p{margin:0 0 6px;font-size:15px;font-weight:700;}
+.empty small{color:var(--ink-soft);font-size:13px;line-height:1.6;display:block;margin-bottom:16px;}
+.btn{border:0;border-radius:10px;padding:12px 16px;font:700 14px inherit;font-family:inherit;cursor:pointer;background:var(--ink);color:#fff;}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--rule);}
+.btn:disabled{opacity:.4;}
+.dock{position:fixed;left:0;right:0;bottom:0;background:rgba(247,246,241,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-top:1px solid var(--rule);padding:10px 16px calc(10px + env(safe-area-inset-bottom));}
+.dock div{max-width:720px;margin:0 auto;display:flex;gap:8px;}
+.dock .btn{flex:1;}
+.quizbtn{background:var(--marker);color:var(--ink);}
+.scrim{position:fixed;inset:0;background:rgba(22,35,63,.5);display:flex;align-items:flex-end;justify-content:center;z-index:40;}
+.sheet{background:var(--paper);width:100%;max-width:720px;border-radius:18px 18px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;}
+.sheet h2{font-size:17px;margin:0 0 4px;letter-spacing:-.02em;}
+.sheet .hint{font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 14px;}
+label.lb{font-size:12px;font-weight:700;color:var(--ink-soft);display:block;margin:12px 0 6px;}
+.inp,.area{width:100%;border:1px solid var(--rule);border-radius:10px;padding:11px;font-size:16px;font-family:inherit;background:var(--card);color:var(--ink);}
+.area{min-height:150px;resize:vertical;line-height:1.6;}
+.code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#EBEAE3;padding:1px 4px;border-radius:4px;}
+.sheet .acts{display:flex;gap:8px;margin-top:18px;position:sticky;bottom:0;background:var(--paper);padding:10px 0 2px;box-shadow:0 -8px 12px -8px rgba(22,35,63,.18);}
+.sheet .acts .btn{flex:1;}
+.shead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;}
+.shead h2{margin:0;}
+.link{border:0;background:transparent;color:var(--ink-soft);font:600 13px inherit;font-family:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px 0;}
+.pair{display:flex;gap:8px;margin:12px 0 4px;}
+.pair .inp{flex:1;min-width:0;}
+select.inp{-webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink-soft) 50%),linear-gradient(135deg,var(--ink-soft) 50%,transparent 50%);background-position:calc(100% - 17px) 20px,calc(100% - 12px) 20px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:34px;}
+.added{font-size:12.5px;color:var(--done);font-weight:600;margin-top:10px;min-height:16px;}
+.lookup{font-size:12.5px;color:var(--ink-soft);margin-top:8px;min-height:16px;line-height:1.5;}
+.lookup.ok{color:var(--done);font-weight:600;}
+.err{background:#FBECEB;border:1px solid #C8433C;border-radius:12px;padding:12px 14px;margin:12px 0 4px;font-size:12.5px;line-height:1.6;color:#7E241F;word-break:break-all;}
+.warn{background:#FDF3D0;border:1px solid var(--marker-deep);border-radius:12px;padding:13px 14px;margin:12px 0 4px;font-size:13px;line-height:1.6;color:var(--ink);}
+.warn b{display:block;margin-bottom:4px;font-size:13.5px;}
+.warn button{margin-top:9px;border:0;background:var(--ink);color:#fff;border-radius:8px;padding:9px 12px;font:600 12.5px inherit;font-family:inherit;cursor:pointer;}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(78px + env(safe-area-inset-bottom));max-width:420px;margin:0 auto;background:var(--ink);color:#fff;border-radius:10px;padding:11px 14px;font-size:13px;text-align:center;z-index:60;}
+.quiz{position:fixed;inset:0;background:var(--ink);z-index:50;display:flex;flex-direction:column;padding:calc(14px + env(safe-area-inset-top)) 16px calc(18px + env(safe-area-inset-bottom));}
+.qtop{display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.7);font-size:13px;font-variant-numeric:tabular-nums;}
+.qtop button{background:transparent;border:0;color:rgba(255,255,255,.7);font:14px inherit;font-family:inherit;cursor:pointer;}
+.qtop .sp{margin-left:auto;}
+.qbar{height:4px;background:rgba(255,255,255,.18);border-radius:99px;margin-top:10px;overflow:hidden;}
+.qbar i{display:block;height:100%;background:var(--marker);transition:width .3s ease;}
+.qcard{flex:1;margin:16px 0;background:var(--card);border-radius:18px;padding:28px 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;overflow-y:auto;}
+.qfront{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.25;}
+.qtap{margin-top:14px;font-size:12.5px;color:var(--ink-soft);}
+.qback{border-top:1px solid var(--rule);margin-top:20px;padding-top:18px;width:100%;}
+.qmean{font-size:19px;font-weight:700;line-height:1.4;}
+.qex{font-size:14px;color:var(--ink-soft);margin-top:12px;line-height:1.6;}
+.qko{font-size:13.5px;color:var(--ink-soft);margin-top:7px;line-height:1.6;}
+.qacts{display:flex;gap:10px;}
+.qacts button{flex:1;border:0;border-radius:12px;padding:16px 0;font:700 15px inherit;font-family:inherit;cursor:pointer;}
+.again{background:rgba(255,255,255,.14);color:#fff;}
+.got{background:var(--marker);color:var(--ink);}
+.qdone{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;gap:8px;}
+.qdone b{font-size:26px;letter-spacing:-.02em;}
+.qdone span{color:rgba(255,255,255,.7);font-size:14px;}
+.hide{display:none !important;}
+
+.todaybox{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:13px 14px;font-size:13px;line-height:1.7;color:var(--ink);margin-bottom:4px;}
+.todaybox b{font-variant-numeric:tabular-nums;}
+.mode .sub{display:block;font-size:11.5px;font-weight:500;color:var(--ink-soft);margin-top:3px;}
+.mode[data-on="0"]{opacity:.45;}
+.mode[data-on="1"]{border-color:var(--ink);}
+.revrow{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--rule);background:var(--card);border-radius:10px;padding:11px 13px;margin-bottom:6px;font-family:inherit;color:var(--ink);cursor:pointer;}
+.revrow[data-on="0"]{opacity:.4;}
+.revrow[data-on="1"]{border-color:var(--ink);}
+.revrow b{font-size:13.5px;}
+.revrow span{font-size:12.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+.sumline{margin-top:12px;background:#EFEEE7;border-radius:10px;padding:11px 13px;font-size:13px;font-weight:600;color:var(--ink);line-height:1.6;}
+.pickhelp{display:flex;gap:14px;margin-bottom:8px;}
+.daypick{display:flex;flex-wrap:wrap;gap:6px;}
+.dp{border:1px solid var(--rule);background:var(--card);border-radius:8px;padding:7px 10px;font:600 12.5px inherit;font-family:inherit;color:var(--ink-soft);cursor:pointer;}
+.dp[data-on="1"]{background:var(--ink);border-color:var(--ink);color:#fff;}
+.mode{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--rule);background:var(--card);border-radius:12px;padding:15px 14px;margin-top:10px;font-family:inherit;color:var(--ink);cursor:pointer;}
+.mode b{font-size:15px;letter-spacing:-.01em;}
+.mode span{font-size:12.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+.mode:disabled{opacity:.45;}
+.p5body{flex:1;margin:16px 0;background:var(--card);border-radius:18px;padding:22px 18px;overflow-y:auto;}
+.p5stem{font-size:18px;line-height:1.65;font-weight:600;letter-spacing:-.01em;}
+.p5opts{margin-top:18px;display:flex;flex-direction:column;gap:8px;}
+.p5opt{width:100%;text-align:left;border:1px solid var(--rule);background:var(--paper);border-radius:10px;padding:13px 14px;font:15px inherit;font-family:inherit;color:var(--ink);cursor:pointer;}
+.p5opt b{font-weight:700;margin-right:8px;color:var(--ink-soft);}
+.p5opt.right{border-color:var(--done);background:#EAF6F1;}
+.p5opt.wrong{border-color:var(--miss);background:#FBECEB;}
+.p5exp{margin-top:18px;border-top:1px solid var(--rule);padding-top:16px;}
+.p5verd{font-size:15px;font-weight:700;}
+.p5verd.ok{color:var(--done);} .p5verd.no{color:var(--miss);}
+.p5line{font-size:14px;margin-top:8px;line-height:1.6;}
+.p5line.ko{color:var(--ink-soft);font-size:13.5px;}
+
+
+.totalbox{background:var(--ink);color:#fff;border-radius:12px;padding:14px 16px;margin-top:14px;font-size:14px;}
+.totalbox b{font-size:24px;font-weight:800;letter-spacing:-.02em;}
+.totalbox span{color:rgba(255,255,255,.7);font-size:13px;}
+.scards{display:flex;gap:8px;margin-top:14px;}
+.scard{flex:1;background:var(--card);border:1px solid var(--rule);border-radius:11px;padding:12px 8px;text-align:center;}
+.scard b{display:block;font-size:22px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;}
+.scard span{font-size:11px;color:var(--ink-soft);}
+.sgrp{font-size:12px;font-weight:700;color:var(--ink-soft);margin:16px 0 8px;}
+.logrow{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--rule);}
+.logdate{flex:0 0 42px;font-size:12.5px;font-weight:700;color:var(--ink);}
+.logbody{flex:1;font-size:12.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+.logstat{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+.logchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+.sealed{background:var(--ink);color:#fff;border-radius:4px;padding:1px 5px;font-size:10.5px;font-weight:700;margin-left:4px;}
+.mk{display:inline-flex;align-items:center;border-radius:6px;padding:3px 8px;font-size:11.5px;font-weight:600;}
+.mk-new{background:#EAF6F1;color:var(--done);}
+.mk-rev{background:#FDF3D0;color:#8A6A00;}
+.logchip{display:inline-flex;align-items:center;gap:4px;background:#EFEEE7;border-radius:6px;padding:3px 7px;font-size:11.5px;color:var(--ink);}
+.logchip b{font-weight:700;}
+.logchip i{font-style:normal;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+.srow{display:flex;align-items:center;gap:9px;padding:5px 0;}
+.sd{font-size:12.5px;color:var(--ink-soft);width:42px;flex:0 0 auto;font-variant-numeric:tabular-nums;}
+.ckrow{cursor:pointer;border-bottom:1px solid var(--rule);}
+.sd.wide{width:74px;color:var(--ink);font-weight:600;}
+.sbar{flex:1;height:7px;background:#EBEAE3;border-radius:99px;overflow:hidden;min-width:40px;}
+.sbar i{display:block;height:100%;background:var(--marker);}
+.sv{font-size:11.5px;color:var(--ink-soft);flex:0 0 auto;font-variant-numeric:tabular-nums;}
+
+@media (prefers-reduced-motion: reduce){*{transition:none !important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>영어단어장 <span id="scopeLabel">· 전체</span></h1>
+    <div class="count"><b id="knownN">0</b><i class="pctmark">%</i><i id="progSub">0 / 0 외움</i></div>
+    <div class="bar"><i id="barFill" style="width:0%"></i></div>
+    <div class="pct" id="pctLine">0% · 남은 단어 0개</div>
+    <div class="pct" id="verLine" style="margin-top:2px;opacity:.65"></div>
+  </header>
+
+  <div class="seg" id="secSeg">
+    <button data-sec="v2026" class="on">2026</button>
+    <button data-sec="v2023">2023</button>
+    <button data-sec="colloc">Collocation</button>
+    <button data-sec="transfer">편입영어</button>
+  </div>
+
+  <div class="days" id="dayRow"></div>
+
+  <div id="warnBox"></div>
+    <div id="errBox"></div>
+
+    <div class="tools hide" id="tools">
+    <input class="search" id="q" placeholder="단어·뜻 검색" autocomplete="off">
+    <button class="tg" id="tgMask">뜻 가리기</button>
+    <button class="tg" id="tgUnknown">미암기만</button>
+    <button class="tg" id="tgMore">⋯ 더보기</button>
+  </div>
+
+  <div id="listArea"></div>
+</div>
+
+<input type="file" id="restoreInput" accept=".json,application/json" style="display:none">
+<div class="dock"><div>
+  <button class="btn ghost" id="addBtn">단어 추가</button>
+  <button class="btn quizbtn" id="startBtn">학습 시작</button>
+</div></div>
+
+<div class="scrim hide" id="scrim">
+  <div class="sheet" id="sheet">
+    <div class="shead">
+      <h2>단어 추가</h2>
+      <button class="link" id="modeBtn">여러 개 붙여넣기</button>
+    </div>
+
+    <select class="inp" id="daySel"></select>
+    <input class="inp hide" id="dayName" autocomplete="off" style="margin-top:8px">
+
+    <div id="oneMode">
+      <div class="pair">
+        <input class="inp" id="fTerm" placeholder="단어" autocomplete="off" autocapitalize="off">
+        <input class="inp" id="fMean" placeholder="뜻" autocomplete="off">
+      </div>
+      <button class="link" id="moreBtn">품사·예문 넣기</button>
+      <div class="lookup" id="lookupN"></div>
+      <div class="hide" id="moreWrap">
+        <input class="inp" id="fPos" placeholder="품사 (v., n., adj.)" autocomplete="off">
+        <input class="inp" id="fEx" placeholder="예문" autocomplete="off" style="margin-top:8px">
+        <input class="inp" id="fSyn" placeholder="동의어 (쉼표로 구분)" autocomplete="off" style="margin-top:8px">
+      </div>
+      <div class="added" id="addedN"></div>
+      <div class="acts">
+        <button class="btn ghost" id="doneAdd">닫기</button>
+        <button class="btn" id="addOne" disabled>추가</button>
+      </div>
+    </div>
+
+    <div id="bulkMode" class="hide">
+      <p class="hint">한 줄에 한 단어씩. <span class="code">단어 | 뜻 | 품사 | 예문 | 해석 | 동의어</span> 순서이며 뒤쪽은 비워도 됩니다. <span class="code">[DAY 4]</span> 같은 줄이 있으면 그 DAY로 들어가고, 이미 있는 단어는 덮어씁니다.</p>
+      <textarea class="area" id="bulk" placeholder="comply 준수하다
+invoice 송장, 청구서
+tentative 잠정적인"></textarea>
+      <div class="pct" id="parsedN" style="margin-top:8px">0개 인식됨</div>
+      <div class="acts">
+        <button class="btn ghost" id="cancelAdd">취소</button>
+        <button class="btn" id="saveAdd" disabled>저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="scrim hide" id="editScrim"><div class="sheet">
+  <h2>단어 수정</h2>
+  <p class="hint">자동으로 채워진 내용이 어색하면 직접 고치세요.</p>
+  <label class="lb">단어</label><input class="inp" id="eTerm" autocomplete="off">
+  <label class="lb">뜻</label><input class="inp" id="eMean" autocomplete="off">
+  <label class="lb">품사</label><input class="inp" id="ePos" autocomplete="off">
+  <label class="lb">예문</label><textarea class="area" id="eEx" style="min-height:70px"></textarea>
+  <label class="lb">예문 해석</label><textarea class="area" id="eKo" style="min-height:70px"></textarea>
+  <label class="lb">동의어</label><input class="inp" id="eSyn" autocomplete="off" placeholder="쉼표로 구분">
+  <button class="link" id="eAuto">내장 데이터에서 가져오기</button>
+  <div class="acts">
+    <button class="btn ghost" id="eDelete">삭제</button>
+    <button class="btn" id="eSave">저장</button>
+  </div>
+</div></div>
+
+<div class="scrim hide" id="startScrim"><div class="sheet">
+  <h2>오늘의 학습</h2>
+  <div class="todaybox" id="todaySum"></div>
+
+  <div class="sgrp">복습 — 날짜별로 안 외워진 단어</div>
+  <div id="revList"></div>
+
+  <div class="sgrp">오늘 새로 할 DAY</div>
+  <div class="pickhelp">
+    <button class="link" data-sel="all">전체 선택</button>
+    <button class="link" data-sel="plus">오답노트(+)만</button>
+    <button class="link" data-sel="none">선택 해제</button>
+  </div>
+  <div class="daypick" id="dayPick"></div>
+  <div class="seg" id="rangeSeg" style="margin:10px 0 0">
+    <button data-range="unknown" class="on">미암기만</button>
+    <button data-range="all">전체</button>
+    <button data-range="weak">틀린 것만</button>
+  </div>
+
+  <div class="sumline" id="pickCount">DAY를 선택하세요</div>
+  <div class="acts">
+    <button class="btn ghost" id="startClose">닫기</button>
+    <button class="btn ghost" id="goP5">파트5</button>
+    <button class="btn" id="goFlash">카드 시작</button>
+  </div>
+</div></div>
+
+<div class="quiz hide" id="p5">
+  <div class="qtop">
+    <span id="pCount">1 / 1</span>
+    <span class="sp" id="pScore">정답 0</span>
+    <button id="pClose" style="margin-left:12px">닫기</button>
+  </div>
+  <div class="qbar"><i id="pBar" style="width:0%"></i></div>
+  <div class="p5body" id="pBody"></div>
+  <div class="qacts" id="pActs"></div>
+</div>
+
+<div class="quiz hide" id="quiz">
+  <div class="qtop">
+    <span id="qCount">1 / 1</span>
+    <span id="qTally" style="opacity:.6">외움 0 · 다시 0</span>
+    <button class="sp" id="qDir">영 → 한</button>
+    <button id="qClose" style="margin-left:12px">닫기</button>
+  </div>
+  <div class="qbar"><i id="qBar" style="width:0%"></i></div>
+  <div class="qcard" id="qCard"></div>
+  <div class="qacts" id="qActs">
+    <button class="again" id="qAgain">다시</button>
+    <button class="got" id="qGot">외웠어요</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+function reportErr(err,where){
+  try{
+    var b=document.getElementById("errBox");
+    if(b) b.innerHTML='<div class="err"><b>오류가 발생했습니다'+(where?" ("+where+")":"")+'</b><br>'+
+      String(err&&err.message||err)+'<br>이 내용을 클로드에게 알려주세요.</div>';
+  }catch(e){}
+}
+(function(){
+  var orig=EventTarget.prototype.addEventListener;
+  EventTarget.prototype.addEventListener=function(type,fn,opts){
+    if(typeof fn==="function"){
+      return orig.call(this,type,function(e){
+        try{ return fn.call(this,e); }catch(err){ reportErr(err,type); }
+      },opts);
+    }
+    return orig.call(this,type,fn,opts);
+  };
+})();
+var KEY="toeic-vocab-v1";
+var uid=function(){return Math.random().toString(36).slice(2,10)};
+var SAMPLE=[
+ ["comply","준수하다, 따르다","v.","All vendors must comply with the new safety regulations."],
+ ["invoice","송장, 청구서","n.","Please submit the invoice by the end of the month."],
+ ["tentative","잠정적인, 임시의","adj.","We reached a tentative agreement on the delivery date."],
+ ["reimburse","환급하다, 상환하다","v.","The company will reimburse you for travel expenses."],
+ ["proficiency","숙련도, 능숙함","n.","Proficiency in Japanese is required for this position."]
+];
+
+var listCap=150;
+var expOpen={};
+var state={days:[],log:{},onlyHard:false,section:"v2026",day:"all",q:"",mask:false,onlyUnknown:false,revealed:{}};
+var quiz=null;
+
+function load(){
+  try{
+    var raw=localStorage.getItem(KEY);
+    if(raw){
+      var o=JSON.parse(raw);
+      state.days=o.days||[];
+      state.log=o.log||{};
+      var cutoff=Date.now()-400*86400000, keep={};
+      Object.keys(state.log).forEach(function(k){
+        var t=Date.parse(k); if(isNaN(t)||t>=cutoff) keep[k]=state.log[k];
+      });
+      state.log=keep;
+      var recent=[dayKey(),dayKey(Date.now()-86400000),dayKey(Date.now()-2*86400000)];
+      Object.keys(state.log).forEach(function(kk){
+        if(recent.indexOf(kk)<0){ delete state.log[kk].ids; delete state.log[kk].sids; }
+      });
+      if(o.ui){
+        if(o.ui.section) state.section=normSec(o.ui.section);
+        if(o.ui.day) state.day=o.ui.day;
+      }
+    }
+  }catch(e){}
+}
+var saveBroken=false;
+function storageWorks(){
+  try{
+    localStorage.setItem("__t","1");
+    localStorage.removeItem("__t");
+    return true;
+  }catch(e){ return false; }
+}
+function save(){
+  try{
+    localStorage.setItem(KEY,JSON.stringify({days:state.days,log:state.log,ui:{section:state.section,day:state.day}}));
+    if(saveBroken){saveBroken=false;showWarn();}
+  }catch(e){
+    if(!saveBroken){saveBroken=true;showWarn();}
+  }
+}
+function showWarn(){
+  var box=document.getElementById("warnBox");
+  if(!box) return;
+  if(!saveBroken){box.innerHTML="";return;}
+  box.innerHTML='<div class="warn"><b>저장이 되지 않는 상태입니다</b>'+
+    '지금 화면의 학습 기록은 창을 닫으면 사라집니다. 파일을 직접 열면(file://) 사파리가 저장을 막습니다. '+
+    '주소(https://)로 열거나 홈 화면에 추가해서 사용하세요.'+
+    '<button id="warnBackup">지금 백업 파일로 저장</button></div>';
+  var b=document.getElementById("warnBackup");
+  if(b) b.onclick=function(){saveBackupFile()};
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var SECTIONS=[{id:"v2026",label:"2026 단어장"},{id:"v2023",label:"2023 단어장"},{id:"colloc",label:"Collocation"},{id:"transfer",label:"편입영어"}];
+function secLabel(id){
+  for(var i=0;i<SECTIONS.length;i++) if(SECTIONS[i].id===id) return SECTIONS[i].label;
+  return "2026 단어장";
+}
+function normSec(s){
+  if(s==="colloc") return "colloc";
+  if(s==="v2023") return "v2023";
+  if(s==="transfer") return "transfer";
+  return "v2026";
+}
+function migrateSections(){
+  var n=0;
+  state.days.forEach(function(d){var v=normSec(d.section); if(d.section!==v){d.section=v;n++;}});
+  if(n) save();
+}
+function daySort(list){
+  return list.slice().sort(function(a,b){
+    var na=parseInt((a.name.match(/\d+/)||[9999])[0],10);
+    var nb=parseInt((b.name.match(/\d+/)||[9999])[0],10);
+    if(na!==nb) return na-nb;
+    var pa=(a.name.match(/\+/g)||[]).length, pb=(b.name.match(/\+/g)||[]).length;
+    if(pa!==pb) return pa-pb;
+    return a.name.localeCompare(b.name);
+  });
+}
+function secDays(){return daySort(state.days.filter(function(d){return d.section===state.section}))}
+function scopeWords(){
+  var src=state.day==="all"?secDays():secDays().filter(function(d){return d.id===state.day});
+  var out=[];
+  src.forEach(function(d){d.words.forEach(function(w){out.push({w:w,dayId:d.id,dayName:d.name})})});
+  return out;
+}
+function visibleWords(){
+  var q=state.q.trim().toLowerCase();
+  return scopeWords().filter(function(o){
+    if(state.onlyHard&&!isLeech(o.w)) return false;
+    if(state.onlyUnknown&&o.w.known) return false;
+    if(!q) return true;
+    return (o.w.term+" "+o.w.meaning).toLowerCase().indexOf(q)>-1;
+  });
+}
+function splitLine(line){
+  if(/[|\t]/.test(line)) return line.split(/\s*[|\t]\s*/);
+  var m=line.match(/^(.+?)\s{2,}(.+)$/); if(m) return [m[1],m[2]];
+  m=line.match(/^(.+?)\s*[-–—:=]\s+(.+)$/); if(m) return [m[1],m[2]];
+  m=line.match(/^([A-Za-z][A-Za-z'’\-\s]*?)\s+([^A-Za-z].*)$/); if(m) return [m[1],m[2]];
+  m=line.match(/^(\S+)\s+(.+)$/); if(m) return [m[1],m[2]];
+  return [line];
+}
+function parseGroups(text,defSec){
+  var groups=[],cur=null;
+  text.split("\n").forEach(function(raw){
+    var line=raw.trim();
+    if(!line) return;
+    var h=line.match(/^\[(.+)\]$/);
+    if(h){
+      var label=h[1];
+      var sec=defSec;
+      if(/collocation/i.test(label)) sec="colloc";
+      else if(/편입/.test(label)) sec="transfer";
+      else if(/2023/.test(label)) sec="v2023";
+      else if(/2026/.test(label)) sec="v2026";
+      var nm=label.replace(/collocation/ig,"").replace(/2026 ?단어장|2023 ?단어장|편입영어/g,"").trim();
+      cur={section:sec,name:nm||"DAY 1",words:[]};
+      groups.push(cur);
+      return;
+    }
+    var p=/[|\t]/.test(line)?line.split(/\s*[|\t]\s*/):splitLine(line);
+    if(!p[0]||!p[0].trim()) return;
+    var w={term:p[0].trim(),meaning:(p[1]||"").trim(),pos:(p[2]||"").trim(),
+           example:(p[3]||"").trim(),ko:(p[4]||"").trim(),syn:(p[5]||"").trim()};
+    if(!cur){cur={section:defSec,name:null,words:[]};groups.push(cur);}
+    cur.words.push(w);
+  });
+  return groups.filter(function(g){return g.words.length});
+}
+function parseBulk(t){
+  return t.split("\n").map(function(l){return l.trim()}).filter(Boolean).map(function(line){
+    var p=splitLine(line);
+    if(!p[0]||!p[0].trim()) return null;
+    return {id:uid(),term:p[0].trim(),meaning:(p[1]||"").trim(),pos:(p[2]||"").trim(),example:(p[3]||"").trim(),known:false};
+  }).filter(Boolean);
+}
+function findWord(id){
+  for(var i=0;i<state.days.length;i++){
+    for(var j=0;j<state.days[i].words.length;j++){
+      if(state.days[i].words[j].id===id) return state.days[i].words[j];
+    }
+  }
+  return null;
+}
+
+function render(){
+  var sc=scopeWords(), total=sc.length;
+  var known=sc.filter(function(o){return o.w.known}).length;
+  var pct=total?Math.round(known/total*100):0;
+  var dObj=secDays().filter(function(d){return d.id===state.day})[0];
+  document.getElementById("scopeLabel").textContent="· "+secLabel(state.section)+" "+(state.day==="all"?"전체":(dObj?dObj.name:"전체"));
+  document.getElementById("knownN").textContent=pct;
+  document.getElementById("progSub").innerHTML='<span id="totalN" style="display:none">'+total+'</span>'+known+' / '+total+' 외움';
+  document.getElementById("barFill").style.width=pct+"%";
+  var tk=state.log[dayKey()]||{};
+  document.getElementById("pctLine").textContent="남은 단어 "+(total-known)+"개"+((tk.o)?" · 오늘 외운 단어 "+tk.o+"개":"");
+  document.getElementById("startBtn").disabled=total===0;
+  document.getElementById("tools").className="tools"+(total?"":" hide");
+
+  // day chips
+  var all=secDays().reduce(function(n,d){return n+d.words.length},0);
+  var html='<button class="chip'+(state.day==="all"?" on":"")+'" data-day="all"><span class="nm">전체</span><span class="sb">'+all+'개</span></button>';
+  secDays().forEach(function(d){
+    var k=d.words.filter(function(w){return w.known}).length;
+    var p=d.words.length?(k/d.words.length*100):0;
+    html+='<button class="chip'+(state.day===d.id?" on":"")+'" data-day="'+d.id+'"><span class="nm">'+esc(d.name)+'</span><span class="sb">'+k+'/'+d.words.length+'</span><span class="ln"><i style="width:'+p+'%"></i></span></button>';
+  });
+  html+='<button class="chip add" data-add="1" aria-label="단어 추가">+</button>';
+  document.getElementById("dayRow").innerHTML=html;
+
+  // list
+  var area=document.getElementById("listArea");
+  if(total===0){
+    area.innerHTML='<div class="empty"><p>아직 단어가 없어요</p><small>DAY를 만들고 단어를 붙여넣으면 시작됩니다.<br>엑셀·메모에서 복사한 목록을 한 번에 넣을 수 있어요.</small><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn" data-add="1">단어 추가</button><button class="btn ghost" id="sampleBtn">샘플 5개로 둘러보기</button></div></div>';
+    return;
+  }
+  var vis=visibleWords();
+  if(!vis.length){
+    area.innerHTML='<div class="empty"><p>조건에 맞는 단어가 없어요</p><small>검색어를 지우거나 \'미암기만\'을 꺼보세요.</small></div>';
+    return;
+  }
+  var shown=vis.slice(0,listCap);
+  var rows=shown.map(function(o){
+    var w=o.w;
+    var mean="";
+    if(w.meaning){
+      mean=(state.mask&&!state.revealed[w.id])
+        ? '<div class="mn"><span class="mask" data-reveal="'+w.id+'">'+esc(w.meaning)+'</span></div>'
+        : '<div class="mn">'+esc(w.meaning)+'</div>';
+    }
+    return '<div class="row'+(w.known?" known":"")+'">'+
+      '<button class="mk'+(w.known?" on":"")+'" data-toggle="'+w.id+'" aria-label="암기 표시"></button>'+
+      '<div class="bd" data-exp="'+w.id+'"><div class="tm">'+esc(w.term)+
+        (w.pos?'<span class="tag">'+esc(w.pos)+'</span>':'')+
+        (state.day==="all"?'<span class="tag">'+esc(o.dayName)+'</span>':'')+(srsTag(w)?'<span class="tag srs">'+srsTag(w)+'</span>':'')+(isLeech(w)?'<span class="tag leech">취약 '+(w.lapses||0)+'</span>':'')+
+      '</div>'+mean+
+      (expOpen[w.id]
+        ? (w.example?'<div class="ex">'+esc(w.example)+'</div>':'')+
+          (w.ko?'<div class="ko">'+esc(w.ko)+'</div>':'')+
+          (w.syn?synHtml(w):'')
+        : ((w.example||w.ko||w.syn)?'<div class="exhint">예문 보기</div>':''))+'</div>'+
+      '<button class="edit" data-editbtn="'+w.id+'" aria-label="수정">✎</button>'+
+      '<button class="del" data-del="'+w.id+'" aria-label="삭제">×</button></div>';
+  }).join("");
+  area.innerHTML='<div class="list">'+rows+'</div>'+
+    (vis.length>shown.length?'<button class="btn ghost" id="moreBtn2" style="width:100%;margin-top:10px">더 보기 ('+(vis.length-shown.length)+'개 남음)</button>':'');
+  var mb=document.getElementById("moreBtn2");
+  if(mb) mb.onclick=function(){ listCap+=150; render(); };
+}
+
+// events
+document.getElementById("secSeg").addEventListener("click",function(e){
+  var b=e.target.closest("button[data-sec]"); if(!b) return;
+  listCap=150; state.section=b.dataset.sec; state.day="all"; state.revealed={};
+  [].forEach.call(this.children,function(c){c.className=c===b?"on":""});
+  render();
+});
+document.getElementById("dayRow").addEventListener("click",function(e){
+  var add=e.target.closest("[data-add]"); if(add){openSheet();return;}
+  var b=e.target.closest("button[data-day]"); if(!b) return;
+  listCap=150; state.day=b.dataset.day; state.revealed={}; render();
+});
+document.getElementById("listArea").addEventListener("click",function(e){
+  var t=e.target.closest("[data-toggle]");
+  if(t){var w=findWord(t.dataset.toggle); if(w){w.known=!w.known; save(); render();} return;}
+  var r=e.target.closest("[data-reveal]");
+  if(r){state.revealed[r.dataset.reveal]=true; render(); return;}
+  var d=e.target.closest("[data-del]");
+  if(d){
+    state.days.forEach(function(day){day.words=day.words.filter(function(w){return w.id!==d.dataset.del})});
+    save(); render(); return;
+  }
+  if(e.target.closest("[data-add]")){openSheet();return;}
+  if(e.target.id==="sampleBtn"){
+    state.days.push({id:uid(),name:"DAY 1",section:"vocab",words:SAMPLE.map(function(s){
+      return {id:uid(),term:s[0],meaning:s[1],pos:s[2],example:s[3],known:false};
+    })});
+    state.section="vocab"; save(); render();
+  }
+});
+document.getElementById("q").addEventListener("input",function(){listCap=150; state.q=this.value;render();this.focus();});
+document.getElementById("tgMask").addEventListener("click",function(){
+  state.mask=!state.mask; state.revealed={}; this.className="tg"+(state.mask?" on":""); render();
+});
+document.getElementById("tgUnknown").addEventListener("click",function(){
+  listCap=150; state.onlyUnknown=!state.onlyUnknown; this.className="tg"+(state.onlyUnknown?" on":""); render();
+});
+document.getElementById("addBtn").addEventListener("click",function(){openSheet()});
+function backupText(){
+  return state.days.map(function(d){
+    return "["+secLabel(d.section)+" "+d.name+"]\n"+
+      d.words.map(function(w){
+        return w.term+" | "+(w.meaning||"")+" | "+(w.pos||"")+" | "+(w.example||"")+" | "+(w.ko||"")+" | "+(w.syn||"");
+      }).join("\n");
+  }).join("\n\n");
+}
+function backupFileName(){
+  var d=new Date(),p=function(n){return (n<10?"0":"")+n};
+  return "toeic-vocab-"+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+".json";
+}
+function saveBackupFile(){
+  try{
+    var payload=JSON.stringify({app:"toeic-vocab",version:1,savedAt:new Date().toISOString(),days:state.days});
+    var blob=new Blob([payload],{type:"application/json"});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement("a");
+    a.href=url; a.download=backupFileName();
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url)},1000);
+    toast("백업 파일을 저장했어요");
+  }catch(e){ toast("저장에 실패했어요"); }
+}
+function applyBackup(obj){
+  if(!obj||!obj.days||!obj.days.length) return {ok:false,msg:"단어가 없는 파일이에요"};
+  var days=[],n=0;
+  for(var i=0;i<obj.days.length;i++){
+    var d=obj.days[i];
+    if(!d||!d.name||!d.words||!d.words.length) continue;
+    var words=[];
+    for(var j=0;j<d.words.length;j++){
+      var w=d.words[j];
+      if(!w||!w.term) continue;
+      words.push({id:w.id||uid(),term:String(w.term),meaning:w.meaning||"",pos:w.pos||"",
+        example:w.example||"",ko:w.ko||"",syn:w.syn||"",known:!!w.known,
+        stage:w.stage||0,due:w.due||0,lapses:w.lapses||0});
+      n++;
+    }
+    if(words.length) days.push({id:d.id||uid(),name:String(d.name),section:normSec(d.section),words:words});
+  }
+  if(!days.length) return {ok:false,msg:"복원할 단어를 찾지 못했어요"};
+  return {ok:true,days:days,count:n};
+}
+function restoreFromFile(file){
+  var r=new FileReader();
+  r.onload=function(){
+    var obj=null;
+    try{obj=JSON.parse(r.result)}catch(e){toast("백업 파일 형식이 아니에요");return;}
+    var res=applyBackup(obj);
+    if(!res.ok){toast(res.msg);return;}
+    var cur=state.days.reduce(function(a,d){return a+d.words.length},0);
+    if(!window.confirm("백업의 단어 "+res.count+"개로 되돌립니다.\n현재 "+cur+"개는 사라집니다. 계속할까요?")) return;
+    state.days=res.days; state.day="all"; save(); render();
+    toast(res.count+"개를 복원했어요");
+  };
+  r.onerror=function(){toast("파일을 읽지 못했어요")};
+  r.readAsText(file);
+}
+document.getElementById("restoreInput").addEventListener("change",function(){
+  if(this.files&&this.files[0]) restoreFromFile(this.files[0]);
+  this.value="";
+});
+function openBackup(){
+  var total=state.days.reduce(function(n,d){return n+d.words.length},0);
+  var sc=document.createElement("div"); sc.className="scrim";
+  sc.innerHTML='<div class="sheet"><h2>백업</h2>'+
+    '<p class="hint">단어 '+total+'개, 암기 상태와 복습 일정까지 함께 저장됩니다.</p>'+
+    '<button class="mode" id="bkSave"><b>파일로 저장</b><span>'+backupFileName()+'</span></button>'+
+    '<button class="mode" id="bkLoad"><b>파일에서 복원</b><span>현재 단어는 교체됨</span></button>'+
+    '<button class="mode" id="bkCopy"><b>텍스트로 복사</b><span>대화창에 붙여넣기용</span></button>'+
+    '<textarea class="area hide" id="expArea" style="min-height:180px;margin-top:10px"></textarea>'+
+    '<div class="acts"><button class="btn ghost" id="expClose">닫기</button></div></div>';
+  document.body.appendChild(sc);
+  var close=function(){if(sc.parentNode)document.body.removeChild(sc)};
+  sc.querySelector("#expClose").onclick=close;
+  sc.onclick=function(e){if(e.target===sc)close()};
+  sc.querySelector("#bkSave").onclick=function(){saveBackupFile()};
+  sc.querySelector("#bkLoad").onclick=function(){close();document.getElementById("restoreInput").click()};
+  sc.querySelector("#bkCopy").onclick=function(){
+    var ta=sc.querySelector("#expArea");
+    ta.className="area"; ta.value=backupText();
+    ta.focus(); ta.setSelectionRange(0,ta.value.length);
+    var ok=false; try{ok=document.execCommand("copy")}catch(e){}
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(ta.value).then(function(){toast("복사됐어요")},function(){if(!ok)toast("길게 눌러 직접 복사해주세요")});
+    }else{toast(ok?"복사됐어요":"길게 눌러 직접 복사해주세요");}
+  };
+}
+
+// ---- 토익 빈출 예문 데이터 (단어|품사|뜻|예문) ----
+var BANK_RAW = [
+"comply|v.|준수하다, 따르다|All suppliers must comply with the revised safety regulations.",
+"invoice|n.|송장, 청구서|Please attach the invoice to your expense report by Friday.",
+"reimburse|v.|환급하다, 상환하다|The company will reimburse employees for approved travel expenses.",
+"tentative|adj.|잠정적인, 임시의|We have set a tentative date for the product launch.",
+"proficiency|n.|숙련도, 능숙함|Proficiency in a second language is preferred for this position.",
+"itinerary|n.|여행 일정표|The travel agent emailed a revised itinerary this morning.",
+"agenda|n.|안건, 의제|Ms. Park added two items to the agenda for Monday's meeting.",
+"appraisal|n.|평가, 인사고과|Annual performance appraisals will be conducted in December.",
+"applicant|n.|지원자|Each applicant must submit three professional references.",
+"candidate|n.|후보자, 지원자|The hiring committee narrowed the list to four candidates.",
+"credential|n.|자격, 자격증|Applicants should upload their credentials to the online portal.",
+"vacancy|n.|공석, 결원|The marketing department has a vacancy for a senior analyst.",
+"promotion|n.|승진, 판촉|Mr. Tanaka received a promotion after five years with the firm.",
+"severance|n.|퇴직금|Departing staff will receive a severance package based on tenure.",
+"payroll|n.|급여 대장|The payroll system will be upgraded over the weekend.",
+"expenditure|n.|지출, 경비|Quarterly expenditures exceeded the approved budget by four percent.",
+"revenue|n.|수익, 매출|Overseas revenue grew steadily throughout the third quarter.",
+"budget|n.|예산|The board approved the budget for next fiscal year.",
+"audit|n.|회계 감사|An external firm will conduct the annual audit in March.",
+"fiscal|adj.|회계의, 재정의|Our fiscal year ends on the last day of June.",
+"receipt|n.|영수증, 수령|Keep all receipts for purchases over fifty dollars.",
+"refund|n.|환불|Customers may request a refund within thirty days of purchase.",
+"warranty|n.|품질 보증서|The warranty covers parts and labor for two years.",
+"defective|adj.|결함이 있는|Any defective items should be returned to the distributor.",
+"inventory|n.|재고|Store managers take inventory at the end of each month.",
+"shipment|n.|수송, 발송물|The shipment from the Osaka plant arrived ahead of schedule.",
+"freight|n.|화물, 운송료|Freight charges will be added to the final invoice.",
+"warehouse|n.|창고|The new warehouse doubled our storage capacity.",
+"expedite|v.|신속히 처리하다|We paid an extra fee to expedite the delivery.",
+"procurement|n.|조달, 구매|The procurement team is reviewing bids from three vendors.",
+"vendor|n.|판매업체, 납품업체|Only approved vendors may access the loading dock.",
+"negotiate|v.|협상하다|Both parties agreed to negotiate the terms of the lease.",
+"clause|n.|조항|The confidentiality clause applies to all contractors.",
+"renew|v.|갱신하다|Subscribers can renew their membership online at any time.",
+"terminate|v.|종료하다, 해지하다|Either party may terminate the agreement with written notice.",
+"expire|v.|만료되다|Your parking permit will expire at the end of the month.",
+"merger|n.|합병|The merger is expected to close by the fourth quarter.",
+"stakeholder|n.|이해관계자|Management briefed all stakeholders on the restructuring plan.",
+"shareholder|n.|주주|Shareholders will vote on the proposal at the annual meeting.",
+"dividend|n.|배당금|The company announced a higher dividend for the second year.",
+"forecast|n.|예측, 전망|The sales forecast for the region was revised upward.",
+"initiative|n.|계획, 주도|The recycling initiative reduced waste by thirty percent.",
+"campaign|n.|캠페인, 운동|The advertising campaign targets customers under thirty.",
+"brochure|n.|안내 책자|Copies of the brochure are available at the front desk.",
+"referral|n.|추천, 소개|New clients often come to us through referrals.",
+"complimentary|adj.|무료의|Hotel guests receive a complimentary breakfast each morning.",
+"installment|n.|할부금|The equipment can be paid for in twelve monthly installments.",
+"deposit|n.|보증금, 예치금|A deposit is required to reserve the conference room.",
+"lease|n.|임대차 계약|The office lease will be renegotiated next spring.",
+"tenant|n.|세입자, 임차인|Tenants were notified about the elevator maintenance.",
+"premises|n.|구내, 부지|Visitors must register at the gate before entering the premises.",
+"renovation|n.|개조, 보수|The lobby renovation will be completed by early October.",
+"maintenance|n.|유지 보수|Routine maintenance is scheduled for the first Sunday of each month.",
+"facility|n.|시설|The manufacturing facility operates around the clock.",
+"attendee|n.|참석자|Attendees should pick up their badges at the registration desk.",
+"keynote|n.|기조연설|The keynote address will begin promptly at nine o'clock.",
+"venue|n.|장소, 개최지|The venue was changed to accommodate a larger audience.",
+"registration|n.|등록|Early registration for the seminar closes on Friday.",
+"deadline|n.|마감 기한|The deadline for submitting proposals has been extended.",
+"submit|v.|제출하다|Please submit your timesheet before leaving on Friday.",
+"revise|v.|수정하다|The manual was revised to reflect the new procedures.",
+"draft|n.|초안|Ms. Ito circulated a draft of the annual report.",
+"delegate|v.|위임하다|Effective managers delegate routine tasks to their staff.",
+"oversee|v.|감독하다|Mr. Ahn will oversee the relocation of the branch office.",
+"supervise|v.|감독하다, 관리하다|She supervises a team of twelve technicians.",
+"coordinate|v.|조율하다|The assistant will coordinate schedules for all interviews.",
+"streamline|v.|간소화하다|The new software streamlines the approval process.",
+"implement|v.|시행하다|The policy will be implemented at all branches next month.",
+"allocate|v.|할당하다|Additional funds were allocated to research and development.",
+"prioritize|v.|우선순위를 매기다|Please prioritize the orders that ship this week.",
+"accommodate|v.|수용하다|The auditorium can accommodate up to four hundred people.",
+"reschedule|v.|일정을 변경하다|The client asked to reschedule the presentation for Thursday.",
+"postpone|v.|연기하다|The board postponed the decision until the next quarter.",
+"boarding|n.|탑승|Boarding will begin thirty minutes before departure.",
+"baggage|n.|수하물|Passengers may check two pieces of baggage free of charge.",
+"reservation|n.|예약|Your reservation is confirmed for three nights.",
+"occupancy|n.|점유율, 투숙률|Hotel occupancy rises sharply during the trade fair.",
+"voucher|n.|상품권, 할인권|Each participant received a voucher for the hotel restaurant.",
+"anticipate|v.|예상하다|We anticipate strong demand for the updated model.",
+"substantial|adj.|상당한|The firm reported a substantial increase in online orders.",
+"eligible|adj.|자격이 있는|Full-time staff are eligible for the tuition program.",
+"mandatory|adj.|의무적인|Attendance at the safety briefing is mandatory.",
+"prompt|adj.|신속한|We appreciate your prompt response to our inquiry.",
+"durable|adj.|내구성이 있는|The casing is durable enough for outdoor use.",
+"consecutive|adj.|연속적인|Sales rose for the fifth consecutive quarter.",
+"preliminary|adj.|예비의|Preliminary results suggest the campaign was successful.",
+"feasible|adj.|실현 가능한|The engineers concluded the timeline was not feasible.",
+"comprehensive|adj.|종합적인|The report offers a comprehensive review of our operations.",
+"recruit|v.|모집하다, 채용하다|The firm is recruiting engineers for its new research center.",
+"qualification|n.|자격, 자격 요건|Please list your qualifications in the application form.",
+"resume|n.|이력서|Send your resume and cover letter to the human resources department.",
+"tenure|n.|재직 기간|Bonuses are calculated according to length of tenure.",
+"personnel|n.|인원, 인사부|All personnel must wear identification badges on site.",
+"workforce|n.|노동력, 전 직원|The company expanded its workforce by twenty percent last year.",
+"orientation|n.|오리엔테이션, 예비 교육|New hires attend a two-day orientation before starting work.",
+"supervisor|n.|상사, 관리자|Submit your leave request to your immediate supervisor.",
+"incentive|n.|장려금, 유인책|The firm offers incentives to employees who exceed sales targets.",
+"compensation|n.|보상, 급여|The compensation package includes health insurance and a pension.",
+"pension|n.|연금|Employees may contribute to the pension plan from their first month.",
+"overtime|n.|초과 근무|Overtime must be approved by a department head in advance.",
+"resignation|n.|사직, 사임|She submitted her resignation two weeks before the merger.",
+"retirement|n.|은퇴, 퇴직|A reception will be held to mark Mr. Kim's retirement.",
+"turnover|n.|이직률, 총매출|Staff turnover has declined since the wage increase.",
+"morale|n.|사기, 의욕|Flexible hours have improved morale across the department.",
+"workload|n.|업무량|The new assistant will help reduce the manager's workload.",
+"distribute|v.|배포하다, 유통하다|Copies of the handbook were distributed to all attendees.",
+"distributor|n.|유통업체|Our regional distributor handles orders throughout Southeast Asia.",
+"retailer|n.|소매업체|Several retailers reported record sales during the holiday season.",
+"wholesale|adj.|도매의|The manufacturer sells directly to buyers at wholesale prices.",
+"merchandise|n.|상품|Damaged merchandise should be reported within forty-eight hours.",
+"consignment|n.|위탁 화물|The consignment cleared customs on Tuesday morning.",
+"customs|n.|세관|Goods were held at customs for additional inspection.",
+"tariff|n.|관세|New tariffs raised the cost of imported components.",
+"import|v.|수입하다|The firm imports raw materials from three countries.",
+"export|n.|수출|Exports to the European market rose sharply this quarter.",
+"logistics|n.|물류|The logistics team is reviewing alternative shipping routes.",
+"carrier|n.|운송업체|Our regular carrier guarantees delivery within three business days.",
+"courier|n.|택배업체|Documents were sent by overnight courier to the branch office.",
+"dispatch|v.|발송하다|The order will be dispatched as soon as payment clears.",
+"loading dock|n.|하역장|Deliveries must be unloaded at the rear loading dock.",
+"outstanding|adj.|미지불된, 뛰어난|Please settle the outstanding balance by the end of the month.",
+"overdue|adj.|기한이 지난|A late fee applies to invoices that are thirty days overdue.",
+"remittance|n.|송금|Remittance should be made to the account listed below.",
+"disbursement|n.|지출, 지급|All disbursements require approval from the finance director.",
+"transaction|n.|거래|Each transaction is recorded in the accounting system automatically.",
+"statement|n.|명세서, 성명|Monthly statements are available through the online portal.",
+"reconcile|v.|조정하다, 대조하다|The bookkeeper reconciles the accounts at each month's end.",
+"liability|n.|부채, 책임|The report lists current assets and long-term liabilities.",
+"asset|n.|자산|The building remains the firm's most valuable asset.",
+"depreciation|n.|감가상각|Depreciation is calculated over the equipment's useful life.",
+"overhead|n.|간접비, 경상비|Moving to a smaller office reduced overhead considerably.",
+"margin|n.|마진, 이윤|Higher material costs narrowed the profit margin.",
+"profitable|adj.|수익성이 있는|The subsidiary became profitable within two years.",
+"surplus|n.|잉여, 흑자|The department returned its budget surplus at year end.",
+"deficit|n.|적자, 부족|The division reported a small deficit for the first quarter.",
+"subsidy|n.|보조금|Local subsidies encouraged the plant to expand.",
+"quotation|n.|견적서|Please send a written quotation before we place the order.",
+"estimate|n.|견적, 추정|The contractor provided an estimate for the lobby repairs.",
+"bid|n.|입찰|Three firms submitted bids for the construction contract.",
+"proposal|n.|제안서|The committee will review all proposals by Friday.",
+"tender|n.|입찰|The tender for the maintenance contract closes next week.",
+"contractor|n.|계약업체, 도급업자|The contractor promised to finish the work by September.",
+"subsidiary|n.|자회사|The subsidiary operates independently from the parent company.",
+"headquarters|n.|본사|The company relocated its headquarters to Singapore.",
+"branch|n.|지점, 지사|Our Osaka branch handles all regional inquiries.",
+"affiliate|n.|계열사|Employees of affiliates receive the same discount.",
+"acquisition|n.|인수|The acquisition doubled the firm's market share.",
+"takeover|n.|인수, 매수|Analysts expect the takeover to be completed in the spring.",
+"expansion|n.|확장|The expansion added two production lines to the plant.",
+"restructuring|n.|구조조정|The restructuring affected several administrative positions.",
+"outsource|v.|외주를 주다|The company outsourced its customer support operations.",
+"partnership|n.|제휴, 협력 관계|The partnership gives both firms access to new markets.",
+"collaborate|v.|협력하다|The two departments collaborated on the marketing plan.",
+"comprise|v.|구성되다|The board comprises nine members from four countries.",
+"consolidate|v.|통합하다|The firm consolidated its three warehouses into one.",
+"diversify|v.|다각화하다|The company diversified into consumer electronics.",
+"compliance|n.|준수, 규정 준수|Compliance training is required for all new employees.",
+"regulation|n.|규정, 규제|Environmental regulations were tightened last January.",
+"provision|n.|조항, 규정|The provision limits liability to the purchase price.",
+"liable|adj.|법적 책임이 있는|The carrier is not liable for damage caused by improper packing.",
+"binding|adj.|구속력 있는|The agreement is binding on both parties once signed.",
+"breach|n.|위반|Any breach of confidentiality will result in termination.",
+"amend|v.|수정하다|The contract was amended to include a delivery penalty.",
+"waive|v.|면제하다, 포기하다|The bank agreed to waive the transfer fee.",
+"enforce|v.|시행하다, 집행하다|The policy will be strictly enforced beginning in May.",
+"authorize|v.|승인하다, 권한을 주다|Only the manager is authorized to approve refunds.",
+"verify|v.|확인하다, 검증하다|Please verify the shipping address before confirming the order.",
+"certify|v.|인증하다|The laboratory is certified to international safety standards.",
+"inspection|n.|점검, 검사|A safety inspection is conducted twice a year.",
+"defect|n.|결함|Any defect discovered during testing must be documented.",
+"malfunction|n.|오작동|A malfunction in the cooling system delayed production.",
+"replacement|n.|교체품, 대체|A replacement part will be shipped at no additional cost.",
+"repair|n.|수리|Repairs to the elevator will take about three hours.",
+"upgrade|v.|개선하다, 업그레이드하다|The office network was upgraded over the holiday weekend.",
+"install|v.|설치하다|Technicians will install the new equipment on Saturday.",
+"assemble|v.|조립하다, 모으다|The units are assembled at the plant in Nagoya.",
+"manufacture|v.|제조하다|The components are manufactured under strict quality controls.",
+"production|n.|생산|Production was suspended during the annual maintenance period.",
+"capacity|n.|수용력, 생산 능력|The plant is operating at full capacity this month.",
+"efficiency|n.|효율성|The new layout improved efficiency on the assembly line.",
+"productivity|n.|생산성|Productivity rose after the scheduling system was updated.",
+"output|n.|생산량|Monthly output exceeded the target for the third time.",
+"quota|n.|할당량|The sales team met its quarterly quota ahead of schedule.",
+"supplier|n.|공급업체|We rely on two suppliers for packaging materials.",
+"sourcing|n.|조달|Local sourcing reduced transportation costs significantly.",
+"surplus stock|n.|재고 과잉분|Surplus stock will be offered at a reduced price.",
+"warehouse fee|n.|창고 보관료|Warehouse fees are billed on the first of each month.",
+"promptly|adv.|즉시, 신속하게|Please respond promptly to any customer complaint.",
+"accordingly|adv.|그에 따라|Demand has changed, and prices were adjusted accordingly.",
+"regarding|prep.|~에 관하여|I am writing regarding your inquiry about bulk orders.",
+"enclosed|adj.|동봉된|Enclosed is a copy of the signed agreement.",
+"attached|adj.|첨부된|The attached document outlines the revised procedures.",
+"inquiry|n.|문의|We received several inquiries about the discontinued model.",
+"correspondence|n.|서신, 왕래|All correspondence should be addressed to the branch manager.",
+"notification|n.|통지|Notification of the change was emailed to all subscribers.",
+"announcement|n.|공지, 발표|The announcement will be posted on the company intranet.",
+"memorandum|n.|회람, 각서|A memorandum was circulated regarding the parking policy.",
+"recipient|n.|수령인|The recipient must sign for the package upon delivery.",
+"addressee|n.|수신인|The letter was returned because the addressee had moved.",
+"confirmation|n.|확인|You will receive a confirmation email within one hour.",
+"acknowledge|v.|인정하다, 수령을 알리다|Please acknowledge receipt of this message.",
+"clarify|v.|명확히 하다|Could you clarify which model you would like to order?",
+"specify|v.|명시하다|Please specify your preferred delivery date on the form.",
+"outline|v.|개요를 서술하다|The report outlines three options for reducing costs.",
+"summarize|v.|요약하다|The assistant summarized the findings in a single page.",
+"brief|v.|보고하다, 알리다|The director briefed the team on the new schedule.",
+"distribute copies|v.|사본을 배포하다|Please distribute copies of the agenda before the meeting.",
+"convene|v.|소집하다|The committee convenes on the first Tuesday of each month.",
+"adjourn|v.|휴회하다, 산회하다|The meeting was adjourned until the following week.",
+"preside|v.|주재하다|The vice president will preside over the annual meeting.",
+"moderate|v.|사회를 보다|Ms. Cho will moderate the afternoon panel discussion.",
+"participant|n.|참가자|Each participant received a certificate of completion.",
+"facilitator|n.|진행자|The workshop facilitator handed out evaluation forms.",
+"delegation|n.|대표단|A delegation from the Tokyo office visited the factory.",
+"itemize|v.|항목별로 적다|Please itemize all expenses on the reimbursement form.",
+"allocate funds|v.|자금을 할당하다|The board allocated funds for the training program.",
+"approve|v.|승인하다|The request was approved by the finance committee.",
+"endorse|v.|지지하다, 배서하다|Several board members endorsed the expansion plan.",
+"disclose|v.|공개하다|The firm declined to disclose the terms of the deal.",
+"confidential|adj.|기밀의|Salary information is strictly confidential.",
+"proprietary|adj.|독점의, 소유주의|The software uses a proprietary compression method.",
+"patent|n.|특허|The company holds a patent on the filtration process.",
+"trademark|n.|상표|The logo has been registered as a trademark.",
+"copyright|n.|저작권|All images are protected by copyright.",
+"license|n.|허가증, 면허|A license is required to operate the equipment.",
+"permit|n.|허가증|A building permit must be obtained before construction begins.",
+"lease agreement|n.|임대차 계약서|The lease agreement runs for an initial term of five years.",
+"utility|n.|공공요금, 공익사업|Rent includes utilities and building maintenance.",
+"appliance|n.|가전제품|The apartment comes with major appliances included.",
+"furnished|adj.|가구가 비치된|The relocation package includes a furnished apartment.",
+"spacious|adj.|넓은|The renovated lobby is bright and spacious.",
+"adjacent|adj.|인접한|Parking is available in the lot adjacent to the building.",
+"vicinity|n.|인근, 부근|Several restaurants are located in the vicinity of the office.",
+"accessible|adj.|접근 가능한|The conference center is accessible by subway and bus.",
+"commute|n.|통근|A shuttle service shortens the commute from the station.",
+"detour|n.|우회로|Construction on Main Street requires a short detour.",
+"congestion|n.|혼잡|Traffic congestion delayed several deliveries this morning.",
+"depart|v.|출발하다|The shuttle departs from the north entrance every hour.",
+"arrival|n.|도착|Please confirm your arrival time with the front desk.",
+"departure|n.|출발|Departure has been delayed by approximately forty minutes.",
+"transit|n.|통과, 운송 중|The parcel is currently in transit to the Seoul office.",
+"layover|n.|경유, 체류|The itinerary includes a two-hour layover in Hong Kong.",
+"fare|n.|요금|Airport shuttle fares are refunded with a receipt.",
+"accommodation|n.|숙소|Accommodation for out-of-town speakers has been arranged.",
+"lodging|n.|숙박|The grant covers travel and lodging expenses.",
+"banquet|n.|연회|The awards banquet will be held in the main ballroom.",
+"catering|n.|출장 요리|Catering for the reception was arranged by the events team.",
+"refreshments|n.|다과|Refreshments will be served during the afternoon break.",
+"exhibit|n.|전시(품)|The trade fair exhibit attracted hundreds of visitors.",
+"exhibition|n.|전시회|Our booth at the exhibition generated dozens of leads.",
+"sponsor|n.|후원자|The conference sponsors are listed in the program.",
+"donation|n.|기부|Donations to the community fund are tax deductible.",
+"charity|n.|자선 단체|The firm supports a local charity every December.",
+"volunteer|n.|자원봉사자|Volunteers helped set up the registration desk.",
+"recognition|n.|인정, 표창|She received recognition for her work on the merger.",
+"achievement|n.|업적, 성취|The award honors outstanding achievement in customer service.",
+"outstanding performance|n.|뛰어난 성과|Bonuses reward outstanding performance during the year.",
+"subscriber|n.|구독자|Subscribers receive the newsletter every Monday morning.",
+"subscription|n.|구독|Your subscription will renew automatically in June.",
+"membership|n.|회원 자격|Membership includes access to the online archive.",
+"loyalty|n.|충성도|The loyalty program offers points on every purchase.",
+"questionnaire|n.|설문지|Guests are asked to complete a short questionnaire.",
+"survey|n.|설문 조사|The survey showed high satisfaction with the new service.",
+"feedback|n.|피드백, 의견|Customer feedback prompted several design changes.",
+"complaint|n.|불만, 항의|Complaints are handled by the customer relations team.",
+"apology|n.|사과|The manager sent a written apology for the delay.",
+"courtesy|n.|예의, 호의|A courtesy call is made before every service visit.",
+"retention|n.|유지, 보유|Customer retention improved after the redesign.",
+"prospective|adj.|유망한, 장래의|Prospective clients toured the manufacturing facility.",
+"potential|adj.|잠재적인|The report identifies three potential markets in Asia.",
+"lucrative|adj.|수익성이 좋은|The contract proved highly lucrative for the supplier.",
+"competitive|adj.|경쟁력 있는|The firm offers competitive rates for bulk shipments.",
+"competitor|n.|경쟁사|Two competitors launched similar products last month.",
+"market share|n.|시장 점유율|The brand gained market share in the premium segment.",
+"demand|n.|수요|Demand for the compact model exceeded expectations.",
+"supply|n.|공급|A shortage disrupted the supply of key components.",
+"shortage|n.|부족|A staff shortage delayed the opening of the second branch.",
+"surge|n.|급증|A surge in online orders overwhelmed the warehouse.",
+"decline|v.|감소하다, 거절하다|Sales declined slightly during the off season.",
+"fluctuate|v.|변동하다|Currency rates fluctuated throughout the quarter.",
+"stabilize|v.|안정되다|Prices stabilized after the new supplier was added.",
+"exceed|v.|초과하다|Costs must not exceed the approved budget.",
+"attain|v.|달성하다|The branch attained its annual target in October.",
+"strive|v.|노력하다|We strive to respond to every inquiry within one day.",
+"undergo|v.|겪다, 받다|The building will undergo extensive renovation this fall.",
+"relocate|v.|이전하다|The design team relocated to the fourth floor.",
+"commence|v.|시작하다|Construction is scheduled to commence in early March.",
+"suspend|v.|중단하다|Deliveries were suspended during the storm.",
+"extend|v.|연장하다|The deadline was extended by one week.",
+"exempt|adj.|면제되는|Nonprofit organizations are exempt from the fee.",
+"applicable|adj.|해당되는, 적용 가능한|Discounts are applicable to orders over one thousand dollars.",
+"valid|adj.|유효한|The coupon is valid through the end of the month.",
+"expiration|n.|만료|Check the expiration date printed on the package.",
+"duplicate|n.|사본, 중복|A duplicate of the receipt was attached to the claim.",
+"revision|n.|수정본|The latest revision of the manual is available online.",
+"supplement|n.|보충, 부록|A supplement to the contract covers overseas shipments.",
+"attachment|n.|첨부 파일|The attachment could not be opened by some recipients.",
+"credentials|n.|자격 증명|Visitors must present credentials at the security desk.",
+"identification|n.|신분증|Photo identification is required to enter the laboratory.",
+"premise|n.|전제|The plan rests on the premise that demand will grow."
+].join("\n");
+
+var BANK={},BANK_LIST=[];
+BANK_RAW.split("\n").forEach(function(l){
+  var p=l.split("|");
+  if(p.length>=4){
+    var e={pos:p[1],meaning:p[2],example:p[3],toeic:true};
+    BANK[p[0].toLowerCase()]=e;
+    BANK_LIST.push({term:p[0],pos:p[1],meaning:p[2],example:p[3]});
+  }
+});
+var USER_DAYS = [{"name": "DAY 1", "words": [{"term": "separate", "meaning": "별개의, 독립된, 분리하다, 나누다", "pos": "adj./v.", "example": "Please keep the receipts in a separate envelope for the audit.", "ko": "영수증은 감사를 위해 별도의 봉투에 보관해 주세요."}, {"term": "collect feedback", "meaning": "피드백을 모으다", "pos": "phrase", "example": "The team will collect feedback from clients after the trial period.", "ko": "팀은 시범 기간이 끝난 후 고객들로부터 피드백을 모을 것입니다."}, {"term": "collect trash", "meaning": "쓰레기를 수거하다", "pos": "phrase", "example": "Building staff collect trash from each floor every evening.", "ko": "건물 직원들이 매일 저녁 각 층의 쓰레기를 수거합니다."}, {"term": "estimate", "meaning": "견적(서), 추정(치), 추정하다", "pos": "n.", "example": "The contractor provided an estimate for the lobby repairs.", "ko": "그 도급업자는 로비 수리에 대한 견적서를 제공했습니다."}, {"term": "immediately after", "meaning": "~한 직후", "pos": "phrase", "example": "The reception begins immediately after the closing remarks.", "ko": "리셉션은 폐회사 직후에 시작됩니다."}, {"term": "soon after", "meaning": "~한 직후", "pos": "phrase", "example": "Soon after the merger, the branch offices were consolidated.", "ko": "합병 직후, 지사들이 통합되었습니다."}, {"term": "shortly after", "meaning": "~한 직후", "pos": "phrase", "example": "Shortly after the announcement, orders increased sharply.", "ko": "발표 직후, 주문이 급격히 늘었습니다."}, {"term": "promptly after", "meaning": "~한 직후", "pos": "phrase", "example": "Invoices are issued promptly after the shipment leaves the warehouse.", "ko": "송장은 화물이 창고를 떠난 직후에 발행됩니다."}, {"term": "right after", "meaning": "~한 직후", "pos": "phrase", "example": "The safety briefing takes place right after the morning meeting.", "ko": "안전 교육은 오전 회의 직후에 진행됩니다."}, {"term": "periodically check", "meaning": "정기적으로 점검하다", "pos": "phrase", "example": "Technicians periodically check the ventilation system for blockages.", "ko": "기술자들이 환기 시스템에 막힌 곳이 없는지 정기적으로 점검합니다."}, {"term": "work alongside", "meaning": "~와 함께 일하다", "pos": "phrase", "example": "Interns will work alongside senior designers for three months.", "ko": "인턴들은 3개월 동안 선임 디자이너들과 함께 일하게 됩니다."}, {"term": "substitute for", "meaning": "~의 대용품(대체품), ~의 대체자", "pos": "phrase", "example": "Ms. Lee is serving as a substitute for the regional manager this week.", "ko": "이 씨가 이번 주 지역 매니저의 대체자로 근무하고 있습니다."}, {"term": "insulation", "meaning": "단열, 절연", "pos": "n.", "example": "New insulation was installed to reduce heating costs.", "ko": "난방비를 줄이기 위해 새 단열재가 설치되었습니다."}, {"term": "ventilation", "meaning": "환기, 통풍", "pos": "n.", "example": "The laboratory requires proper ventilation at all times.", "ko": "실험실은 항상 적절한 환기가 필요합니다."}, {"term": "ideal for", "meaning": "~에 이상적인", "pos": "phrase", "example": "The compact printer is ideal for small offices.", "ko": "이 소형 프린터는 작은 사무실에 이상적입니다."}, {"term": "place an order", "meaning": "주문하다", "pos": "phrase", "example": "Customers may place an order by phone or through our website.", "ko": "고객은 전화 또는 웹사이트를 통해 주문할 수 있습니다."}, {"term": "fill an order", "meaning": "주문을 처리하다", "pos": "phrase", "example": "The warehouse can fill an order within two business days.", "ko": "창고는 영업일 기준 이틀 안에 주문을 처리할 수 있습니다."}, {"term": "fulfill an order", "meaning": "주문을 처리하다", "pos": "phrase", "example": "We were unable to fulfill the order because of a parts shortage.", "ko": "부품 부족으로 인해 저희는 그 주문을 처리할 수 없었습니다."}, {"term": "process an order", "meaning": "주문을 처리하다", "pos": "phrase", "example": "It takes about an hour to process an order during peak season.", "ko": "성수기에는 주문 처리에 약 한 시간이 걸립니다."}, {"term": "following", "meaning": "다음의, ~후에, ~에 따라", "pos": "adj./prep.", "example": "Following the presentation, participants will tour the facility.", "ko": "발표 후에 참가자들은 시설을 견학할 예정입니다."}, {"term": "facilitate", "meaning": "용이하게 하다, 쉽게 하다", "pos": "v.", "example": "The new software facilitates communication between departments.", "ko": "새 소프트웨어는 부서 간 소통을 용이하게 합니다."}, {"term": "strategic", "meaning": "전략적인", "pos": "adj.", "example": "The firm formed a strategic partnership with a local distributor.", "ko": "그 회사는 현지 유통업체와 전략적 제휴를 맺었습니다."}, {"term": "unanimous", "meaning": "만장일치의", "pos": "adj.", "example": "The board reached a unanimous decision on the budget.", "ko": "이사회는 예산에 대해 만장일치의 결정을 내렸습니다."}, {"term": "anonymous", "meaning": "익명의", "pos": "adj.", "example": "The survey is anonymous, so please answer honestly.", "ko": "이 설문은 익명이므로 솔직하게 답해 주세요."}, {"term": "anonymously fill out", "meaning": "익명으로 작성하다", "pos": "phrase", "example": "Employees may anonymously fill out the workplace satisfaction form.", "ko": "직원들은 직장 만족도 양식을 익명으로 작성할 수 있습니다."}, {"term": "promotion to N", "meaning": "~로 승진", "pos": "phrase", "example": "Her promotion to department head was announced on Monday.", "ko": "그녀의 부서장으로의 승진이 월요일에 발표되었습니다."}, {"term": "keynote speaker", "meaning": "기조 연설자", "pos": "phrase", "example": "This year's keynote speaker is a well-known economist.", "ko": "올해의 기조 연설자는 저명한 경제학자입니다."}, {"term": "at the last minute", "meaning": "막판에, 이박해서", "pos": "phrase", "example": "The venue was changed at the last minute due to flooding.", "ko": "홍수 때문에 행사 장소가 막판에 변경되었습니다."}, {"term": "own", "meaning": "소유하다 , 자신의", "pos": "v./adj.", "example": "The company owns three warehouses in the region.", "ko": "그 회사는 지역 내에 창고 세 곳을 소유하고 있습니다."}, {"term": "insightful", "meaning": "통찰력 있는", "pos": "adj.", "example": "The consultant gave an insightful analysis of our pricing.", "ko": "그 컨설턴트는 우리 가격 정책에 대해 통찰력 있는 분석을 제시했습니다."}, {"term": "look forward to ~ing", "meaning": "~를 학수 고대하다", "pos": "phrase", "example": "We look forward to working with your team next quarter.", "ko": "다음 분기에 귀사 팀과 함께 일하기를 고대합니다."}, {"term": "be functioning properly", "meaning": "제대로 작동하고 있다", "pos": "phrase", "example": "Please confirm that the alarm system is functioning properly.", "ko": "경보 시스템이 제대로 작동하고 있는지 확인해 주세요."}, {"term": "on behalf of 전치사", "meaning": "~를 대표하여, 대신하여", "pos": "phrase", "example": "On behalf of the staff, I would like to thank our sponsors.", "ko": "직원들을 대표하여 후원사들께 감사드립니다."}, {"term": "agree with", "meaning": "~에 동의하다", "pos": "phrase", "example": "Most managers agree with the proposed schedule change.", "ko": "대부분의 관리자들이 제안된 일정 변경에 동의합니다."}, {"term": "agree to N", "meaning": "~에 동의하다", "pos": "phrase", "example": "Both sides agreed to the revised delivery terms.", "ko": "양측은 수정된 배송 조건에 동의했습니다."}, {"term": "agree upon(on)", "meaning": "~에 동의하다", "pos": "phrase", "example": "The committee agreed upon a date for the annual review.", "ko": "위원회는 연례 검토 날짜에 합의했습니다."}, {"term": "agree to do", "meaning": "~하는 데 동의하다", "pos": "phrase", "example": "The supplier agreed to reduce the shipping fee.", "ko": "공급업체는 배송비를 낮추는 데 동의했습니다."}, {"term": "agree that", "meaning": "S+V 라는 것에 동의하다", "pos": "phrase", "example": "Analysts agree that demand will recover next year.", "ko": "분석가들은 내년에 수요가 회복될 것이라는 데 동의합니다."}, {"term": "for the sake of", "meaning": "~를 위해", "pos": "phrase", "example": "For the sake of accuracy, please double-check the figures.", "ko": "정확성을 위해 수치를 다시 한번 확인해 주세요."}, {"term": "in advance of", "meaning": "~전에", "pos": "phrase", "example": "Materials should be distributed in advance of the meeting.", "ko": "자료는 회의 전에 배포되어야 합니다."}, {"term": "in advance", "meaning": "미리", "pos": "phrase", "example": "Reservations must be made at least two weeks in advance.", "ko": "예약은 최소 2주 전에 미리 하셔야 합니다."}, {"term": "present an ID(passport, visa..)", "meaning": "신분증(여권,비자..)를 제시하다", "pos": "phrase", "example": "Visitors must present an ID at the security desk.", "ko": "방문객은 보안 데스크에서 신분증을 제시해야 합니다."}, {"term": "tray", "meaning": "쟁반", "pos": "n.", "example": "Place the completed forms in the tray on the front counter.", "ko": "작성 완료된 양식은 안내 데스크의 쟁반에 놓아 주세요."}, {"term": "alternate route", "meaning": "대체 경로, 우회로", "pos": "phrase", "example": "Drivers were advised to take an alternate route during construction.", "ko": "공사 기간 동안 운전자들은 우회로를 이용하도록 안내받았습니다."}, {"term": "jammed", "meaning": "혼잡한, 붐비는, 움직일 수 없는, 종이가 걸린", "pos": "adj.", "example": "The copier is jammed and needs to be serviced.", "ko": "복사기에 종이가 걸려서 수리가 필요합니다."}, {"term": "close to N", "meaning": "~에 가까운", "pos": "phrase", "example": "The hotel is close to the convention center.", "ko": "그 호텔은 컨벤션 센터에 가깝습니다."}, {"term": "curb", "meaning": "도로 경계석, 억제하다, 제한하다", "pos": "n./v.", "example": "The company introduced measures to curb unnecessary spending.", "ko": "회사는 불필요한 지출을 억제하기 위한 조치를 도입했습니다."}, {"term": "easily accessible", "meaning": "쉽게 접근 가능한", "pos": "phrase", "example": "All training materials are easily accessible on the intranet.", "ko": "모든 교육 자료는 사내망에서 쉽게 접근할 수 있습니다."}, {"term": "on display", "meaning": "전시 중인, 진열 중인", "pos": "phrase", "example": "The latest models are on display in the main showroom.", "ko": "최신 모델들이 메인 전시장에 진열되어 있습니다."}, {"term": "on file", "meaning": "정리 보관되어, 기록 보관되어", "pos": "phrase", "example": "A copy of your contract is kept on file in the personnel office.", "ko": "귀하의 계약서 사본은 인사부에 보관되어 있습니다."}, {"term": "be promoted to N~", "meaning": "~로 승진되다", "pos": "phrase", "example": "Mr. Choi was promoted to regional sales director.", "ko": "최 씨는 지역 영업 이사로 승진했습니다."}, {"term": "avoid further delays", "meaning": "추가 지연 상황을 피하다", "pos": "phrase", "example": "Please submit the forms today to avoid further delays.", "ko": "추가 지연을 피하려면 오늘 양식을 제출해 주세요."}, {"term": "swiftly", "meaning": "재빠르게", "pos": "adv.", "example": "The support team swiftly resolved the billing error.", "ko": "지원팀이 청구 오류를 신속하게 해결했습니다."}, {"term": "machinery", "meaning": "기계류", "pos": "n.", "example": "All machinery must be inspected before the shift begins.", "ko": "모든 기계류는 교대 근무 시작 전에 점검되어야 합니다."}, {"term": "confidential document", "meaning": "기밀 문서", "pos": "phrase", "example": "Confidential documents should be stored in the locked cabinet.", "ko": "기밀 문서는 잠금 캐비닛에 보관해야 합니다."}, {"term": "analyze", "meaning": "분석하다", "pos": "v.", "example": "The consultant will analyze last quarter's sales figures.", "ko": "그 컨설턴트가 지난 분기 매출 수치를 분석할 예정입니다."}, {"term": "analysis", "meaning": "분석", "pos": "n.", "example": "The analysis showed a steady rise in overseas orders.", "ko": "그 분석은 해외 주문이 꾸준히 증가했음을 보여주었습니다."}, {"term": "analyst", "meaning": "분석가", "pos": "n.", "example": "A market analyst presented the findings to the board.", "ko": "한 시장 분석가가 이사회에 조사 결과를 발표했습니다."}, {"term": "summarize", "meaning": "요약하다", "pos": "v.", "example": "The assistant summarized the findings in a single page.", "ko": "그 비서가 조사 결과를 한 페이지로 요약했습니다."}, {"term": "exchange A for B", "meaning": "A를 B와 교환하다", "pos": "phrase", "example": "Customers may exchange the item for a different size.", "ko": "고객은 그 상품을 다른 사이즈로 교환할 수 있습니다."}, {"term": "be put on hold", "meaning": "보류되다, 연기되다", "pos": "phrase", "example": "The expansion project was put on hold until funding is secured.", "ko": "자금이 확보될 때까지 확장 사업은 보류되었습니다."}, {"term": "be filled with", "meaning": "~로 가득 차다", "pos": "phrase", "example": "The storage room is filled with promotional materials.", "ko": "창고 방은 판촉물로 가득 차 있습니다."}]}, {"name": "DAY 2", "words": [{"term": "various", "meaning": "다양한", "pos": "adj.", "example": "The catalog lists various models at different price points.", "ko": "카탈로그에는 다양한 가격대의 다양한 모델이 실려 있습니다."}, {"term": "variable", "meaning": "가변성의, 변하는", "pos": "adj.", "example": "Shipping costs are variable depending on the destination.", "ko": "배송비는 목적지에 따라 변동됩니다."}, {"term": "the number of 복수명사", "meaning": "~의 수,", "pos": "phrase", "example": "The number of applicants has doubled since last year.", "ko": "지원자 수가 작년 이후 두 배가 되었습니다."}, {"term": "a number of + 복수명사", "meaning": "많은", "pos": "phrase", "example": "A number of employees have requested flexible hours.", "ko": "많은 직원들이 탄력 근무를 요청했습니다."}, {"term": "forgetful", "meaning": "잘 잊어버리는, 건망증의", "pos": "adj.", "example": "He has become forgetful about submitting his timesheets.", "ko": "그는 근무 시간표 제출을 잘 잊어버리게 되었습니다."}, {"term": "forgettable", "meaning": "잊혀지기 쉬운, 별로 특별할 것이 없는", "pos": "adj.", "example": "Reviewers described the product design as forgettable.", "ko": "평론가들은 그 제품 디자인이 별로 인상적이지 않다고 평했습니다."}, {"term": "imaginative", "meaning": "상상력이 풍부한", "pos": "adj.", "example": "The agency produced an imaginative advertising campaign.", "ko": "그 대행사는 상상력이 풍부한 광고 캠페인을 만들었습니다."}, {"term": "imaginary", "meaning": "가상의", "pos": "adj.", "example": "The training uses an imaginary company as a case study.", "ko": "그 교육은 가상의 회사를 사례 연구로 사용합니다."}, {"term": "momentary", "meaning": "순간의, 찰나의", "pos": "adj.", "example": "A momentary power failure interrupted the presentation.", "ko": "순간적인 정전으로 발표가 중단되었습니다."}, {"term": "momentous", "meaning": "중요한, 중대한", "pos": "adj.", "example": "The merger was a momentous event for the industry.", "ko": "그 합병은 업계에 중대한 사건이었습니다."}, {"term": "envious", "meaning": "부러워하는, 질투하는", "pos": "adj.", "example": "Competitors were envious of the firm's rapid growth.", "ko": "경쟁사들은 그 회사의 빠른 성장을 부러워했습니다."}, {"term": "enviable", "meaning": "부러울 만한, 선망의 대상이 되는", "pos": "adj.", "example": "The company has an enviable reputation for customer service.", "ko": "그 회사는 고객 서비스로 선망의 대상이 되는 평판을 갖고 있습니다."}, {"term": "ingenious", "meaning": "독창적인", "pos": "adj.", "example": "An ingenious design reduced assembly time by half.", "ko": "독창적인 설계로 조립 시간이 절반으로 줄었습니다."}, {"term": "indigenous", "meaning": "고유의, 토착의", "pos": "adj.", "example": "The park protects several indigenous plant species.", "ko": "그 공원은 여러 토착 식물 종을 보호하고 있습니다."}, {"term": "competition", "meaning": "경쟁, 대회", "pos": "n.", "example": "Competition in the online market has intensified.", "ko": "온라인 시장에서의 경쟁이 심화되었습니다."}, {"term": "competitiveness", "meaning": "경쟁력", "pos": "n.", "example": "Automation improved the plant's competitiveness.", "ko": "자동화로 그 공장의 경쟁력이 향상되었습니다."}, {"term": "advance", "meaning": "사전의", "pos": "adj.", "example": "Advance payment is required for all custom orders.", "ko": "모든 맞춤 주문은 사전 결제가 필요합니다."}, {"term": "advance notice", "meaning": "사전 통보", "pos": "phrase", "example": "Tenants must give thirty days' advance notice before moving out.", "ko": "세입자는 이사 30일 전에 사전 통보를 해야 합니다."}, {"term": "advanced", "meaning": "첨단의, 상급의, 고급의", "pos": "adj.", "example": "The lab is equipped with advanced testing instruments.", "ko": "그 실험실은 첨단 검사 장비를 갖추고 있습니다."}, {"term": "advanced degree", "meaning": "상급 학위", "pos": "phrase", "example": "An advanced degree is preferred but not required.", "ko": "상급 학위가 있으면 좋지만 필수는 아닙니다."}, {"term": "advances in", "meaning": "~에서의 발전(진보)", "pos": "phrase", "example": "Recent advances in battery technology lowered production costs.", "ko": "최근 배터리 기술의 발전으로 생산 비용이 낮아졌습니다."}, {"term": "advancement to N", "meaning": "~로 승진, 진출", "pos": "phrase", "example": "Her advancement to senior manager surprised no one.", "ko": "그녀의 수석 관리자로의 승진은 누구도 놀라게 하지 않았습니다."}, {"term": "clear", "meaning": "명백한, 분명한, 확실한", "pos": "adj.", "example": "The instructions must be clear enough for new employees.", "ko": "지시 사항은 신입 직원이 이해할 만큼 명확해야 합니다."}, {"term": "special", "meaning": "특별한, 특별 상품", "pos": "adj./n.", "example": "The restaurant offers a lunch special on weekdays.", "ko": "그 식당은 평일에 점심 특선을 제공합니다."}, {"term": "specialty", "meaning": "지역 특산품, 전공 분야", "pos": "n.", "example": "Handmade ceramics are a specialty of this region.", "ko": "수제 도자기는 이 지역의 특산품입니다."}, {"term": "beside", "meaning": "~옆에", "pos": "prep.", "example": "The vending machine is beside the staff lounge.", "ko": "자판기는 직원 휴게실 옆에 있습니다."}, {"term": "besides", "meaning": "~이외에", "pos": "prep.", "example": "Besides the base salary, the position offers a yearly bonus.", "ko": "기본급 이외에, 그 직책은 연간 상여금을 제공합니다."}, {"term": "in addition to N", "meaning": "~이외에", "pos": "phrase", "example": "In addition to the warranty, buyers receive free installation.", "ko": "보증 이외에, 구매자는 무료 설치를 받습니다."}, {"term": "sole", "meaning": "유일한, 혼자의, (신발) 밑창", "pos": "adj.", "example": "The firm is the sole distributor of the brand in Asia.", "ko": "그 회사는 아시아에서 그 브랜드의 유일한 유통업체입니다."}, {"term": "superior to N", "meaning": "~보다 우수한", "pos": "phrase", "example": "The new model is superior to earlier versions in efficiency.", "ko": "새 모델은 효율성 면에서 이전 버전보다 우수합니다."}, {"term": "synthetic", "meaning": "합성의", "pos": "adj.", "example": "The jackets are made from a lightweight synthetic material.", "ko": "그 재킷은 가벼운 합성 소재로 만들어졌습니다."}, {"term": "appear + 형용사", "meaning": "~ 인 것 같다", "pos": "phrase", "example": "The figures appear accurate, but I will verify them.", "ko": "수치가 정확한 것 같지만, 제가 확인해 보겠습니다."}, {"term": "appear to do", "meaning": "~인 것 같다", "pos": "phrase", "example": "Sales appear to have stabilized in the second quarter.", "ko": "매출은 2분기에 안정된 것으로 보입니다."}, {"term": "appear as if", "meaning": "~인 것 같다", "pos": "phrase", "example": "It appears as if the shipment was misrouted.", "ko": "화물이 잘못 배송된 것 같습니다."}, {"term": "appear as though", "meaning": "~인 것 같다", "pos": "phrase", "example": "It appears as though the deadline will be extended.", "ko": "마감일이 연장될 것처럼 보입니다."}, {"term": "top priority", "meaning": "최 우선순위", "pos": "phrase", "example": "Customer safety is our top priority.", "ko": "고객 안전이 저희의 최우선순위입니다."}, {"term": "the highest priority", "meaning": "최 우선순위", "pos": "phrase", "example": "Repairs to the main line have the highest priority.", "ko": "본선 수리가 최우선순위입니다."}, {"term": "in use", "meaning": "사용 중인", "pos": "phrase", "example": "The conference room is in use until three o'clock.", "ko": "회의실은 3시까지 사용 중입니다."}, {"term": "of use", "meaning": "유용한", "pos": "phrase", "example": "The manual may be of use to new technicians.", "ko": "그 설명서는 신입 기술자들에게 유용할 것입니다."}, {"term": "of no use", "meaning": "쓸모 없는", "pos": "phrase", "example": "The outdated forms are of no use to the accounting team.", "ko": "구식 양식은 회계팀에 쓸모가 없습니다."}, {"term": "stay seated", "meaning": "계속자리에 앉아 있다", "pos": "phrase", "example": "Passengers should stay seated until the shuttle stops.", "ko": "승객들은 셔틀이 멈출 때까지 계속 앉아 계셔야 합니다."}, {"term": "in motion", "meaning": "움직이고 있는, 운전 중인", "pos": "phrase", "example": "Do not open the panel while the machinery is in motion.", "ko": "기계가 작동 중일 때는 패널을 열지 마십시오."}, {"term": "subsidiary", "meaning": "자회사", "pos": "n.", "example": "The subsidiary operates independently from the parent company.", "ko": "그 자회사는 모회사와 독립적으로 운영됩니다."}, {"term": "revisit", "meaning": "다시 논의하다 , 재방문하다", "pos": "v.", "example": "The board will revisit the proposal at the next meeting.", "ko": "이사회는 다음 회의에서 그 제안을 다시 논의할 것입니다."}, {"term": "proposed site", "meaning": "후보지", "pos": "phrase", "example": "Engineers surveyed the proposed site for the new plant.", "ko": "기술자들이 새 공장의 후보지를 조사했습니다."}, {"term": "sought-after", "meaning": "수요가 많은, 많은 사람들이 원하는", "pos": "adj.", "example": "She is a sought-after speaker at industry conferences.", "ko": "그녀는 업계 콘퍼런스에서 수요가 많은 연사입니다."}, {"term": "tech-savvy", "meaning": "최신 기술에 능한", "pos": "adj.", "example": "The campaign targets tech-savvy customers under thirty.", "ko": "그 캠페인은 30세 미만의 최신 기술에 능한 고객을 겨냥합니다."}, {"term": "setback", "meaning": "차질, 실패", "pos": "n.", "example": "A supplier shortage caused a setback in production.", "ko": "공급업체 부족으로 생산에 차질이 생겼습니다."}, {"term": "virtually", "meaning": "가상으로, 사실상, 거의", "pos": "adv.", "example": "The training can be completed virtually from any location.", "ko": "그 교육은 어디에서든 온라인으로 이수할 수 있습니다."}, {"term": "neighboring", "meaning": "인근의, 밀접한", "pos": "adj.", "example": "Deliveries were rerouted through a neighboring town.", "ko": "배송이 인근 도시를 거쳐 우회되었습니다."}, {"term": "That is", "meaning": "즉, 다시 말해", "pos": "phrase", "example": "The offer applies to full-time staff, that is, anyone working forty hours.", "ko": "그 혜택은 정규직, 즉 주 40시간 근무하는 모든 사람에게 적용됩니다."}, {"term": "put an end to N", "meaning": "~를 끝내다, 없애다", "pos": "phrase", "example": "The new policy put an end to unauthorized overtime.", "ko": "새 정책이 승인되지 않은 초과 근무를 없앴습니다."}, {"term": "feasibility", "meaning": "실행 가능성", "pos": "n.", "example": "A feasibility study will determine whether the plan is realistic.", "ko": "타당성 조사가 그 계획이 현실적인지 판단할 것입니다."}, {"term": "pick up", "meaning": "가져가다", "pos": "phrase", "example": "Please pick up your badge at the registration desk.", "ko": "등록 데스크에서 명찰을 가져가 주세요."}, {"term": "drop off", "meaning": "가져다 놓다", "pos": "phrase", "example": "You may drop off the completed forms at the front office.", "ko": "작성한 양식은 안내 사무실에 가져다 놓으시면 됩니다."}, {"term": "embark on", "meaning": "~를 시작하다, 착수하다", "pos": "phrase", "example": "The firm is about to embark on a major expansion.", "ko": "그 회사는 대규모 확장에 착수하려 하고 있습니다."}, {"term": "embark", "meaning": "탑승하다", "pos": "v.", "example": "Passengers will embark through gate four.", "ko": "승객들은 4번 게이트를 통해 탑승합니다."}, {"term": "disembark", "meaning": "내리다", "pos": "v.", "example": "Travelers disembark on the lower level of the terminal.", "ko": "여행객들은 터미널 아래층에서 내립니다."}, {"term": "on leave", "meaning": "휴가 중인", "pos": "phrase", "example": "The director is on leave until the end of the month.", "ko": "그 이사는 이달 말까지 휴가 중입니다."}, {"term": "in anticipation of", "meaning": "~를 예상하고", "pos": "phrase", "example": "Extra staff were hired in anticipation of the holiday rush.", "ko": "연휴 성수기를 예상하고 추가 인력이 채용되었습니다."}, {"term": "most notably", "meaning": "무엇보다도 특히", "pos": "phrase", "example": "Several branches expanded, most notably the Osaka office.", "ko": "여러 지점이 확장되었는데, 무엇보다 특히 오사카 지점이 그렇습니다."}, {"term": "be mindful", "meaning": "~에 주의(유의)하다", "pos": "phrase", "example": "Please be mindful of the noise near the conference rooms.", "ko": "회의실 근처에서는 소음에 주의해 주세요."}, {"term": "make amends", "meaning": "보상해주다", "pos": "phrase", "example": "The airline offered vouchers to make amends for the delay.", "ko": "항공사는 지연에 대해 보상하고자 상품권을 제공했습니다."}, {"term": "compensate A for B", "meaning": "B에 대해 A에게 보상해주다", "pos": "phrase", "example": "The company will compensate customers for the shipping error.", "ko": "회사는 배송 오류에 대해 고객에게 보상할 것입니다."}, {"term": "itinerary", "meaning": "여행 일정", "pos": "n.", "example": "The travel agent emailed a revised itinerary this morning.", "ko": "여행사 직원이 오늘 아침 수정된 여행 일정표를 이메일로 보냈습니다."}, {"term": "cozy", "meaning": "안락한", "pos": "adj.", "example": "The lobby was redesigned to feel bright and cozy.", "ko": "로비는 밝고 안락한 느낌이 나도록 재설계되었습니다."}, {"term": "thoroughly enjoy", "meaning": "매우 즐기다", "pos": "phrase", "example": "Guests thoroughly enjoyed the opening reception.", "ko": "손님들은 개막 리셉션을 매우 즐겼습니다."}, {"term": "abstract", "meaning": "추상적인, 발췌문, 초록", "pos": "adj./n.", "example": "Please submit an abstract of your presentation by Friday.", "ko": "금요일까지 발표 초록을 제출해 주세요."}, {"term": "outreach", "meaning": "봉사활동", "pos": "n.", "example": "The bank sponsors a community outreach program each spring.", "ko": "그 은행은 매년 봄 지역 봉사 프로그램을 후원합니다."}]}, {"name": "DAY 3", "words": [{"term": "resolve complaints", "meaning": "불만(사항)을 해결하다", "pos": "phrase", "example": "The service desk resolves complaints within one business day.", "ko": "서비스 데스크는 영업일 하루 안에 불만 사항을 해결합니다."}, {"term": "address complaints", "meaning": "불만(사항)을 해결하다", "pos": "phrase", "example": "Managers are trained to address complaints promptly.", "ko": "관리자들은 불만 사항을 신속히 해결하도록 교육받습니다."}, {"term": "on (such) short notice", "meaning": "갑작스러운 통보(연락)에도", "pos": "phrase", "example": "Thank you for meeting with us on such short notice.", "ko": "갑작스러운 연락에도 만나 주셔서 감사합니다."}, {"term": "preferably", "meaning": "가급적이면, 되도록이면", "pos": "adv.", "example": "Please reply by Friday, preferably before noon.", "ko": "금요일까지, 가급적이면 정오 전에 답변해 주세요."}, {"term": "mainly", "meaning": "주로, 대게", "pos": "adv.", "example": "The plant mainly produces packaging for food products.", "ko": "그 공장은 주로 식품용 포장재를 생산합니다."}, {"term": "chiefly", "meaning": "주로, 대게", "pos": "adv.", "example": "Costs rose chiefly because of higher fuel prices.", "ko": "비용 상승은 주로 유가 상승 때문이었습니다."}, {"term": "primarily", "meaning": "주로, 대게", "pos": "adv.", "example": "The grant is primarily intended for small businesses.", "ko": "그 보조금은 주로 소규모 사업체를 위한 것입니다."}, {"term": "through understanding", "meaning": "철저한 이해", "pos": "phrase", "example": "A thorough understanding of the contract is essential.", "ko": "계약에 대한 철저한 이해가 필수적입니다."}, {"term": "clear understanding", "meaning": "명확한 이해", "pos": "phrase", "example": "We now have a clear understanding of the client's needs.", "ko": "이제 우리는 고객의 요구를 명확히 이해하게 되었습니다."}, {"term": "better understanding", "meaning": "더 잘 이해", "pos": "phrase", "example": "The workshop gave staff a better understanding of the software.", "ko": "그 워크숍으로 직원들이 소프트웨어를 더 잘 이해하게 되었습니다."}, {"term": "conceive", "meaning": "구상하다, 상상하다", "pos": "v.", "example": "The founder conceived the idea while working overseas.", "ko": "창업자는 해외에서 근무하던 중 그 아이디어를 구상했습니다."}, {"term": "refine", "meaning": "정제[제련]하다, 개선하다", "pos": "v.", "example": "The team refined the proposal after receiving feedback.", "ko": "팀은 피드백을 받은 후 제안서를 개선했습니다."}, {"term": "in the heart of", "meaning": "~의 한가운데에", "pos": "phrase", "example": "The hotel is located in the heart of the business district.", "ko": "그 호텔은 상업 지구 한가운데에 위치해 있습니다."}, {"term": "make it to N", "meaning": "~에 이르다, 도착하다", "pos": "phrase", "example": "Several attendees could not make it to the morning session.", "ko": "몇몇 참석자는 오전 세션에 도착하지 못했습니다."}, {"term": "complimentary", "meaning": "무료의", "pos": "adj.", "example": "Hotel guests receive a complimentary breakfast each morning.", "ko": "호텔 투숙객은 매일 아침 무료 조식을 제공받습니다."}, {"term": "possess", "meaning": "소유하다", "pos": "v.", "example": "Applicants must possess a valid driver's license.", "ko": "지원자는 유효한 운전면허증을 소지해야 합니다."}, {"term": "drainage", "meaning": "배수, 배수시설", "pos": "n.", "example": "Poor drainage caused flooding in the parking area.", "ko": "배수가 잘 되지 않아 주차장에 물이 찼습니다."}, {"term": "oversee", "meaning": "감독하다", "pos": "v.", "example": "Mr. Ahn will oversee the relocation of the branch office.", "ko": "안 씨가 지점 사무실 이전을 감독할 것입니다."}, {"term": "supervise", "meaning": "감독하다", "pos": "v.", "example": "She supervises a team of twelve technicians.", "ko": "그녀는 기술자 12명으로 구성된 팀을 감독합니다."}, {"term": "be over", "meaning": "끝나다", "pos": "phrase", "example": "The renovation will be over before the holiday season.", "ko": "개조 공사는 연휴 시즌 전에 끝날 것입니다."}, {"term": "over the past + 기간", "meaning": "지난 ~동안", "pos": "phrase", "example": "Revenue has grown steadily over the past three years.", "ko": "지난 3년 동안 매출이 꾸준히 성장했습니다."}, {"term": "over 20%", "meaning": "20% 이상", "pos": "phrase", "example": "Online sales increased by over twenty percent this year.", "ko": "올해 온라인 매출이 20퍼센트 이상 증가했습니다."}, {"term": "for your convenience", "meaning": "~의 편의를 위해", "pos": "phrase", "example": "For your convenience, a shuttle runs every fifteen minutes.", "ko": "편의를 위해 셔틀이 15분마다 운행됩니다."}, {"term": "at your (earliest) convenience", "meaning": "편하실 때", "pos": "phrase", "example": "Please return the signed form at your earliest convenience.", "ko": "편하실 때 서명한 양식을 반송해 주세요."}, {"term": "issue a refund", "meaning": "환불해 주다", "pos": "phrase", "example": "We will issue a refund once the item is returned.", "ko": "상품이 반품되면 환불해 드리겠습니다."}, {"term": "issue a badge", "meaning": "배지를 발급해주다", "pos": "phrase", "example": "Security will issue a badge to each visitor.", "ko": "보안팀이 각 방문객에게 배지를 발급해 드립니다."}, {"term": "issue a statement", "meaning": "성명을 발표하다", "pos": "phrase", "example": "The company issued a statement about the recall.", "ko": "회사는 리콜에 관한 성명을 발표했습니다."}, {"term": "a variety of", "meaning": "다양한", "pos": "phrase", "example": "The store carries a variety of office supplies.", "ko": "그 매장은 다양한 사무용품을 취급합니다."}, {"term": "a range of", "meaning": "다양한", "pos": "phrase", "example": "The seminar covers a range of management topics.", "ko": "그 세미나는 다양한 경영 주제를 다룹니다."}, {"term": "an array of", "meaning": "다양한", "pos": "phrase", "example": "The exhibit featured an array of new appliances.", "ko": "그 전시회는 다양한 신형 가전제품을 선보였습니다."}, {"term": "a collection of", "meaning": "다양한", "pos": "phrase", "example": "The museum displays a collection of historical maps.", "ko": "그 박물관은 다양한 고지도를 전시하고 있습니다."}, {"term": "a selection of", "meaning": "다양한", "pos": "phrase", "example": "A selection of desserts is served after lunch.", "ko": "점심 식사 후 다양한 디저트가 제공됩니다."}, {"term": "an assortment of", "meaning": "다양한", "pos": "phrase", "example": "Guests received an assortment of samples at the booth.", "ko": "손님들은 부스에서 다양한 샘플을 받았습니다."}, {"term": "serve as", "meaning": "~의 역할을 하다", "pos": "phrase", "example": "The lounge will serve as a temporary meeting space.", "ko": "그 라운지는 임시 회의 공간의 역할을 할 것입니다."}, {"term": "undergo renovations", "meaning": "보수를 받다", "pos": "phrase", "example": "The lobby will undergo renovations throughout August.", "ko": "로비는 8월 내내 보수 공사를 받습니다."}, {"term": "temperate", "meaning": "온화한, 차분한, 절제된", "pos": "adj.", "example": "The region has a temperate climate year-round.", "ko": "그 지역은 연중 온화한 기후를 보입니다."}, {"term": "temporary", "meaning": "일시적인, 잠시의", "pos": "adj.", "example": "A temporary entrance will be used during construction.", "ko": "공사 기간에는 임시 출입구가 사용됩니다."}, {"term": "flock to N", "meaning": "~로 모이다", "pos": "phrase", "example": "Shoppers flock to the mall during the sale period.", "ko": "세일 기간에는 쇼핑객들이 쇼핑몰로 모여듭니다."}, {"term": "well worth a visit", "meaning": "방문할 만한 가치가 충분히 있는", "pos": "phrase", "example": "The new branch office is well worth a visit.", "ko": "새 지점 사무실은 방문할 만한 가치가 충분히 있습니다."}, {"term": "time-honored", "meaning": "유서 깊은, 전통적인", "pos": "adj.", "example": "The bakery follows a time-honored recipe.", "ko": "그 제과점은 유서 깊은 조리법을 따릅니다."}, {"term": "be designed to do", "meaning": "~하도록 만들어지다, ~하도록 설계되다", "pos": "phrase", "example": "The system is designed to detect errors automatically.", "ko": "그 시스템은 오류를 자동으로 감지하도록 설계되었습니다."}, {"term": "be replaced with", "meaning": "~로 대체되다", "pos": "phrase", "example": "The old copier was replaced with a faster model.", "ko": "낡은 복사기가 더 빠른 모델로 교체되었습니다."}, {"term": "agenda for", "meaning": "~의 안건", "pos": "phrase", "example": "The agenda for Monday's meeting was circulated yesterday.", "ko": "월요일 회의의 안건이 어제 배포되었습니다."}, {"term": "progress slowly", "meaning": "천천히 진행되다", "pos": "phrase", "example": "Work on the parking structure is progressing slowly.", "ko": "주차 건물 공사가 천천히 진행되고 있습니다."}, {"term": "high priority", "meaning": "높은 우선순위", "pos": "phrase", "example": "Customer retention remains a high priority this year.", "ko": "고객 유지가 올해 높은 우선순위로 남아 있습니다."}, {"term": "department head", "meaning": "부서장", "pos": "phrase", "example": "Each department head must approve the budget request.", "ko": "각 부서장이 예산 요청을 승인해야 합니다."}, {"term": "participate in", "meaning": "~에 참여(참석)하다", "pos": "phrase", "example": "All staff are encouraged to participate in the training.", "ko": "모든 직원이 그 교육에 참여하도록 권장됩니다."}, {"term": "take part in", "meaning": "~에 참여(참석) 하다", "pos": "phrase", "example": "Twelve firms will take part in the trade fair.", "ko": "열두 개 회사가 그 무역 박람회에 참가할 예정입니다."}, {"term": "attend", "meaning": "~에 참여(참석)하다", "pos": "v.", "example": "More than two hundred people attended the seminar.", "ko": "200명 이상이 그 세미나에 참석했습니다."}, {"term": "complete a survey", "meaning": "설문조사를 작성하다", "pos": "phrase", "example": "Guests who complete a survey receive a discount coupon.", "ko": "설문조사를 작성한 손님은 할인 쿠폰을 받습니다."}, {"term": "fill out a survey", "meaning": "설문조사를 작성하다", "pos": "phrase", "example": "Please fill out the survey before leaving the workshop.", "ko": "워크숍을 떠나기 전에 설문조사를 작성해 주세요."}, {"term": "register for", "meaning": "~에 등록하다", "pos": "phrase", "example": "You may register for the course online until Friday.", "ko": "금요일까지 온라인으로 그 강좌에 등록하실 수 있습니다."}, {"term": "malfunction", "meaning": "오작동, 오작동하다", "pos": "n.", "example": "A malfunction in the cooling system delayed production.", "ko": "냉각 시스템의 오작동으로 생산이 지연되었습니다."}, {"term": "safety inspection", "meaning": "안전 점검", "pos": "phrase", "example": "A safety inspection is required before the plant reopens.", "ko": "공장을 다시 열기 전에 안전 점검이 필요합니다."}, {"term": "plant", "meaning": "화초, 식물, 공장, 시설, 심다", "pos": "n./v.", "example": "The plant in Nagoya operates three shifts a day.", "ko": "나고야에 있는 그 공장은 하루 3교대로 운영됩니다."}, {"term": "soil", "meaning": "토양, 흙", "pos": "n.", "example": "The soil at the site was tested before construction began.", "ko": "공사 시작 전에 부지의 토양을 검사했습니다."}, {"term": "in part", "meaning": "부분적으로, 어느 정도는", "pos": "phrase", "example": "The delay was caused in part by severe weather.", "ko": "그 지연은 부분적으로 악천후 때문이었습니다."}, {"term": "employment opportunity", "meaning": "채용 기회", "pos": "phrase", "example": "The fair offers employment opportunities in several industries.", "ko": "그 박람회는 여러 산업 분야의 채용 기회를 제공합니다."}, {"term": "component", "meaning": "요소, 부품", "pos": "n.", "example": "A faulty component caused the machine to shut down.", "ko": "결함이 있는 부품 때문에 기계가 멈췄습니다."}, {"term": "preserve", "meaning": "(특정한 자질, 특색 등을) 지키다, 관리하다", "pos": "v.", "example": "The renovation will preserve the building's original facade.", "ko": "개조 공사는 건물의 원래 외관을 보존할 것입니다."}, {"term": "perishable", "meaning": "잘 상하는, 썩는", "pos": "adj.", "example": "Perishable goods must be refrigerated during transport.", "ko": "잘 상하는 상품은 운송 중 냉장 보관해야 합니다."}, {"term": "under control", "meaning": "통제되는, 관리되는", "pos": "phrase", "example": "Costs are now under control after the review.", "ko": "검토 이후 비용이 이제 통제되고 있습니다."}, {"term": "beyond control", "meaning": "통제되지 않는", "pos": "phrase", "example": "The delay was due to circumstances beyond our control.", "ko": "그 지연은 저희가 통제할 수 없는 상황 때문이었습니다."}, {"term": "out of control", "meaning": "통제되지 않는", "pos": "phrase", "example": "Expenses were out of control before the new policy.", "ko": "새 정책이 시행되기 전에는 지출이 통제되지 않았습니다."}, {"term": "encompass", "meaning": "포함하다, 에워싸다", "pos": "v.", "example": "The report encompasses all three regional divisions.", "ko": "그 보고서는 세 개 지역 사업부를 모두 포함합니다."}, {"term": "precise", "meaning": "정확한", "pos": "adj.", "example": "Please provide precise measurements for the shelving.", "ko": "선반에 필요한 정확한 치수를 알려 주세요."}, {"term": "designated", "meaning": "지정된", "pos": "adj.", "example": "Smoking is permitted only in designated areas.", "ko": "흡연은 지정된 구역에서만 허용됩니다."}]}];
+USER_DAYS.forEach(function(d){d.words.forEach(function(w){
+  var k=w.term.toLowerCase();
+  if(w.example) BANK[k]={pos:w.pos,meaning:w.meaning,example:w.example,ko:w.ko||'',toeic:true};
+})});
+function bankLookup(w){return BANK[String(w||"").trim().toLowerCase()]||null}
+function bankFull(w){var b=bankLookup(w);return (b&&b.ko&&b.example)?b:null;}
+function blankInfo(sentence,term){
+  if(!sentence||!term) return null;
+  var clean=String(term)
+    .replace(/\([^)]*\)/g," ")
+    .replace(/[~+]/g," ")
+    .replace(/(전치사|복수명사|형용사|기간|명사|동사|S\+V)/g," ")
+    .replace(/\bN\b/g," ").replace(/\b[AB]\b/g," ")
+    .replace(/[.,]/g," ").replace(/\s+/g," ").trim();
+  var toks=clean.split(" ").filter(Boolean).filter(function(t){
+    return !/^(a|an|the|do|doing|sth|something)$/i.test(t);
+  });
+  if(!toks.length) return null;
+  var esc=function(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")};
+  var unit=function(t,i){
+    if(i===0&&/^be$/i.test(t)) return "(?:is|are|was|were|been|being|be)";
+    if(/[^A-Za-z'’\-]/.test(t)) return esc(t);
+    if(/y$/i.test(t)) return "(?:"+esc(t)+"(?:s|ing)?|"+esc(t.slice(0,-1))+"(?:ies|ied|ier|iest))";
+    if(/e$/i.test(t)) return "(?:"+esc(t)+"(?:s|d)?|"+esc(t.slice(0,-1))+"ing)";
+    return esc(t)+"(?:s|es|ed|ing|d|"+esc(t.slice(-1))+"(?:ed|ing))?";
+  };
+  var gap="\\s+(?:(?:a|an|the|his|her|its|their|our|your|this|that|these|those)\\s+)?";
+  var pat=toks.map(unit).join(gap);
+  var re=new RegExp(pat,"i");
+  var m=sentence.match(re);
+  if(m) return {text:sentence.replace(re,"______"),answer:m[0]};
+  for(var i=0;i<toks.length;i++){
+    if(!/^[A-Za-z]/.test(toks[i])) continue;
+    var re2=new RegExp("\\b"+esc(toks[i])+"[a-z]*\\b","i");
+    var m2=sentence.match(re2);
+    if(m2) return {text:sentence.replace(re2,"______"),answer:m2[0]};
+  }
+  return null;
+}
+function blankOut(sentence,term){var r=blankInfo(sentence,term);return r?r.text:(sentence||"");}
+
+// ---- 자동 사전 조회 ----
+var DKEY="toeic-vocab-dict";
+var dcache={};
+try{dcache=JSON.parse(localStorage.getItem(DKEY)||"{}")}catch(e){}
+function dsave(){try{localStorage.setItem(DKEY,JSON.stringify(dcache))}catch(e){}}
+var POS={noun:"n.",verb:"v.",adjective:"adj.",adverb:"adv.",preposition:"prep.",conjunction:"conj.",pronoun:"pron.",interjection:"int."};
+function isEnglish(s){return /^[A-Za-z][A-Za-z'’\-\s]*$/.test(s.trim())}
+
+function lookup(word){ return Promise.resolve(null); } // 사전 조회 사용 안 함
+function translateText(text){ return Promise.resolve(""); } // 자동 번역 사용 안 함
+function translate(word){ return Promise.resolve(""); }
+
+var toastEl=null,toastTimer=null;
+function toast(msg,sticky){
+  if(!toastEl){toastEl=document.createElement("div");toastEl.className="toast";document.body.appendChild(toastEl);}
+  toastEl.textContent=msg; toastEl.style.display="block";
+  clearTimeout(toastTimer);
+  if(!sticky) toastTimer=setTimeout(function(){toastEl.style.display="none"},2200);
+}
+
+function openCopySheet(words,title){
+  var txt=words.map(function(w){return w.term+" | "+(w.meaning||"")+" | "+(w.pos||"")+" | "+(w.example||"")}).join("\n");
+  var sc=document.createElement("div"); sc.className="scrim";
+  sc.innerHTML='<div class="sheet"><h2>'+esc(title)+'</h2>'+
+    '<p class="hint">예문이나 해석이 비어 있는 단어들입니다. 아래를 복사해 클로드 대화창에 붙여넣으면 예문과 해석을 만들어 받을 수 있어요. 총 '+words.length+'개.</p>'+
+    '<textarea class="area" id="cpArea" style="min-height:200px"></textarea>'+
+    '<div class="acts"><button class="btn ghost" id="cpClose">닫기</button>'+
+    '<button class="btn" id="cpCopy">전체 복사</button></div></div>';
+  document.body.appendChild(sc);
+  var ta=sc.querySelector("#cpArea"); ta.value=txt;
+  var close=function(){if(sc.parentNode)document.body.removeChild(sc)};
+  sc.querySelector("#cpClose").onclick=close;
+  sc.onclick=function(e){if(e.target===sc)close()};
+  sc.querySelector("#cpCopy").onclick=function(){
+    ta.focus(); ta.setSelectionRange(0,ta.value.length);
+    var ok=false; try{ok=document.execCommand("copy")}catch(e){}
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){toast("복사됐어요")},function(){if(!ok)toast("길게 눌러 직접 복사해주세요")});
+    }else{toast(ok?"복사됐어요":"길게 눌러 직접 복사해주세요");}
+  };
+}
+function enrichDay(day){enrichDays([day])}
+function cleanDuplicates(list){
+  var cnt={},cleared=0;
+  list.forEach(function(d){d.words.forEach(function(w){
+    if(w.ko){ var k="k:"+w.ko; (cnt[k]=cnt[k]||[]).push(w); }
+    if(w.example){ var e="e:"+w.example; (cnt[e]=cnt[e]||[]).push(w); }
+  })});
+  Object.keys(cnt).forEach(function(k){
+    var arr=cnt[k];
+    if(arr.length<2) return;
+    // 서로 다른 단어에 같은 예문/해석이 붙어 있으면 잘못된 것
+    var terms={},uniq=0;
+    arr.forEach(function(w){ if(!terms[w.term.toLowerCase()]){terms[w.term.toLowerCase()]=1;uniq++;} });
+    if(uniq<2) return;
+    arr.forEach(function(w){
+      var b=bankLookup(w.term);
+      if(b&&b.example===w.example) return;  // 내장 데이터와 일치하면 정상
+      if(k.indexOf("k:")===0) w.ko=""; else w.example="";
+      cleared++;
+    });
+  });
+  return cleared;
+}
+function enrichDays(list,cb){
+  var todo=[];
+  list.forEach(function(d){
+    d.words.forEach(function(w){
+      if(isEnglish(w.term)&&(!w.pos||!w.example||!w.meaning||!w.ko)) todo.push(w);
+    });
+  });
+  if(!todo.length){if(cb){cb();}else{toast("채울 항목이 없어요 (이미 다 채워짐)");}return;}
+  var i=0,filled=0,fails=0,tried=0;
+  toast("품사·예문 채우는 중… 0/"+todo.length,true);
+  (function step(){
+    if(i>=todo.length){
+      save(); render();
+      var left=[];
+      list.forEach(function(d){d.words.forEach(function(w){if(!w.example||!w.ko) left.push(w)})});
+      if(filled) toast(filled+"개에 품사·예문이 채워졌어요");
+      else if(tried&&fails===tried) toast("사전을 불러오지 못했어요. 인터넷 연결을 확인해주세요.");
+      else toast("사전에서 찾은 항목이 없어요");
+      if(cb){ setTimeout(cb,300); }
+      else if(left.length){ setTimeout(function(){openCopySheet(left,"예문을 못 채운 단어 "+left.length+"개")},700); }
+      return;
+    }
+    var w=todo[i++];
+    toast("품사·예문 채우는 중… "+i+"/"+todo.length,true);
+    var b=bankFull(w.term);
+    if(b){
+      if(!w.pos) w.pos=b.pos;
+      if(!w.example) w.example=b.example;
+      if(!w.ko&&b.ko) w.ko=b.ko;
+      if(!w.meaning) w.meaning=b.meaning;
+      filled++;
+      if(w.example&&!w.ko){
+        translateText(w.example).then(function(t){ if(t) w.ko=t; setTimeout(step,150); });
+      }else{ setTimeout(step,0); }
+      return;
+    }
+    setTimeout(step,0);
+  })();
+}
+
+// add sheet
+var $=function(id){return document.getElementById(id)};
+var addedCount=0;
+
+function nextDayName(sec){
+  return "DAY "+(state.days.filter(function(d){return d.section===sec}).length+1);
+}
+function fillDaySel(preselect){
+  var h="";
+  SECTIONS.forEach(function(s){
+    var list=daySort(state.days.filter(function(d){return d.section===s.id}));
+    if(list.length) h+='<optgroup label="'+s.label+'">'+list.map(function(d){return '<option value="'+d.id+'">'+esc(d.name)+'</option>'}).join("")+'</optgroup>';
+  });
+  h+='<optgroup label="새로 만들기">'+SECTIONS.map(function(s){
+    return '<option value="new:'+s.id+'">＋ 새 DAY ('+s.label+')</option>';
+  }).join("")+'</optgroup>';
+  document.getElementById("daySel").innerHTML=h;
+  var pick=preselect;
+  if(!pick){
+    if(state.day!=="all") pick=state.day;
+    else{
+      var cur=state.days.filter(function(d){return d.section===state.section});
+      pick=cur.length?cur[cur.length-1].id:"new:"+state.section;
+    }
+  }
+  var sel=document.getElementById("daySel");
+  sel.value=pick;
+  if(!sel.value){ // 없는 DAY를 가리켰을 때
+    var cur=state.days.filter(function(d){return d.section===state.section});
+    sel.value=cur.length?cur[cur.length-1].id:"new:"+state.section;
+  }
+  syncDayName();
+}
+function syncDayName(){
+  var v=$("daySel").value, el=$("dayName");
+  if(v.indexOf("new:")===0){
+    el.className="inp"; el.placeholder=nextDayName(v.slice(4));
+  }else{
+    el.className="inp hide"; el.value="";
+  }
+}
+function targetDay(){
+  var v=$("daySel").value;
+  if(v&&v.indexOf("new:")!==0){
+    var found=state.days.filter(function(d){return d.id===v})[0];
+    if(found) return found;
+  }
+  if(!v||v.indexOf("new:")!==0){ // 선택이 깨졌으면 현재 교재의 마지막 DAY로
+    var cur=state.days.filter(function(d){return d.section===state.section});
+    if(cur.length) return cur[cur.length-1];
+    v="new:"+state.section;
+  }
+  var sec=v.slice(4);
+  var name=$("dayName").value.trim()||$("dayName").placeholder;
+  var found=state.days.filter(function(d){return d.section===sec&&d.name===name})[0];
+  if(!found){found={id:uid(),name:name,section:sec,words:[]}; state.days.push(found);}
+  fillDaySel(found.id);
+  return found;
+}
+function focusDay(day){
+  state.section=day.section; state.day=day.id;
+  [].forEach.call($("secSeg").children,function(c){c.className=c.dataset.sec===day.section?"on":""});
+}
+function openSheet(){
+  addedCount=0;
+  setMode("one");
+  fillDaySel();
+  ["fTerm","fMean","fPos","fEx","fSyn","bulk"].forEach(function(id){$(id).value=""});
+  $("addedN").textContent=""; pendingKo=""; lookupFor="";
+  $("addOne").disabled=true;
+  $("moreWrap").className="hide";
+  $("moreBtn").textContent="품사·예문 넣기";
+  $("parsedN").textContent="0개 인식됨";
+  $("saveAdd").disabled=true; $("saveAdd").textContent="저장";
+  $("scrim").className="scrim";
+}
+function closeSheet(){$("scrim").className="scrim hide"}
+function setMode(m){
+  $("oneMode").className=m==="one"?"":"hide";
+  $("bulkMode").className=m==="one"?"hide":"";
+  $("modeBtn").textContent=m==="one"?"여러 개 붙여넣기":"하나씩 입력";
+}
+$("modeBtn").addEventListener("click",function(){
+  setMode($("bulkMode").className==="hide"?"bulk":"one");
+});
+$("daySel").addEventListener("change",syncDayName);
+$("moreBtn").addEventListener("click",function(){
+  var open=$("moreWrap").className==="hide";
+  $("moreWrap").className=open?"":"hide";
+  this.textContent=open?"품사·예문 접기":"품사·예문 넣기";
+});
+function checkOne(){
+  $("addOne").disabled=!$("fTerm").value.trim();
+}
+var composing=false;
+["fTerm","fMean","fPos","fEx","bulk","q"].forEach(function(id){
+  var el=$(id); if(!el) return;
+  el.addEventListener("compositionstart",function(){composing=true});
+  el.addEventListener("compositionend",function(){composing=false;checkOne();});
+});
+$("fTerm").addEventListener("input",checkOne);
+
+var pendingKo="",lookupFor="";
+function bankFill(){ /* 자동 채움 사용 안 함 */ }
+["fTerm","fMean","fPos","fEx","fSyn"].forEach(function(id){
+  $(id).addEventListener("keydown",function(e){
+    if(e.key!=="Enter") return;
+    if(composing||e.isComposing||e.keyCode===229||e.which===229) return; // 한글 조합 확정용 엔터
+    e.preventDefault();
+    addOne();
+  });
+});
+function addOne(){
+  var term=$("fTerm").value.trim(); if(!term) return;
+  var day=targetDay();
+  if(!day){ toast("DAY를 만들지 못했어요. DAY를 다시 선택해주세요"); return; }
+  day.words.push({id:uid(),term:term,meaning:$("fMean").value.trim(),pos:$("fPos").value.trim(),example:$("fEx").value.trim(),ko:"",syn:$("fSyn").value.trim(),known:false});
+  addedCount++;
+  logAdded(1);
+  focusDay(day); save(); render();
+  ["fTerm","fMean","fEx","fSyn"].forEach(function(id){$(id).value=""});
+  $("fPos").value=""; $("lookupN").textContent=""; $("lookupN").className="lookup"; lookupFor=""; pendingKo="";
+  $("addedN").textContent=day.name+"에 "+addedCount+"개 추가됨";
+  $("addOne").disabled=true;
+  $("fTerm").focus();
+}
+$("addOne").addEventListener("click",addOne);
+$("doneAdd").addEventListener("click",closeSheet);
+$("bulk").addEventListener("input",function(){
+  var gs=parseGroups(this.value,state.section);
+  var n=gs.reduce(function(a,g){return a+g.words.length},0);
+  $("parsedN").textContent=n+"개 인식됨";
+  $("saveAdd").disabled=n===0;
+  $("saveAdd").textContent=n?n+"개 저장":"저장";
+});
+$("cancelAdd").addEventListener("click",closeSheet);
+$("scrim").addEventListener("click",function(e){if(e.target===this)closeSheet()});
+$("saveAdd").addEventListener("click",function(){
+  var sel=$("daySel").value;
+  var defSec=sel.indexOf("new:")===0?sel.slice(4):(function(){
+    var d=state.days.filter(function(x){return x.id===sel})[0];
+    return d?d.section:state.section;
+  })();
+  var groups=parseGroups($("bulk").value,defSec);
+  if(!groups.length){ toast("인식된 단어가 없어요"); return; }
+  var added=0,updated=0,lastDay=null;
+  groups.forEach(function(g){
+    var day;
+    if(g.name){
+      day=state.days.filter(function(d){return d.section===g.section&&d.name===g.name})[0];
+      if(!day){day={id:uid(),name:g.name,section:g.section,words:[]};state.days.push(day);}
+    }else{
+      day=targetDay();
+    }
+    if(!day) return;
+    lastDay=day;
+    var used={};
+    g.words.forEach(function(nw){
+      var key=nw.term.toLowerCase();
+      var matches=day.words.filter(function(w){return w.term.toLowerCase()===key});
+      var idx=used[key]||0;
+      used[key]=idx+1;
+      var ex=matches[idx]; // 같은 단어가 여러 줄이면 순서대로 짝지음
+      if(ex){
+        if(nw.meaning) ex.meaning=nw.meaning;
+        if(nw.pos) ex.pos=nw.pos;
+        if(nw.example) ex.example=nw.example;
+        if(nw.ko) ex.ko=nw.ko;
+        if(nw.syn) ex.syn=nw.syn;
+        updated++;
+      }else{
+        day.words.push({id:uid(),term:nw.term,meaning:nw.meaning,pos:nw.pos,
+          example:nw.example,ko:nw.ko,syn:nw.syn||"",known:false});
+        added++;
+      }
+    });
+  });
+  if(lastDay) focusDay(lastDay);
+  logAdded(added);
+  save(); closeSheet(); render();
+  toast("추가 "+added+"개 · 수정 "+updated+"개");
+  if(added&&lastDay) enrichDay(lastDay);
+});
+
+// flashcards
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function launchQuiz(){
+  var pool=visibleWords(); if(!pool.length) pool=scopeWords();
+  var target=pool.filter(function(o){return !o.w.known});
+  var deck=shuffle(target.length?target:pool);
+  if(!deck.length) return;
+  quiz={deck:deck,i:0,flipped:false,done:0,again:0,front:"term",missed:[],review:null};
+  document.getElementById("quiz").className="quiz";
+  renderQuiz();
+}
+
+function buildReview(){return buildReviewFrom(quiz.missed)}
+function buildReviewFrom(missed){
+  var seen={},groups={};
+  missed.forEach(function(m){
+    var key=m.dayId+"|"+m.w.id;
+    if(seen[key]) return; seen[key]=1;
+    (groups[m.dayId]=groups[m.dayId]||[]).push(m.w);
+  });
+  var results=[];
+  Object.keys(groups).forEach(function(dayId){
+    var origin=state.days.filter(function(d){return d.id===dayId})[0];
+    if(!origin) return;
+    if(/\+$/.test(origin.name)) return; // 이미 복습장이면 그대로 둠
+    var name=origin.name+"+";
+    var tgt=state.days.filter(function(d){return d.section===origin.section&&d.name===name})[0];
+    if(!tgt){tgt={id:uid(),name:name,section:origin.section,words:[]};state.days.push(tgt);}
+    var added=0;
+    groups[dayId].forEach(function(w){
+      var dup=tgt.words.some(function(x){return x.term.toLowerCase()===w.term.toLowerCase()});
+      if(dup) return;
+      tgt.words.push({id:uid(),term:w.term,meaning:w.meaning,pos:w.pos,example:w.example,known:false});
+      added++;
+    });
+    if(added) results.push({name:name,added:added});
+  });
+  save(); render();
+  return results;
+}
+
+function renderQuiz(){
+  if(!quiz) return;
+  var d=quiz.deck, o=d[quiz.i], fin=quiz.i>=d.length;
+  document.getElementById("qCount").textContent=Math.min(quiz.i+1,d.length)+" / "+d.length;
+  document.getElementById("qTally").textContent="외움 "+quiz.done+" · 다시 "+quiz.again;
+  document.getElementById("qDir").textContent=quiz.front==="term"?"영 → 한":"한 → 영";
+  document.getElementById("qBar").style.width=(d.length?quiz.i/d.length*100:0)+"%";
+  var card=document.getElementById("qCard"), acts=document.getElementById("qActs");
+  if(fin){
+    if(quiz.review===null) quiz.review=reviewSummary(quiz);
+    card.className="qdone";
+    card.innerHTML="<b>한 바퀴 끝!</b><span>외움 "+quiz.done+"개 · 다시 본 카드 "+quiz.again+"개</span>"+
+      (quiz.review.length?"<span style='color:#FFDF3D;font-weight:600'>틀린 단어 정리 → "+esc(quiz.review.join(", "))+"</span>":"");
+    var uniq=uniqueMissed(quiz.missed);
+    acts.innerHTML=(uniq.length?'<button class="again" id="qRetry">틀린 '+uniq.length+'개 다시</button>':'')+
+      '<button class="got" id="qBack">단어장으로 돌아가기</button>';
+    document.getElementById("qBack").onclick=closeQuiz;
+    if(uniq.length) document.getElementById("qRetry").onclick=function(){ startDeck(uniq); };
+    return;
+  }
+  var c=o.w;
+  card.className="qcard";
+  var front=quiz.front==="term"?c.term:(c.meaning||c.term);
+  var backMain=(quiz.front==="term"?(c.meaning||"(뜻 없음)"):c.term)+(c.pos?" · "+c.pos:"");
+  var hint=c.example?'<div class="qex">'+esc(blankOut(c.example,c.term))+'</div>'
+                    :(quiz.flipped?'<div class="qex" style="opacity:.6">예문 없음 — 목록에서 \'예문 채우기\'를 눌러보세요</div>':"");
+  card.innerHTML='<div class="qfront">'+esc(front)+'</div>'+hint+
+    (quiz.flipped
+      ? '<div class="qback"><div class="qmean">'+esc(backMain)+'</div>'+(c.example?'<div class="qex" style="color:#16233F">'+esc(c.example)+'</div>':'')+(c.ko?'<div class="qko">'+esc(c.ko)+'</div>':'')+(c.syn?'<div class="qko" style="color:#1F8A63;font-weight:600">≒ '+esc(c.syn)+'</div>':'')+'</div>'
+      : '<div class="qtap">탭하면 뜻이 보여요</div>');
+  acts.innerHTML='<button class="again" id="qAgain">다시</button><button class="got" id="qGot">외웠어요</button>';
+  document.getElementById("qAgain").onclick=function(){answer(false)};
+  document.getElementById("qGot").onclick=function(){answer(true)};
+}
+function answer(knew){
+  var o=quiz.deck[quiz.i]; if(!o) return;
+  grade(o.w,knew);
+  if(!knew){
+    quiz.deck.push(o); quiz.again++; quiz.missed.push(o);
+    noteReview(quiz,o);
+  } else { quiz.done++; }
+  save();
+  quiz.i++; quiz.flipped=false; renderQuiz();
+}
+function noteReview(sess,o){
+  if(!sess.counts) sess.counts={};
+  buildReviewFrom([o]).forEach(function(r){ sess.counts[r.name]=(sess.counts[r.name]||0)+r.added; });
+}
+function reviewSummary(sess){
+  var c=sess.counts||{},out=[];
+  Object.keys(c).forEach(function(k){out.push(k+"에 "+c[k]+"개")});
+  return out;
+}
+function closeQuiz(){
+  quiz=null;document.getElementById("quiz").className="quiz hide";render();
+}
+document.getElementById("qCard").addEventListener("click",function(){if(quiz&&quiz.i<quiz.deck.length){quiz.flipped=!quiz.flipped;renderQuiz();}});
+document.getElementById("qDir").addEventListener("click",function(){if(!quiz)return;quiz.front=quiz.front==="term"?"meaning":"term";quiz.flipped=false;renderQuiz();});
+document.getElementById("qClose").addEventListener("click",closeQuiz);
+
+function seedDefault(){
+  USER_DAYS.forEach(function(d){
+    state.days.push({id:uid(),name:d.name,section:"v2026",words:d.words.map(function(w){
+      return {id:uid(),term:w.term,meaning:w.meaning,pos:w.pos,example:w.example,ko:w.ko||'',known:false};
+    })});
+  });
+  save();
+}
+
+
+// ================= 간격 반복(SRS) =================
+var DAYMS=86400000;
+var SRS_STEPS=[1,3,7,14,30,60];
+function nowMs(){return Date.now()}
+function dueDays(w){
+  if(!w.due) return null;
+  return Math.ceil((w.due-nowMs())/DAYMS);
+}
+function isDue(w){return w.due&&w.due<=nowMs()}
+function allWords(){
+  var out=[];
+  state.days.forEach(function(d){d.words.forEach(function(w){out.push({w:w,dayId:d.id,dayName:d.name})})});
+  return out;
+}
+function dueList(){
+  return allWords().filter(function(o){return isDue(o.w)}).sort(function(a,b){return a.w.due-b.w.due});
+}
+function dayKey(t){
+  var d=new Date(t||Date.now()),p=function(n){return (n<10?"0":"")+n};
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());
+}
+function wordDayName(w){
+  for(var i=0;i<state.days.length;i++){
+    if(state.days[i].words.indexOf(w)>-1) return state.days[i].name;
+  }
+  return "";
+}
+function logStudy(ok,wordId,dayName,firstTime,prevKey){
+  var k=dayKey();
+  var e=state.log[k]||{s:0,o:0,x:0,n:0};
+  e.s++;
+  if(ok){
+    e.ids=e.ids||{};
+    if(!e.ids[wordId]){ e.ids[wordId]=1; e.o++; if(firstTime) e.fo=(e.fo||0)+1; else e.ro=(e.ro||0)+1; }
+  }else{
+    e.x++;                                          // 다시 = 누른 횟수
+  }
+  e.sids=e.sids||{};
+  if(!e.sids[wordId]){
+    e.sids[wordId]=1;
+    if(firstTime) e.fn=(e.fn||0)+1;                       // 그날 처음 공부한 단어
+    else if(prevKey&&prevKey!==k){ e.rev=e.rev||{}; e.rev[prevKey]=(e.rev[prevKey]||0)+1; }  // 복습 출처 날짜
+  }
+  if(dayName){ e.d=e.d||{}; e.d[dayName]=(e.d[dayName]||0)+1; }
+  state.log[k]=e;
+}
+function logAdded(n){
+  if(!n) return;
+  var k=dayKey();
+  var e=state.log[k]||{s:0,o:0,x:0,n:0};
+  e.n=(e.n||0)+n;                                   // 새 단어 = 그날 추가한 개수
+  state.log[k]=e;
+}
+function grade(w,ok){
+  var firstTime=!w.reps&&!w.lapses;
+  var prevKey=w.last?dayKey(w.last):null;
+  if(ok){
+    w.reps=(w.reps||0)+1;
+    w.stage=Math.min((w.stage||0)+1,SRS_STEPS.length);
+    w.due=nowMs()+SRS_STEPS[w.stage-1]*DAYMS;
+    w.known=true;
+    if(!w.first) w.first=nowMs();
+  }else{
+    w.stage=0;
+    w.due=nowMs()+DAYMS;
+    w.known=false;
+    w.lapses=(w.lapses||0)+1;
+    w.missDay=dayKey();
+  }
+  w.last=nowMs();
+  logStudy(ok,w.id,wordDayName(w),firstTime,prevKey);
+}
+function srsTag(w){
+  var d=dueDays(w);
+  if(d===null) return "";
+  if(d<=0) return "복습";
+  return "D-"+d;
+}
+
+// ================= 파트5 문제 생성 =================
+function capLike(src,word){
+  if(!src||!word) return word;
+  return /^[A-Z]/.test(src) ? word.charAt(0).toUpperCase()+word.slice(1) : word.charAt(0).toLowerCase()+word.slice(1);
+}
+function formVariants(ans,pos){
+  var w=String(ans).trim();
+  if(/\s/.test(w)||w.length<4) return [];
+  var lw=w.toLowerCase(),out=[],seen={};
+  function add(x){
+    if(!x) return; x=x.toLowerCase();
+    if(x===lw||seen[x]||x.length<3) return;
+    seen[x]=1; out.push(x);
+  }
+  var p=String(pos||"").toLowerCase();
+  var plural=/y$/.test(lw)?lw.replace(/y$/,"ies"):(/(s|x|ch|sh)$/.test(lw)?lw+"es":lw+"s");
+  var ing=/ie$/.test(lw)?lw.replace(/ie$/,"ying"):(/e$/.test(lw)?lw.replace(/e$/,"ing"):lw+"ing");
+  var ed=/e$/.test(lw)?lw+"d":(/y$/.test(lw)?lw.replace(/y$/,"ied"):lw+"ed");
+  var ly=/le$/.test(lw)?lw.replace(/le$/,"ly"):(/y$/.test(lw)?lw.replace(/y$/,"ily"):lw+"ly");
+  var isN=p.indexOf("n.")===0, isV=p.indexOf("v.")===0, isAdj=p.indexOf("adj")===0, isAdv=p.indexOf("adv")===0;
+  if(isAdj){ if(!/ing$|ly$/.test(lw)) add(ly); }
+  else if(isV){ add(plural); if(!/ing$/.test(lw)) add(ing); if(!/ed$/.test(lw)) add(ed); }
+  else if(isN){ if(!/s$/.test(lw)) add(plural); }
+  else if(isAdv){ if(/ly$/.test(lw)) add(lw.replace(/ly$/,"")); }
+  else { if(!/s$|ing$|ed$|ly$/.test(lw)) add(plural); }
+  return out.slice(0,2);
+}
+function buildQuestion(o,pool){
+  var w=o.w;
+  var info=blankInfo(w.example,w.term);
+  if(!info||!info.answer) return null;
+  var ans=info.answer;
+  var opts=[ans],seen={};
+  seen[ans.toLowerCase()]=1;
+  formVariants(w.term,w.pos).concat(seen[w.term.toLowerCase()]?[]:[w.term]).forEach(function(v){
+    var lv=String(v).toLowerCase();
+    if(opts.length<3&&!seen[lv]){seen[lv]=1;opts.push(capLike(ans,v));}
+  });
+  var others=shuffle(pool.filter(function(p){
+    if(p.w.id===w.id) return false;
+    var t=p.w.term;
+    if(/[^A-Za-z'’\- ]/.test(t)) return false;
+    if(/\s/.test(t)!==/\s/.test(ans)) return false;
+    return !seen[t.toLowerCase()];
+  }));
+  for(var i=0;i<others.length&&opts.length<4;i++){
+    var t=others[i].w.term;
+    seen[t.toLowerCase()]=1;
+    opts.push(capLike(ans,t));
+  }
+  while(opts.length<4) opts.push(capLike(ans,"the "+opts.length));
+  return {word:w,dayId:o.dayId,dayName:o.dayName,stem:info.text,answer:ans,options:shuffle(opts)};
+}
+
+// ================= 학습 시작 시트 =================
+function scopeDays(){return state.day==="all"?secDays():secDays().filter(function(d){return d.id===state.day})}
+function p5Pool(){
+  var pool=scopeDays().length?[]:[];
+  scopeDays().forEach(function(d){d.words.forEach(function(w){ if(w.example) pool.push({w:w,dayId:d.id,dayName:d.name}); })});
+  return pool;
+}
+function startDeck(list){
+  if(!list.length) return;
+  quiz={deck:shuffle(list),i:0,flipped:false,done:0,again:0,front:"term",missed:[],review:null};
+  document.getElementById("quiz").className="quiz";
+  renderQuiz();
+}
+
+// ================= 파트5 =================
+var p5=null;
+function startP5(){
+  var pool=p5Pool();
+  var qs=[];
+  shuffle(pool).forEach(function(o){
+    if(qs.length>=20) return;
+    var q=buildQuestion(o,pool);
+    if(q) qs.push(q);
+  });
+  if(!qs.length){toast("문제를 만들 예문이 없어요");return;}
+  p5={qs:qs,i:0,score:0,picked:null,missed:[],review:null};
+  document.getElementById("p5").className="quiz";
+  renderP5();
+}
+function closeP5(){
+  p5=null; document.getElementById("p5").className="quiz hide"; render();
+}
+function renderP5(){
+  if(!p5) return;
+  var body=document.getElementById("pBody"),acts=document.getElementById("pActs");
+  var fin=p5.i>=p5.qs.length;
+  document.getElementById("pCount").textContent=Math.min(p5.i+1,p5.qs.length)+" / "+p5.qs.length;
+  document.getElementById("pScore").textContent="정답 "+p5.score;
+  document.getElementById("pBar").style.width=(p5.qs.length?p5.i/p5.qs.length*100:0)+"%";
+  if(fin){
+    if(p5.review===null) p5.review=reviewSummary(p5);
+    body.innerHTML='<div style="text-align:center;padding:30px 0">'+
+      '<div style="font-size:26px;font-weight:800;letter-spacing:-.02em">'+p5.score+' / '+p5.qs.length+'</div>'+
+      '<div style="margin-top:8px;color:#5A6478;font-size:14px">정답률 '+Math.round(p5.score/p5.qs.length*100)+'%</div>'+
+      (p5.review.length?'<div style="margin-top:12px;color:#E5BE00;font-weight:600;font-size:13.5px">틀린 단어 정리 → '+esc(p5.review.join(", "))+'</div>':'')+
+      '</div>';
+    var uniqP=uniqueMissed(p5.missed);
+    acts.innerHTML=(uniqP.length?'<button class="again" id="pRetry">틀린 '+uniqP.length+'개 다시</button>':'')+
+      '<button class="got" id="pBack">단어장으로 돌아가기</button>';
+    document.getElementById("pBack").onclick=closeP5;
+    if(uniqP.length) document.getElementById("pRetry").onclick=function(){
+      var list=uniqP.slice(); closeP5(); startP5From(list);
+    };
+    return;
+  }
+  var q=p5.qs[p5.i];
+  var letters=["A","B","C","D"];
+  var opts=q.options.map(function(o,i){
+    var cls="p5opt";
+    if(p5.picked!==null){
+      if(o===q.answer) cls+=" right";
+      else if(o===p5.picked) cls+=" wrong";
+    }
+    return '<button class="'+cls+'" data-opt="'+esc(o)+'"><b>'+letters[i]+'</b>'+esc(o)+'</button>';
+  }).join("");
+  var exp="";
+  if(p5.picked!==null){
+    var ok=p5.picked===q.answer;
+    exp='<div class="p5exp"><div class="p5verd '+(ok?"ok":"no")+'">'+(ok?"정답":"오답 · 정답은 "+esc(q.answer))+'</div>'+
+      '<div class="p5line"><b>'+esc(q.word.term)+'</b>'+(q.word.pos?' · '+esc(q.word.pos):'')+' — '+esc(q.word.meaning||"")+'</div>'+
+      '<div class="p5line">'+esc(q.word.example)+'</div>'+
+      (q.word.ko?'<div class="p5line ko">'+esc(q.word.ko)+'</div>':'')+'</div>';
+  }
+  body.innerHTML='<div class="p5stem">'+esc(q.stem)+'</div><div class="p5opts">'+opts+'</div>'+exp;
+  acts.innerHTML=p5.picked!==null?'<button class="got" id="pNext">'+(p5.i+1>=p5.qs.length?"결과 보기":"다음 문제")+'</button>':'';
+  if(p5.picked!==null) document.getElementById("pNext").onclick=function(){p5.i++;p5.picked=null;renderP5();};
+}
+document.getElementById("pBody").addEventListener("click",function(e){
+  var b=e.target.closest("[data-opt]"); if(!b||!p5||p5.picked!==null) return;
+  var q=p5.qs[p5.i], pick=b.dataset.opt;
+  p5.picked=pick;
+  var ok=pick===q.answer;
+  if(ok) p5.score++;
+  else { var mo={w:q.word,dayId:q.dayId,dayName:q.dayName}; p5.missed.push(mo); noteReview(p5,mo); }
+  grade(q.word,ok);
+  save(); renderP5();
+});
+document.getElementById("pClose").addEventListener("click",closeP5);
+
+// ================= 단어 수정 =================
+var editing=null;
+function openEdit(id){
+  var found=null;
+  state.days.forEach(function(d){d.words.forEach(function(w){if(w.id===id) found={d:d,w:w}})});
+  if(!found) return;
+  editing=found;
+  document.getElementById("eTerm").value=found.w.term||"";
+  document.getElementById("eMean").value=found.w.meaning||"";
+  document.getElementById("ePos").value=found.w.pos||"";
+  document.getElementById("eEx").value=found.w.example||"";
+  document.getElementById("eKo").value=found.w.ko||"";
+  document.getElementById("eSyn").value=found.w.syn||"";
+  document.getElementById("editScrim").className="scrim";
+}
+function closeEdit(){editing=null;document.getElementById("editScrim").className="scrim hide"}
+document.getElementById("listArea").addEventListener("click",function(e){
+  if(e.target.closest("[data-toggle]")||e.target.closest("[data-del]")||e.target.closest("[data-reveal]")||e.target.closest("[data-syn]")) return;
+  var pen=e.target.closest("[data-editbtn]");
+  if(pen){ openEdit(pen.dataset.editbtn); return; }
+  var b=e.target.closest("[data-exp]");
+  if(b){ var id=b.dataset.exp; expOpen[id]=!expOpen[id]; render(); }
+});
+document.getElementById("editScrim").addEventListener("click",function(e){if(e.target===this)closeEdit()});
+document.getElementById("eSave").addEventListener("click",function(){
+  if(!editing) return;
+  var w=editing.w;
+  w.term=document.getElementById("eTerm").value.trim()||w.term;
+  w.meaning=document.getElementById("eMean").value.trim();
+  w.pos=document.getElementById("ePos").value.trim();
+  w.example=document.getElementById("eEx").value.trim();
+  w.ko=document.getElementById("eKo").value.trim();
+  w.syn=document.getElementById("eSyn").value.trim();
+  save(); closeEdit(); render(); toast("수정했어요");
+});
+document.getElementById("eDelete").addEventListener("click",function(){
+  if(!editing) return;
+  if(!window.confirm("'"+editing.w.term+"'을(를) 삭제할까요?")) return;
+  var id=editing.w.id;
+  editing.d.words=editing.d.words.filter(function(x){return x.id!==id});
+  save(); closeEdit(); render(); toast("삭제했어요");
+});
+document.getElementById("eAuto").addEventListener("click",function(){
+  if(!editing) return;
+  var term=document.getElementById("eTerm").value.trim();
+  var self=this; self.textContent="가져오는 중…";
+  var b=bankFull(term);
+  if(b){
+    if(b.pos) document.getElementById("ePos").value=b.pos;
+    if(b.example) document.getElementById("eEx").value=b.example;
+    if(b.ko) document.getElementById("eKo").value=b.ko;
+    if(b.meaning&&!document.getElementById("eMean").value.trim()) document.getElementById("eMean").value=b.meaning;
+    self.textContent="가져왔어요 · 확인 후 저장하세요";
+    return;
+  }
+  self.textContent="내장 데이터에 없는 단어예요 · 직접 입력해주세요";
+});
+
+// ================= 학습 기록 =================
+
+// ---- DAY별 회차 계산 ----
+function logKeysAsc(){
+  return Object.keys(state.log).filter(function(k){return !isNaN(Date.parse(k))}).sort();
+}
+function roundMaps(){
+  var perDate={},total={},seen={};
+  logKeysAsc().forEach(function(k){
+    var e=state.log[k]; if(!e||!e.d) return;
+    perDate[k]={};
+    Object.keys(e.d).forEach(function(nm){
+      seen[nm]=(seen[nm]||0)+1;
+      perDate[k][nm]={round:seen[nm],count:e.d[nm]};
+    });
+  });
+  Object.keys(seen).forEach(function(nm){total[nm]=seen[nm]});
+  return {perDate:perDate,total:total};
+}
+function roundLabel(n){ return n+"회차"; }
+
+function makeupLine(e){
+  var parts=[];
+  if(e.fn) parts.push('<span class="mk mk-new">새 단어 '+e.fn+'개</span>');
+  if(e.rev){
+    var ks=Object.keys(e.rev).sort();
+    ks.forEach(function(kk){
+      parts.push('<span class="mk mk-rev">'+shortDate(kk)+' 복습 '+e.rev[kk]+'개</span>');
+    });
+  }
+  return parts.length?'<div class="logchips">'+parts.join("")+'</div>':'';
+}
+function statBar(v,max){
+  var pct=max?Math.round(v/max*100):0;
+  return '<span class="sbar"><i style="width:'+pct+'%"></i></span>';
+}
+function openStats(){
+  var all=allWords();
+  var total=all.length, known=all.filter(function(o){return o.w.known}).length;
+  var pct=total?Math.round(known/total*100):0;
+
+  // 날짜별
+  var rm=roundMaps(), rows="", keys=[];
+  for(var i=0;i<30;i++){ var kk=dayKey(Date.now()-i*DAYMS); if(state.log[kk]) keys.push(kk); }
+  if(!keys.length) rows='<p class="hint" style="margin:0">아직 학습 기록이 없습니다.</p>';
+  keys.forEach(function(kk){
+    var e=state.log[kk];
+    var md=parseInt(kk.slice(5,7),10)+"/"+parseInt(kk.slice(8,10),10);
+    var info=rm.perDate[kk]||{};
+    var names=daySort(Object.keys(info).map(function(n){return {name:n}})).map(function(d){return d.name});
+    var items=names.map(function(nm){
+      return '<span class="logchip"><b>'+esc(nm)+'</b> '+roundLabel(info[nm].round)+'</span>';
+    }).join("");
+    rows+='<div class="logrow"><div class="logdate">'+md+'</div>'+
+      '<div class="logbody"><div class="logstat">외움 <b>'+(e.o||0)+'</b>개 · 안 외워짐 <b>'+(e.x||0)+'</b>번'+
+      (e.closed?' <span class="sealed">마감</span>':'')+
+      (e.n?' · 추가 '+e.n+'개':'')+'</div>'+makeupLine(e)+
+      (items?'<div class="logchips">'+items+'</div>':'')+'</div></div>';
+  });
+
+  // DAY별
+  var dayRows="";
+  SECTIONS.forEach(function(s){
+    var list=daySort(state.days.filter(function(d){return d.section===s.id}));
+    if(!list.length) return;
+    dayRows+='<div class="sgrp">'+esc(s.label)+'</div>';
+    list.forEach(function(d){
+      var k=d.words.filter(function(w){return w.known}).length;
+      var left=d.words.length-k;
+      var rounds=rm.total[d.name]||0;
+      dayRows+='<div class="srow"><span class="sd wide">'+esc(d.name)+'</span>'+statBar(k,d.words.length)+
+        '<span class="sv">외움 '+k+' · 남은 '+left+(rounds?' · '+rounds+'회차':'')+'</span></div>';
+    });
+  });
+
+  var sc=document.createElement("div"); sc.className="scrim";
+  sc.innerHTML='<div class="sheet"><h2>학습 기록</h2>'+
+    '<div class="totalbox">총 암기 <b>'+known+'</b>개 <span>/ '+total+'개 ('+pct+'%)</span></div>'+
+    '<div class="sgrp">날짜별</div>'+rows+
+    '<div class="sgrp" style="margin-top:18px">DAY별</div>'+dayRows+
+    '<div class="acts"><button class="btn ghost" id="stClose">닫기</button></div></div>';
+  document.body.appendChild(sc);
+  var close=function(){if(sc.parentNode)document.body.removeChild(sc)};
+  sc.querySelector("#stClose").onclick=close;
+  sc.onclick=function(e){if(e.target===sc)close()};
+}
+
+
+// ================= 단어 점검 =================
+function editDistance(a,b){
+  a=a.toLowerCase();b=b.toLowerCase();
+  var m=a.length,n=b.length,d=[];
+  if(Math.abs(m-n)>2) return 9;
+  for(var i=0;i<=m;i++){d[i]=[i];}
+  for(var j=0;j<=n;j++){d[0][j]=j;}
+  for(i=1;i<=m;i++)for(j=1;j<=n;j++){
+    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  }
+  return d[m][n];
+}
+function spellSuggest(term){
+  if(/\s/.test(term)||term.length<4||!isEnglish(term)) return null;
+  if(BANK[term.toLowerCase()]) return null;
+  var best=null,bd=3;
+  Object.keys(BANK).forEach(function(k){
+    if(/\s/.test(k)) return;
+    var d=editDistance(term,k);
+    if(d<bd){bd=d;best=k;}
+  });
+  return bd<=1?best:null;
+}
+function scanIssues(){
+  var out=[],seenDup={};
+  state.days.forEach(function(d){
+    var inDay={};
+    d.words.forEach(function(w){
+      var push=function(type,msg,fix){out.push({w:w,d:d,type:type,msg:msg,fix:fix})};
+      var key=w.term.toLowerCase();
+      if(inDay[key]) push("중복","같은 DAY에 중복된 단어",null); else inDay[key]=1;
+      if(!w.meaning) push("빈칸","뜻이 비어 있음",null);
+      if(!w.example) push("빈칸","예문이 비어 있음","bank");
+      else{
+        if(!w.ko) push("빈칸","해석이 비어 있음","bank");
+        if(/[가-힣]/.test(w.example)) push("형식","예문에 한글이 섞여 있음",null);
+        if(isEnglish(w.term)&&!blankInfo(w.example,w.term)) push("불일치","예문에 단어가 들어 있지 않음","bank");
+      }
+      if(w.ko&&!/[가-힣]/.test(w.ko)) push("형식","해석에 한글이 없음",null);
+      var sp=spellSuggest(w.term);
+      if(sp) push("철자","철자 확인 필요 → "+sp,null);
+      if(w.example){
+        var ek="e:"+w.example;
+        (seenDup[ek]=seenDup[ek]||[]).push(w);
+      }
+      if(w.ko){
+        var kk="k:"+w.ko;
+        (seenDup[kk]=seenDup[kk]||[]).push(w);
+      }
+    });
+  });
+  Object.keys(seenDup).forEach(function(k){
+    var arr=seenDup[k];
+    var terms={},uniq=0;
+    arr.forEach(function(w){if(!terms[w.term.toLowerCase()]){terms[w.term.toLowerCase()]=1;uniq++;}});
+    if(uniq<3) return;
+    arr.forEach(function(w){
+      var d=state.days.filter(function(x){return x.words.indexOf(w)>-1})[0];
+      out.push({w:w,d:d,type:"도배",msg:(k.indexOf("k:")===0?"해석":"예문")+"이 다른 단어와 똑같음",fix:"clear"});
+    });
+  });
+  return out;
+}
+function autoFixable(issues){
+  return issues.filter(function(it){
+    if(it.fix==="clear") return true;
+    if(it.fix==="bank"){ return !!bankFull(it.w.term); }
+    return false;
+  });
+}
+function runAutoFix(issues){
+  var n=0;
+  issues.forEach(function(it){
+    if(it.fix==="clear"){
+      var b=bankLookup(it.w.term);
+      if(b&&b.example===it.w.example) return;
+      if(it.msg.indexOf("해석")===0) it.w.ko=""; else it.w.example="";
+      n++;
+    }
+  });
+  issues.forEach(function(it){
+    if(it.fix!=="bank") return;
+    var b=bankFull(it.w.term);
+    if(!b) return;
+    if(!it.w.example||!blankInfo(it.w.example,it.w.term)) it.w.example=b.example;
+    if(!it.w.pos&&b.pos) it.w.pos=b.pos;
+    if(!it.w.meaning&&b.meaning) it.w.meaning=b.meaning;
+    if(!it.w.ko&&b.ko) it.w.ko=b.ko;
+    n++;
+  });
+  if(n) save();
+  return n;
+}
+function openCheck(){
+  var issues=scanIssues();
+  var fixable=autoFixable(issues);
+  var sc=document.createElement("div"); sc.className="scrim";
+  var body;
+  if(!issues.length){
+    body='<p class="hint">문제를 찾지 못했습니다. 단어장이 깨끗합니다.</p>';
+  }else{
+    var byType={};
+    issues.forEach(function(it){(byType[it.type]=byType[it.type]||[]).push(it)});
+    body='<p class="hint">'+issues.length+'건을 찾았습니다. 항목을 누르면 바로 수정할 수 있어요.</p>';
+    Object.keys(byType).forEach(function(t){
+      body+='<div class="sgrp">'+esc(t)+' '+byType[t].length+'건</div>';
+      byType[t].slice(0,40).forEach(function(it,i){
+        var idx=issues.indexOf(it);
+        body+='<div class="srow ckrow" data-issue="'+idx+'"><span class="sd wide">'+esc(it.w.term)+'</span>'+
+          '<span class="sv" style="flex:1;text-align:left">'+esc(it.d.name)+' · '+esc(it.msg)+'</span></div>';
+      });
+      if(byType[t].length>40) body+='<p class="hint">…외 '+(byType[t].length-40)+'건</p>';
+    });
+  }
+  sc.innerHTML='<div class="sheet"><h2>단어장 점검</h2>'+body+
+    '<div class="acts">'+
+    '<button class="btn ghost" id="ckClose">닫기</button>'+
+    (fixable.length?'<button class="btn" id="ckFix">자동으로 고치기 '+fixable.length+'건</button>':'')+
+    '</div></div>';
+  document.body.appendChild(sc);
+  var close=function(){if(sc.parentNode)document.body.removeChild(sc)};
+  sc.querySelector("#ckClose").onclick=close;
+  sc.onclick=function(e){if(e.target===sc)close()};
+  var fb=sc.querySelector("#ckFix");
+  if(fb) fb.onclick=function(){
+    var n=runAutoFix(fixable);
+    close(); render(); toast(n+"건을 고쳤어요");
+    setTimeout(openCheck,600);
+  };
+  sc.addEventListener("click",function(e){
+    var r=e.target.closest("[data-issue]");
+    if(!r) return;
+    var it=issues[parseInt(r.dataset.issue,10)];
+    if(!it) return;
+    close(); openEdit(it.w.id);
+  });
+}
+
+
+// ================= 취약 단어 =================
+var LEECH_MIN=3;
+function isLeech(w){return (w.lapses||0)>=LEECH_MIN}
+function leechList(){
+  return allWords().filter(function(o){return isLeech(o.w)})
+    .sort(function(a,b){return (b.w.lapses||0)-(a.w.lapses||0)});
+}
+
+// ================= 오늘/어제 틀린 단어 · 재시험 =================
+function missedOn(key){
+  return allWords().filter(function(o){return o.w.missDay===key&&!o.w.known});
+}
+function uniqueMissed(list){
+  var seen={},out=[];
+  (list||[]).forEach(function(o){
+    if(seen[o.w.id]) return;
+    seen[o.w.id]=1; out.push(o);
+  });
+  return out;
+}
+function startP5From(list){
+  var pool=list.filter(function(o){return o.w.example});
+  var qs=[];
+  shuffle(pool).forEach(function(o){
+    var q=buildQuestion(o,allWords().filter(function(x){return x.w.example}));
+    if(q) qs.push(q);
+  });
+  if(!qs.length){ startDeck(list); return; }
+  p5={qs:qs,i:0,score:0,picked:null,missed:[],review:null};
+  document.getElementById("p5").className="quiz";
+  renderP5();
+}
+
+function synHtml(w){
+  var list=String(w.syn).split(",").map(function(s){return s.trim()}).filter(Boolean);
+  var open=synOpen[w.id];
+  if(list.length<=3||open){
+    return '<div class="syn" data-syn="'+w.id+'">≒ '+esc(list.join(", "))+
+      (list.length>3?' <span class="synmore">접기</span>':'')+'</div>';
+  }
+  return '<div class="syn" data-syn="'+w.id+'">≒ '+esc(list.slice(0,3).join(", "))+
+    ' <span class="synmore">+'+(list.length-3)+'개 더</span></div>';
+}
+var synOpen={};
+document.getElementById("listArea").addEventListener("click",function(e){
+  var s=e.target.closest("[data-syn]");
+  if(!s) return;
+  e.stopPropagation();
+  var id=s.dataset.syn;
+  synOpen[id]=!synOpen[id];
+  render();
+},true);
+
+// ---- 초기 실행 (모든 정의가 끝난 뒤) ----
+saveBroken=!storageWorks();
+load();
+migrateSections();
+if(state.day!=="all"&&!state.days.some(function(d){return d.id===state.day})) state.day="all";
+[].forEach.call(document.getElementById("secSeg").children,function(c){c.className=c.dataset.sec===state.section?"on":""});
+if(!state.days.length) seedDefault();
+else{
+  // 이미 쓰던 단어장이면 기본 단어를 절대 추가하지 않음 (예문·해석만 보충)
+  var n=0;
+  state.days.forEach(function(d){d.words.forEach(function(w){
+    var b=bankLookup(w.term);
+    if(b&&b.ko&&(!w.example||!w.pos||!w.ko)){
+      if(!w.pos)w.pos=b.pos; if(!w.example)w.example=b.example;
+      if(!w.meaning)w.meaning=b.meaning; if(!w.ko&&b.ko)w.ko=b.ko;
+      n++;
+    }
+  })});
+  if(n) save();
+}
+document.getElementById("verLine").textContent="v50 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+render();
+showWarn();
+
+// ---- 오류 표시 ----
+window.onerror=function(msg,src,line,col){
+  try{
+    var b=document.getElementById("errBox");
+    if(b) b.innerHTML='<div class="err"><b>오류가 발생했습니다</b><br>'+String(msg)+'<br>(줄 '+line+')<br>이 내용을 클로드에게 알려주세요.</div>';
+  }catch(e){}
+  return false;
+};
+function guard(fn,label){
+  return function(){
+    try{ return fn.apply(this,arguments); }
+    catch(e){
+      var b=document.getElementById("errBox");
+      if(b) b.innerHTML='<div class="err"><b>'+label+' 중 오류</b><br>'+String(e&&e.message||e)+'<br>이 내용을 클로드에게 알려주세요.</div>';
+      throw e;
+    }
+  };
+}
+openSheet=guard(openSheet,"단어 추가창 열기");
+addOne=guard(addOne,"단어 추가");
+targetDay=guard(targetDay,"DAY 만들기");
+render=guard(render,"화면 그리기");
+
+// ================= 오늘의 학습 =================
+var pickDays={}, pickRange="unknown", revPick={};
+function studiedOn(key){
+  return allWords().filter(function(o){return o.w.last&&dayKey(o.w.last)===key});
+}
+function reviewGroups(){   // 안 외워진 단어를 '마지막으로 공부한 날짜'별로 묶음
+  var map={};
+  allWords().forEach(function(o){
+    if(!o.w.last||o.w.known) return;
+    var k=dayKey(o.w.last);
+    (map[k]=map[k]||[]).push(o);
+  });
+  return Object.keys(map).sort().map(function(k){return {key:k,items:map[k]}});
+}
+function todaySummary(){
+  var k=dayKey(), e=state.log[k];
+  if(!e||!(e.o||e.x||e.n)) return '<b>오늘은 아직 시작 전입니다.</b><br>복습 단어에 오늘 할 DAY를 더해서 시작하세요.';
+  return '오늘 외운 단어 <b>'+(e.o||0)+'</b>개'+
+    ((e.fo||e.ro)?' (새 '+(e.fo||0)+' · 복습 '+(e.ro||0)+')':'')+
+    ' · 다시 <b>'+(e.x||0)+'</b>번'+(e.n?' · 새로 추가 <b>'+e.n+'</b>개':'');
+}
+function shortDate(k){ return parseInt(k.slice(5,7),10)+"/"+parseInt(k.slice(8,10),10); }
+function renderRevList(){
+  var gs=reviewGroups();
+  var box=document.getElementById("revList");
+  if(!gs.length){ box.innerHTML='<p class="hint" style="margin:0 0 4px">아직 복습할 단어가 없습니다.</p>'; return; }
+  box.innerHTML=gs.map(function(g){
+    if(revPick[g.key]===undefined) revPick[g.key]=true;
+    var label=g.key===dayKey()?"오늘":(g.key===dayKey(Date.now()-DAYMS)?"어제":shortDate(g.key)+"에");
+    return '<button class="revrow" data-rev="'+g.key+'" data-on="'+(revPick[g.key]?1:0)+'">'+
+      '<b>'+label+' 안 외워진 단어</b><span>'+g.items.length+'개</span></button>';
+  }).join("");
+}
+function reviewSelected(){
+  var out=[];
+  reviewGroups().forEach(function(g){ if(revPick[g.key]) out=out.concat(g.items); });
+  return out;
+}
+function renderDayPick(){
+  var days=secDays();
+  document.getElementById("dayPick").innerHTML=days.map(function(d){
+    var left=d.words.filter(function(w){return !w.known}).length;
+    return '<button class="dp" data-day="'+d.id+'" data-on="'+(pickDays[d.id]?1:0)+'">'+esc(d.name)+
+      '<span style="opacity:.6"> '+left+'</span></button>';
+  }).join("")||'<p class="hint" style="margin:0">이 교재에 DAY가 없습니다.</p>';
+  updatePickCount();
+}
+function pickedWords(){
+  var out=[];
+  secDays().forEach(function(d){
+    if(!pickDays[d.id]) return;
+    d.words.forEach(function(w){
+      if(pickRange==="unknown"&&w.known) return;
+      if(pickRange==="weak"&&!(w.lapses||0)) return;
+      out.push({w:w,dayId:d.id,dayName:d.name});
+    });
+  });
+  return out;
+}
+function finalDeck(){
+  var seen={},out=[];
+  reviewSelected().forEach(function(o){ if(!seen[o.w.id]){seen[o.w.id]=1;out.push(o);} });
+  pickedWords().forEach(function(o){ if(!seen[o.w.id]){seen[o.w.id]=1;out.push(o);} });
+  return out;
+}
+function updatePickCount(){
+  var rev=reviewSelected(), seen={};
+  rev.forEach(function(o){seen[o.w.id]=1});
+  var fresh=pickedWords().filter(function(o){return !seen[o.w.id]}).length;
+  var parts=reviewGroups().filter(function(g){return revPick[g.key]})
+    .map(function(g){ return shortDate(g.key)+" "+g.items.length; });
+  var total=rev.length+fresh;
+  document.getElementById("pickCount").innerHTML= total
+    ? '복습 <b>'+rev.length+'</b>개'+(parts.length?' <span style="font-weight:500;color:#5A6478">('+parts.join(" · ")+')</span>':'')+
+      ' + 새 단어 <b>'+fresh+'</b>개 = <b>'+total+'</b>개'
+    : 'DAY를 선택하세요';
+  document.getElementById("goFlash").disabled=total===0;
+  document.getElementById("goP5").disabled=total===0;
+}
+function openStart(){
+  document.getElementById("todaySum").innerHTML=todaySummary();
+  renderRevList();
+  renderDayPick();
+  document.getElementById("startScrim").className="scrim";
+}
+function closeStart(){document.getElementById("startScrim").className="scrim hide"}
+document.getElementById("startBtn").addEventListener("click",openStart);
+document.getElementById("startClose").addEventListener("click",closeStart);
+document.getElementById("startScrim").addEventListener("click",function(e){
+  if(e.target===this){closeStart();return;}
+  var rv=e.target.closest("[data-rev]");
+  if(rv){ var kk=rv.dataset.rev; revPick[kk]=!revPick[kk]; renderRevList(); updatePickCount(); return; }
+  var s=e.target.closest("[data-sel]");
+  if(s){
+    var days=secDays(); pickDays={};
+    if(s.dataset.sel==="all") days.forEach(function(d){pickDays[d.id]=true});
+    else if(s.dataset.sel==="plus") days.forEach(function(d){ if(/\+$/.test(d.name)) pickDays[d.id]=true; });
+    renderDayPick(); return;
+  }
+  var dp=e.target.closest(".dp");
+  if(dp){ pickDays[dp.dataset.day]=!pickDays[dp.dataset.day]; renderDayPick(); return; }
+  var rb=e.target.closest("#rangeSeg button");
+  if(rb){
+    pickRange=rb.dataset.range;
+    [].forEach.call(rb.parentNode.children,function(c){c.className=c===rb?"on":""});
+    updatePickCount(); return;
+  }
+});
+document.getElementById("goFlash").addEventListener("click",function(){
+  var list=finalDeck(); if(!list.length) return;
+  closeStart(); startDeck(list);
+});
+document.getElementById("goP5").addEventListener("click",function(){
+  var list=finalDeck(); if(!list.length) return;
+  closeStart(); startP5From(list);
+});
+
+
+// ================= 학습 마감 =================
+function mergeLog(fromKey,toKey){
+  var a=state.log[fromKey]; if(!a) return 0;
+  var b=state.log[toKey]||{s:0,o:0,x:0,n:0};
+  ["s","o","x","n","fn"].forEach(function(f){ if(a[f]) b[f]=(b[f]||0)+a[f]; });
+  ["ids","sids"].forEach(function(f){
+    if(!a[f]) return; b[f]=b[f]||{};
+    Object.keys(a[f]).forEach(function(id){b[f][id]=1});
+  });
+  ["d","rev"].forEach(function(f){
+    if(!a[f]) return; b[f]=b[f]||{};
+    Object.keys(a[f]).forEach(function(kk){ b[f][kk]=(b[f][kk]||0)+a[f][kk]; });
+  });
+  b.closed=true;
+  state.log[toKey]=b;
+  delete state.log[fromKey];
+  save();
+  return a.o||0;
+}
+function openCloseDay(){
+  var today=dayKey(), yest=dayKey(Date.now()-DAYMS);
+  var e=state.log[today];
+  var hour=new Date().getHours();
+  var sc=document.createElement("div"); sc.className="scrim";
+  var body= e&&(e.o||e.x)
+    ? '<p class="hint">지금까지 외움 <b>'+(e.o||0)+'</b>개 · 안 외워짐 <b>'+(e.x||0)+'</b>번이 쌓여 있습니다. 어느 날짜의 기록으로 마감할까요?</p>'
+    : '<p class="hint">아직 마감할 학습 기록이 없습니다.</p>';
+  sc.innerHTML='<div class="sheet"><h2>학습 마감</h2>'+body+
+    (e&&(e.o||e.x)?
+      '<button class="mode" data-end="'+yest+'"><b>'+shortDate(yest)+' (어제) 기록으로</b><span>'+(hour<4?'새벽이면 이쪽':'')+'</span></button>'+
+      '<button class="mode" data-end="'+today+'"><b>'+shortDate(today)+' (오늘) 기록으로</b><span>'+(hour>=4?'보통 이쪽':'')+'</span></button>':'')+
+    '<div class="acts"><button class="btn ghost" id="endClose">닫기</button></div></div>';
+  document.body.appendChild(sc);
+  var close=function(){if(sc.parentNode)document.body.removeChild(sc)};
+  sc.querySelector("#endClose").onclick=close;
+  sc.onclick=function(ev){
+    if(ev.target===sc){close();return;}
+    var b=ev.target.closest("[data-end]");
+    if(!b) return;
+    var target=b.dataset.end;
+    if(target===today){
+      state.log[today].closed=true; save(); render();
+      toast(shortDate(today)+" 기록으로 마감했어요");
+    }else{
+      var moved=mergeLog(today,target);
+      render();
+      toast(shortDate(target)+" 기록으로 옮겼어요 · 외움 "+moved+"개");
+    }
+    close();
+  };
+}
+
+
+// ---- 더보기 메뉴 ----
+document.getElementById("tgMore").addEventListener("click",function(){
+  var sc=document.createElement("div"); sc.className="scrim";
+  sc.innerHTML='<div class="sheet"><h2>더보기</h2>'+
+    '<button class="mode" data-go="stats"><b>학습 기록</b><span>날짜별 · DAY별</span></button>'+
+    '<button class="mode" data-go="end"><b>학습 마감</b><span>오늘 기록 확정</span></button>'+
+    '<button class="mode" data-go="export"><b>백업</b><span>저장 · 복원 · 복사</span></button>'+
+    '<button class="mode" data-go="check"><b>단어장 점검</b><span>빠진 항목 찾기</span></button>'+
+    '<div class="acts"><button class="btn ghost" id="moreClose">닫기</button></div></div>';
+  document.body.appendChild(sc);
+  var close=function(){if(sc.parentNode)document.body.removeChild(sc)};
+  sc.querySelector("#moreClose").onclick=close;
+  sc.onclick=function(e){
+    if(e.target===sc){close();return;}
+    var b=e.target.closest("[data-go]"); if(!b) return;
+    var go=b.dataset.go; close();
+    setTimeout(function(){
+      if(go==="stats") openStats();
+      else if(go==="end") openCloseDay();
+      else if(go==="export") openBackup();
+      else if(go==="check") openCheck();
+    },60);
+  };
+});
+
+// ---- 시작 자가 점검 (업데이트 후 버튼이 안 눌리는 문제 조기 발견) ----
+(function(){
+  try{
+    var needEl=["addBtn","startBtn","tgMask","tgUnknown","tgMore","listArea","secSeg","dayRow","startScrim","editScrim"];
+    var missEl=needEl.filter(function(id){return !document.getElementById(id)});
+    var needFn=["render","openStart","openSheet","openStats","openCheck","openBackup","openCloseDay","startDeck","startP5From","addOne","targetDay"];
+    var missFn=needFn.filter(function(n){return typeof window[n]!=="function"});
+    if(missEl.length||missFn.length){
+      reportErr("빠진 요소: "+(missEl.join(", ")||"없음")+" / 빠진 기능: "+(missFn.join(", ")||"없음"),"시작 점검");
+    }
+  }catch(e){ reportErr(e,"시작 점검"); }
+})();
+</script>
+</body>
+</html>
