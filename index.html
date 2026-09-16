@@ -162,16 +162,18 @@ select.inp{-webkit-appearance:none;appearance:none;background-image:linear-gradi
 .scard b{display:block;font-size:22px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;}
 .scard span{font-size:11px;color:var(--ink-soft);}
 .sgrp{font-size:12px;font-weight:700;color:var(--ink-soft);margin:16px 0 8px;}
-.logrow{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--rule);}
-.logdate{flex:0 0 42px;font-size:12.5px;font-weight:700;color:var(--ink);}
-.logbody{flex:1;font-size:12.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
-.logstat{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
-.logchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+.logrow{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--rule);align-items:flex-start;}
+.logdate{flex:0 0 40px;font-size:13px;font-weight:800;color:var(--ink);padding-top:1px;}
+.logbody{flex:1;min-width:0;font-size:12.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+.logstat{font-size:12.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;line-height:1.6;}
+.logchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
 .sealed{background:var(--ink);color:#fff;border-radius:4px;padding:1px 5px;font-size:10.5px;font-weight:700;margin-left:4px;}
-.mk{display:inline-flex;align-items:center;border-radius:6px;padding:3px 8px;font-size:11.5px;font-weight:600;}
+.mk{display:inline-flex;align-items:center;flex:0 0 auto;white-space:nowrap;
+  border-radius:6px;padding:4px 9px;font-size:11.5px;font-weight:600;line-height:1.3;}
 .mk-new{background:#EAF6F1;color:var(--done);}
 .mk-rev{background:#FDF3D0;color:#8A6A00;}
-.logchip{display:inline-flex;align-items:center;gap:4px;background:#EFEEE7;border-radius:6px;padding:3px 7px;font-size:11.5px;color:var(--ink);}
+.logchip{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;white-space:nowrap;
+  background:#EFEEE7;border-radius:6px;padding:4px 8px;font-size:11.5px;color:var(--ink);line-height:1.3;}
 .logchip b{font-weight:700;}
 .logchip i{font-style:normal;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
 .srow{display:flex;align-items:center;gap:9px;padding:5px 0;}
@@ -244,6 +246,41 @@ h1 span{color:var(--ink-soft);}
     vertical-align:baseline;margin:0 3px;height:1.1em;}
 .qex .blank{min-width:86px;}
 
+
+.reader{position:fixed;inset:0;background:var(--paper);z-index:45;display:flex;flex-direction:column;}
+.rtop{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;border-bottom:1px solid var(--rule);background:var(--card);}
+.rtop button{border:0;background:transparent;font:600 14px inherit;font-family:inherit;color:var(--ink);cursor:pointer;min-width:44px;min-height:38px;}
+.rtitle{flex:1;font-size:14px;font-weight:700;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rbody{flex:1;overflow-y:auto;padding:16px 16px 90px;}
+.rdock{position:fixed;left:0;right:0;bottom:0;background:rgba(250,250,249,.96);border-top:1px solid var(--rule);padding:10px 16px calc(10px + env(safe-area-inset-bottom));}
+@media (prefers-color-scheme: dark){ .rdock{background:rgba(15,18,24,.96);} }
+.artext{font-size:16px;line-height:1.95;color:var(--ink);}
+.artext .w{cursor:pointer;border-radius:3px;padding:0 1px;}
+.artext .w.picked{background:var(--marker);color:#11151F;font-weight:600;}
+.arpara{margin-bottom:18px;}
+.arko{font-size:13.5px;line-height:1.75;color:var(--ink-soft);background:var(--card);border-left:3px solid var(--rule);padding:9px 12px;margin-top:8px;border-radius:0 8px 8px 0;}
+.arlist{display:flex;flex-direction:column;gap:8px;}
+.arcard{width:100%;text-align:left;border:1px solid var(--rule);background:var(--card);border-radius:12px;padding:13px 14px;font-family:inherit;color:var(--ink);cursor:pointer;}
+.arcard b{font-size:14.5px;display:block;letter-spacing:-.01em;}
+.arcard span{font-size:12px;color:var(--ink-soft);}
+.arnote{width:100%;border:1px solid var(--rule);border-radius:10px;padding:11px;font:14px inherit;font-family:inherit;background:var(--card);color:var(--ink);min-height:90px;resize:vertical;}
+
+.kbd{align-items:center;justify-content:center;min-width:19px;height:19px;padding:0 5px;
+  margin-left:6px;border-radius:5px;border:1px solid currentColor;opacity:.55;
+  font-size:11px;font-weight:700;line-height:1;vertical-align:middle;}
+.kbd{display:inline-flex;}
+.qacts .kbd{border-color:currentColor;opacity:.65;}
+
+
+.dpg{display:inline-flex;flex:0 0 auto;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--card);}
+.dpg button{border:0;background:transparent;padding:8px 11px;min-height:38px;font:600 12.5px inherit;font-family:inherit;
+  color:var(--ink-soft);cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.dpg button+button{border-left:1px solid var(--rule);padding-left:9px;padding-right:9px;}
+.dpg button.sub{font-size:12px;letter-spacing:-.5px;}
+.dpg button i{font-style:normal;font-size:11px;opacity:.6;font-variant-numeric:tabular-nums;}
+.dpg button[data-on="1"]{background:var(--ink);color:#fff;}
+.dpg button[data-on="1"] i{opacity:.75;}
+
 @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
 </style>
 </head>
@@ -262,6 +299,7 @@ h1 span{color:var(--ink-soft);}
     <button data-sec="v2023">2023</button>
     <button data-sec="colloc">Collocation</button>
     <button data-sec="transfer">편입영어</button>
+    <button data-sec="news">기사</button>
   </div>
 
   <div class="days" id="dayRow"></div>
@@ -271,7 +309,7 @@ h1 span{color:var(--ink-soft);}
     <div id="updBox"></div>
 
     <div class="tools hide" id="tools">
-    <input class="search" id="q" placeholder="단어·뜻 검색" autocomplete="off">
+    <input class="search" id="q" placeholder="검색  ( / )" autocomplete="off">
     <button class="tg" id="tgMask" aria-pressed="false">뜻 가리기</button>
     <button class="tg" id="tgUnknown" aria-pressed="false">미암기만</button>
     <button class="tg" id="tgMore">⋯ 더보기</button>
@@ -282,8 +320,8 @@ h1 span{color:var(--ink-soft);}
 
 <input type="file" id="restoreInput" accept=".json,application/json" style="display:none">
 <div class="dock"><div>
-  <button class="btn ghost" id="addBtn">단어 추가</button>
-  <button class="btn quizbtn" id="startBtn" aria-label="학습 시작">학습 시작</button>
+  <button class="btn ghost" id="addBtn">단어 추가<span class="kbd">A</span></button>
+  <button class="btn quizbtn" id="startBtn" aria-label="학습 시작">학습 시작<span class="kbd">S</span></button>
 </div></div>
 
 <div class="scrim hide" id="scrim">
@@ -298,16 +336,20 @@ h1 span{color:var(--ink-soft);}
 
     <div id="oneMode">
       <div class="pair">
-        <input class="inp" id="fTerm" placeholder="단어" autocomplete="off" autocapitalize="off">
+        <input class="inp" id="fTerm" placeholder="단어" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
         <input class="inp" id="fMean" placeholder="뜻" autocomplete="off">
       </div>
-      <button class="link" id="moreBtn">품사·예문 넣기</button>
+      <button class="link" id="moreBtn">자세히 접기</button>
       <div class="lookup" id="lookupN"></div>
-      <div class="hide" id="moreWrap">
-        <input class="inp" id="fPos" placeholder="품사 (v., n., adj.)" autocomplete="off">
-        <input class="inp" id="fEx" placeholder="예문" autocomplete="off" style="margin-top:8px">
-        <input class="inp" id="fSyn" placeholder="유의어 (쉼표로 구분)" autocomplete="off" style="margin-top:8px">
-        <input class="inp" id="fAnt" placeholder="반의어 (쉼표로 구분)" autocomplete="off" style="margin-top:8px">
+      <div id="moreWrap">
+        <label class="lb">품사</label>
+        <input class="inp" id="fPos" placeholder="v. / n. / adj. / phrase" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+        <label class="lb">예문</label>
+        <input class="inp" id="fEx" placeholder="영어 예문" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+        <label class="lb">유의어</label>
+        <input class="inp" id="fSyn" placeholder="쉼표로 구분 · 개수 제한 없음" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+        <label class="lb">반의어</label>
+        <input class="inp" id="fAnt" placeholder="쉼표로 구분" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
       </div>
       <div class="added" id="addedN"></div>
       <div class="acts">
@@ -320,7 +362,7 @@ h1 span{color:var(--ink-soft);}
       <p class="hint">한 줄에 한 단어씩. <span class="code">단어 | 뜻 | 품사 | 예문 | 해석 | 유의어 | 반의어</span> 순서이며 뒤쪽은 비워도 됩니다. <span class="code">[DAY 4]</span> 같은 줄이 있으면 그 DAY로 들어가고, 이미 있는 단어는 덮어씁니다.</p>
       <textarea class="area" id="bulk" placeholder="comply 준수하다
 invoice 송장, 청구서
-tentative 잠정적인"></textarea>
+tentative 잠정적인" autocapitalize="none" autocorrect="off" spellcheck="false"></textarea>
       <div class="pct" id="parsedN" style="margin-top:8px">0개 인식됨</div>
       <div class="acts">
         <button class="btn ghost" id="cancelAdd">취소</button>
@@ -333,13 +375,13 @@ tentative 잠정적인"></textarea>
 <div class="scrim hide" id="editScrim"><div class="sheet">
   <h2>단어 수정</h2>
   <p class="hint">자동으로 채워진 내용이 어색하면 직접 고치세요.</p>
-  <label class="lb">단어</label><input class="inp" id="eTerm" autocomplete="off">
+  <label class="lb">단어</label><input class="inp" id="eTerm" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
   <label class="lb">뜻</label><input class="inp" id="eMean" autocomplete="off">
-  <label class="lb">품사</label><input class="inp" id="ePos" autocomplete="off">
-  <label class="lb">예문</label><textarea class="area" id="eEx" style="min-height:70px"></textarea>
+  <label class="lb">품사</label><input class="inp" id="ePos" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+  <label class="lb">예문</label><textarea class="area" id="eEx" style="min-height:70px" autocapitalize="none" autocorrect="off" spellcheck="false"></textarea>
   <label class="lb">예문 해석</label><textarea class="area" id="eKo" style="min-height:70px"></textarea>
-  <label class="lb">유의어</label><input class="inp" id="eSyn" autocomplete="off" placeholder="쉼표로 구분">
-  <label class="lb">반의어</label><input class="inp" id="eAnt" autocomplete="off" placeholder="쉼표로 구분">
+  <label class="lb">유의어</label><input class="inp" id="eSyn" autocomplete="off" placeholder="쉼표로 구분" autocapitalize="none" autocorrect="off" spellcheck="false">
+  <label class="lb">반의어</label><input class="inp" id="eAnt" autocomplete="off" placeholder="쉼표로 구분" autocapitalize="none" autocorrect="off" spellcheck="false">
   <button class="link" id="eAuto">내장 데이터에서 가져오기</button>
   <div class="acts">
     <button class="btn ghost" id="eDelete">삭제</button>
@@ -362,24 +404,27 @@ tentative 잠정적인"></textarea>
   </div>
   <div class="daypick" id="dayPick"></div>
   <div class="seg" id="rangeSeg" style="margin:10px 0 0">
-    <button data-range="unknown" class="on">미암기만</button>
+    <button data-range="unknown" class="on">아직 못 외운 것</button>
     <button data-range="all">전체</button>
-    <button data-range="weak">틀린 것만</button>
   </div>
 
-  <div class="sgrp">한 번에 풀 분량</div>
-  <div class="seg" id="sizeSeg" style="margin:0">
-    <button data-size="30">30개</button>
-    <button data-size="50" class="on">50개</button>
-    <button data-size="100">100개</button>
-    <button data-size="0">전체</button>
-  </div>
   <div class="sumline" id="pickCount">DAY를 선택하세요</div>
   <div class="acts">
-    <button class="btn ghost" id="startClose">닫기</button>
+    <button class="btn ghost" id="startClose">닫기<span class="kbd">Esc</span></button>
     <button class="btn" id="goFlash">카드 시작</button>
   </div>
 </div></div>
+
+
+<div class="reader hide" id="reader">
+  <div class="rtop">
+    <button id="rBack" aria-label="뒤로">←<span class="kbd">Esc</span></button>
+    <div class="rtitle" id="rTitle">기사</div>
+    <button id="rEdit">편집</button>
+  </div>
+  <div class="rbody" id="rBody"></div>
+  <div class="rdock" id="rDock"></div>
+</div>
 
 <div class="quiz hide" id="quiz">
   <div class="qtop">
@@ -427,8 +472,9 @@ var SAMPLE=[
 ];
 
 var listCap=150;
+var pickDays={}, pickRange="unknown", revPick={};
 var expOpen={};
-var state={days:[],log:{},onlyHard:false,section:"v2026",day:"all",q:"",mask:false,onlyUnknown:false,revealed:{}};
+var state={days:[],log:{},articles:[],onlyHard:false,section:"v2026",day:"all",q:"",mask:false,onlyUnknown:false,revealed:{}};
 var quiz=null;
 
 function load(){
@@ -438,6 +484,7 @@ function load(){
       var o=JSON.parse(raw);
       state.days=o.days||[];
       state.log=o.log||{};
+      state.articles=o.articles||[];
       var cutoff=Date.now()-400*86400000, keep={};
       Object.keys(state.log).forEach(function(k){
         var t=Date.parse(k); if(isNaN(t)||t>=cutoff) keep[k]=state.log[k];
@@ -450,6 +497,8 @@ function load(){
       if(o.ui){
         if(o.ui.section) state.section=normSec(o.ui.section);
         if(o.ui.day) state.day=o.ui.day;
+        if(o.ui.pick) pickDays=o.ui.pick;
+        if(o.ui.range==="all"||o.ui.range==="unknown") pickRange=o.ui.range;
       }
     }
   }catch(e){}
@@ -464,7 +513,7 @@ function storageWorks(){
 }
 function save(){
   try{
-    localStorage.setItem(KEY,JSON.stringify({days:state.days,log:state.log,ui:{section:state.section,day:state.day}}));
+    localStorage.setItem(KEY,JSON.stringify({days:state.days,log:state.log,articles:state.articles,ui:{section:state.section,day:state.day,pick:pickDays,range:pickRange }}));
     if(saveBroken){saveBroken=false;showWarn();}
   }catch(e){
     if(!saveBroken){saveBroken=true;showWarn();}
@@ -482,7 +531,7 @@ function showWarn(){
   if(b) b.onclick=function(){saveBackupFile()};
 }
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-var SECTIONS=[{id:"v2026",label:"2026 단어장"},{id:"v2023",label:"2023 단어장"},{id:"colloc",label:"Collocation"},{id:"transfer",label:"편입영어"}];
+var SECTIONS=[{id:"v2026",label:"2026 단어장"},{id:"v2023",label:"2023 단어장"},{id:"colloc",label:"Collocation"},{id:"transfer",label:"편입영어"},{id:"news",label:"기사"}];
 function secLabel(id){
   for(var i=0;i<SECTIONS.length;i++) if(SECTIONS[i].id===id) return SECTIONS[i].label;
   return "2026 단어장";
@@ -491,6 +540,7 @@ function normSec(s){
   if(s==="colloc") return "colloc";
   if(s==="v2023") return "v2023";
   if(s==="transfer") return "transfer";
+  if(s==="news") return "news";
   return "v2026";
 }
 function migrateSections(){
@@ -507,6 +557,17 @@ function daySort(list){
     if(pa!==pb) return pa-pb;
     return a.name.localeCompare(b.name);
   });
+}
+
+function baseName(n){ return String(n).replace(/\++$/,""); }
+function groupDays(list){
+  var map={},order=[];
+  daySort(list).forEach(function(d){
+    var b=baseName(d.name);
+    if(!map[b]){ map[b]={base:null,subs:[]}; order.push(b); }
+    if(d.name===b) map[b].base=d; else map[b].subs.push(d);
+  });
+  return order.map(function(b){ return {name:b,base:map[b].base,subs:map[b].subs}; });
 }
 function secDays(){return daySort(state.days.filter(function(d){return d.section===state.section}))}
 function scopeWords(){
@@ -592,10 +653,19 @@ function render(){
   // day chips
   var all=secDays().reduce(function(n,d){return n+d.words.length},0);
   var html='<button class="chip'+(state.day==="all"?" on":"")+'" data-day="all"><span class="nm">전체</span><span class="sb">'+all+'개</span></button>';
-  secDays().forEach(function(d){
-    var k=d.words.filter(function(w){return w.known}).length;
-    var p=d.words.length?(k/d.words.length*100):0;
-    html+='<button class="chip'+(state.day===d.id?" on":"")+'" data-day="'+d.id+'"><span class="nm">'+esc(d.name)+'</span><span class="sb">'+k+'/'+d.words.length+'</span><span class="ln"><i style="width:'+p+'%"></i></span></button>';
+  groupDays(secDays()).forEach(function(g){
+    var parts=[];
+    if(g.base){
+      var k=g.base.words.filter(function(w){return w.known}).length;
+      parts.push('<button data-day="'+g.base.id+'" data-on="'+(state.day===g.base.id?1:0)+'">'+
+        esc(g.name)+'<i>'+k+'/'+g.base.words.length+'</i></button>');
+    }
+    g.subs.forEach(function(s){
+      var k2=s.words.filter(function(w){return w.known}).length;
+      parts.push('<button class="sub" data-day="'+s.id+'" data-on="'+(state.day===s.id?1:0)+'">'+
+        esc(s.name.slice(g.name.length))+'<i>'+k2+'/'+s.words.length+'</i></button>');
+    });
+    html+='<span class="dpg">'+parts.join("")+'</span>';
   });
   html+='<button class="chip add" data-add="1" aria-label="단어 추가">+</button>';
   document.getElementById("dayRow").innerHTML=html;
@@ -1166,28 +1236,6 @@ function openCopySheet(words,title){
   };
 }
 function enrichDay(day){enrichDays([day])}
-function cleanDuplicates(list){
-  var cnt={},cleared=0;
-  list.forEach(function(d){d.words.forEach(function(w){
-    if(w.ko){ var k="k:"+w.ko; (cnt[k]=cnt[k]||[]).push(w); }
-    if(w.example){ var e="e:"+w.example; (cnt[e]=cnt[e]||[]).push(w); }
-  })});
-  Object.keys(cnt).forEach(function(k){
-    var arr=cnt[k];
-    if(arr.length<2) return;
-    // 서로 다른 단어에 같은 예문/해석이 붙어 있으면 잘못된 것
-    var terms={},uniq=0;
-    arr.forEach(function(w){ if(!terms[w.term.toLowerCase()]){terms[w.term.toLowerCase()]=1;uniq++;} });
-    if(uniq<2) return;
-    arr.forEach(function(w){
-      var b=bankLookup(w.term);
-      if(b&&b.example===w.example) return;  // 내장 데이터와 일치하면 정상
-      if(k.indexOf("k:")===0) w.ko=""; else w.example="";
-      cleared++;
-    });
-  });
-  return cleared;
-}
 function enrichDays(list,cb){
   var todo=[];
   list.forEach(function(d){
@@ -1298,8 +1346,8 @@ function openSheet(){
   ["fTerm","fMean","fPos","fEx","fSyn","fAnt","bulk"].forEach(function(id){$(id).value=""});
   $("addedN").textContent=""; pendingKo=""; lookupFor="";
   $("addOne").disabled=true;
-  $("moreWrap").className="hide";
-  $("moreBtn").textContent="품사·예문 넣기";
+  $("moreWrap").className="";
+  $("moreBtn").textContent="자세히 접기";
   $("parsedN").textContent="0개 인식됨";
   $("saveAdd").disabled=true; $("saveAdd").textContent="저장";
   $("scrim").className="scrim";
@@ -1317,7 +1365,7 @@ $("daySel").addEventListener("change",syncDayName);
 $("moreBtn").addEventListener("click",function(){
   var open=$("moreWrap").className==="hide";
   $("moreWrap").className=open?"":"hide";
-  this.textContent=open?"품사·예문 접기":"품사·예문 넣기";
+  this.textContent=open?"자세히 접기":"품사·예문·유의어 넣기";
 });
 function checkOne(){
   $("addOne").disabled=!$("fTerm").value.trim();
@@ -1437,7 +1485,8 @@ function buildReviewFrom(missed){
   Object.keys(groups).forEach(function(dayId){
     var origin=state.days.filter(function(d){return d.id===dayId})[0];
     if(!origin) return;
-    if(/\+$/.test(origin.name)) return; // 이미 복습장이면 그대로 둠
+    var plus=(origin.name.match(/\+/g)||[]).length;
+    if(plus>=2) return;              // DAY n++ 에서 또 틀리면 그 안에 머무름
     var name=origin.name+"+";
     var tgt=state.days.filter(function(d){return d.section===origin.section&&d.name===name})[0];
     if(!tgt){tgt={id:uid(),name:name,section:origin.section,words:[]};state.days.push(tgt);}
@@ -1469,7 +1518,7 @@ function renderQuiz(){
       (quiz.review.length?"<span style='color:#FFDF3D;font-weight:600'>틀린 단어 정리 → "+esc(quiz.review.join(", "))+"</span>":"");
     var uniq=uniqueMissed(quiz.missed);
     acts.innerHTML=(uniq.length?'<button class="again" id="qRetry">틀린 '+uniq.length+'개 다시</button>':'')+
-      '<button class="got" id="qBack">단어장으로 돌아가기</button>';
+      '<button class="got" id="qBack">단어장으로 돌아가기<span class="kbd">Esc</span></button>';
     document.getElementById("qBack").onclick=closeQuiz;
     if(uniq.length) document.getElementById("qRetry").onclick=function(){ startDeck(uniq); };
     return;
@@ -1483,8 +1532,9 @@ function renderQuiz(){
   card.innerHTML='<div class="qfront">'+esc(front)+'</div>'+hint+
     (quiz.flipped
       ? '<div class="qback"><div class="qmean">'+esc(backMain)+'</div>'+(c.example?'<div class="qex" style="color:#16233F">'+esc(c.example)+'</div>':'')+(c.ko?'<div class="qko">'+esc(c.ko)+'</div>':'')+(c.syn?'<div class="qko" style="color:var(--done);font-weight:600">유의 '+esc(c.syn)+'</div>':'')+(c.ant?'<div class="qko" style="color:var(--miss);font-weight:600">반의 '+esc(c.ant)+'</div>':'')+'</div>'
-      : '<div class="qtap">탭하거나 스페이스를 눌러 뒤집기</div>');
-  acts.innerHTML='<button class="again" id="qAgain">다시</button><button class="got" id="qGot">외웠어요</button>';
+      : '<div class="qtap">탭해서 뒤집기<span class="kbd">Space</span></div>');
+  acts.innerHTML='<button class="again" id="qAgain">다시<span class="kbd">←</span></button>'+
+    '<button class="got" id="qGot">외웠어요<span class="kbd">→</span></button>';
   document.getElementById("qAgain").onclick=function(){answer(false)};
   document.getElementById("qGot").onclick=function(){answer(true)};
 }
@@ -1696,18 +1746,14 @@ function roundLabel(n){ return n+"회차"; }
 
 function makeupLine(e){
   var parts=[];
-  if(e.fn) parts.push('<span class="mk mk-new">새 단어 '+e.fn+'개</span>');
+  if(e.fn) parts.push('<span class="mk mk-new">새 단어 '+e.fn+'</span>');
   if(e.rev){
     var ks=Object.keys(e.rev).sort();
     ks.forEach(function(kk){
-      parts.push('<span class="mk mk-rev">'+shortDate(kk)+' 복습 '+e.rev[kk]+'개</span>');
+      parts.push('<span class="mk mk-rev">'+shortDate(kk)+' 복습 '+e.rev[kk]+'</span>');
     });
   }
   return parts.length?'<div class="logchips">'+parts.join("")+'</div>':'';
-}
-function statBar(v,max){
-  var pct=max?Math.round(v/max*100):0;
-  return '<span class="sbar"><i style="width:'+pct+'%"></i></span>';
 }
 function openStats(){
   var all=allWords();
@@ -1733,26 +1779,11 @@ function openStats(){
       (items?'<div class="logchips">'+items+'</div>':'')+'</div></div>';
   });
 
-  // DAY별
-  var dayRows="";
-  SECTIONS.forEach(function(s){
-    var list=daySort(state.days.filter(function(d){return d.section===s.id}));
-    if(!list.length) return;
-    dayRows+='<div class="sgrp">'+esc(s.label)+'</div>';
-    list.forEach(function(d){
-      var k=d.words.filter(function(w){return w.known}).length;
-      var left=d.words.length-k;
-      var rounds=rm.total[d.name]||0;
-      dayRows+='<div class="srow"><span class="sd wide">'+esc(d.name)+'</span>'+statBar(k,d.words.length)+
-        '<span class="sv">외움 '+k+' · 남은 '+left+(rounds?' · '+rounds+'회차':'')+'</span></div>';
-    });
-  });
 
   var sc=document.createElement("div"); sc.className="scrim";
   sc.innerHTML='<div class="sheet"><h2>학습 기록</h2>'+
     '<div class="totalbox">총 암기 <b>'+known+'</b>개 <span>/ '+total+'개 ('+pct+'%)</span></div>'+
     '<div class="sgrp">날짜별</div>'+rows+
-    '<div class="sgrp" style="margin-top:18px">DAY별</div>'+dayRows+
     '<div class="acts"><button class="btn ghost" id="stClose">닫기</button></div></div>';
   document.body.appendChild(sc);
   var close=function(){if(sc.parentNode)document.body.removeChild(sc)};
@@ -1761,142 +1792,6 @@ function openStats(){
 }
 
 // ================= 단어 점검 =================
-function editDistance(a,b){
-  a=a.toLowerCase();b=b.toLowerCase();
-  var m=a.length,n=b.length,d=[];
-  if(Math.abs(m-n)>2) return 9;
-  for(var i=0;i<=m;i++){d[i]=[i];}
-  for(var j=0;j<=n;j++){d[0][j]=j;}
-  for(i=1;i<=m;i++)for(j=1;j<=n;j++){
-    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
-  }
-  return d[m][n];
-}
-function spellSuggest(term){
-  if(/\s/.test(term)||term.length<4||!isEnglish(term)) return null;
-  if(BANK[term.toLowerCase()]) return null;
-  var best=null,bd=3;
-  Object.keys(BANK).forEach(function(k){
-    if(/\s/.test(k)) return;
-    var d=editDistance(term,k);
-    if(d<bd){bd=d;best=k;}
-  });
-  return bd<=1?best:null;
-}
-function scanIssues(){
-  var out=[],seenDup={};
-  state.days.forEach(function(d){
-    var inDay={};
-    d.words.forEach(function(w){
-      var push=function(type,msg,fix){out.push({w:w,d:d,type:type,msg:msg,fix:fix})};
-      var key=w.term.toLowerCase();
-      if(inDay[key]) push("중복","같은 DAY에 중복된 단어",null); else inDay[key]=1;
-      if(!w.meaning) push("빈칸","뜻이 비어 있음",null);
-      if(!w.example) push("빈칸","예문이 비어 있음","bank");
-      else{
-        if(!w.ko) push("빈칸","해석이 비어 있음","bank");
-        if(/[가-힣]/.test(w.example)) push("형식","예문에 한글이 섞여 있음",null);
-        if(isEnglish(w.term)&&!blankInfo(w.example,w.term)) push("불일치","예문에 단어가 들어 있지 않음","bank");
-      }
-      if(w.ko&&!/[가-힣]/.test(w.ko)) push("형식","해석에 한글이 없음",null);
-      var sp=spellSuggest(w.term);
-      if(sp) push("철자","철자 확인 필요 → "+sp,null);
-      if(w.example){
-        var ek="e:"+w.example;
-        (seenDup[ek]=seenDup[ek]||[]).push(w);
-      }
-      if(w.ko){
-        var kk="k:"+w.ko;
-        (seenDup[kk]=seenDup[kk]||[]).push(w);
-      }
-    });
-  });
-  Object.keys(seenDup).forEach(function(k){
-    var arr=seenDup[k];
-    var terms={},uniq=0;
-    arr.forEach(function(w){if(!terms[w.term.toLowerCase()]){terms[w.term.toLowerCase()]=1;uniq++;}});
-    if(uniq<3) return;
-    arr.forEach(function(w){
-      var d=state.days.filter(function(x){return x.words.indexOf(w)>-1})[0];
-      out.push({w:w,d:d,type:"도배",msg:(k.indexOf("k:")===0?"해석":"예문")+"이 다른 단어와 똑같음",fix:"clear"});
-    });
-  });
-  return out;
-}
-function autoFixable(issues){
-  return issues.filter(function(it){
-    if(it.fix==="clear") return true;
-    if(it.fix==="bank"){ return !!bankFull(it.w.term); }
-    return false;
-  });
-}
-function runAutoFix(issues){
-  var n=0;
-  issues.forEach(function(it){
-    if(it.fix==="clear"){
-      var b=bankLookup(it.w.term);
-      if(b&&b.example===it.w.example) return;
-      if(it.msg.indexOf("해석")===0) it.w.ko=""; else it.w.example="";
-      n++;
-    }
-  });
-  issues.forEach(function(it){
-    if(it.fix!=="bank") return;
-    var b=bankFull(it.w.term);
-    if(!b) return;
-    if(!it.w.example||!blankInfo(it.w.example,it.w.term)) it.w.example=b.example;
-    if(!it.w.pos&&b.pos) it.w.pos=b.pos;
-    if(!it.w.meaning&&b.meaning) it.w.meaning=b.meaning;
-    if(!it.w.ko&&b.ko) it.w.ko=b.ko;
-    n++;
-  });
-  if(n) save();
-  return n;
-}
-function openCheck(){
-  var issues=scanIssues();
-  var fixable=autoFixable(issues);
-  var sc=document.createElement("div"); sc.className="scrim";
-  var body;
-  if(!issues.length){
-    body='<p class="hint">문제를 찾지 못했습니다. 단어장이 깨끗합니다.</p>';
-  }else{
-    var byType={};
-    issues.forEach(function(it){(byType[it.type]=byType[it.type]||[]).push(it)});
-    body='<p class="hint">'+issues.length+'건을 찾았습니다. 항목을 누르면 바로 수정할 수 있어요.</p>';
-    Object.keys(byType).forEach(function(t){
-      body+='<div class="sgrp">'+esc(t)+' '+byType[t].length+'건</div>';
-      byType[t].slice(0,40).forEach(function(it,i){
-        var idx=issues.indexOf(it);
-        body+='<div class="srow ckrow" data-issue="'+idx+'"><span class="sd wide">'+esc(it.w.term)+'</span>'+
-          '<span class="sv" style="flex:1;text-align:left">'+esc(it.d.name)+' · '+esc(it.msg)+'</span></div>';
-      });
-      if(byType[t].length>40) body+='<p class="hint">…외 '+(byType[t].length-40)+'건</p>';
-    });
-  }
-  sc.innerHTML='<div class="sheet"><h2>단어장 점검</h2>'+body+
-    '<div class="acts">'+
-    '<button class="btn ghost" id="ckClose">닫기</button>'+
-    (fixable.length?'<button class="btn" id="ckFix">자동으로 고치기 '+fixable.length+'건</button>':'')+
-    '</div></div>';
-  document.body.appendChild(sc);
-  var close=function(){if(sc.parentNode)document.body.removeChild(sc)};
-  sc.querySelector("#ckClose").onclick=close;
-  sc.onclick=function(e){if(e.target===sc)close()};
-  var fb=sc.querySelector("#ckFix");
-  if(fb) fb.onclick=function(){
-    var n=runAutoFix(fixable);
-    close(); render(); toast(n+"건을 고쳤어요");
-    setTimeout(openCheck,600);
-  };
-  sc.addEventListener("click",function(e){
-    var r=e.target.closest("[data-issue]");
-    if(!r) return;
-    var it=issues[parseInt(r.dataset.issue,10)];
-    if(!it) return;
-    close(); openEdit(it.w.id);
-  });
-}
 
 // ================= 취약 단어 =================
 var LEECH_MIN=3;
@@ -1948,6 +1843,7 @@ saveBroken=!storageWorks();
 load();
 migrateSections();
 if(state.day!=="all"&&!state.days.some(function(d){return d.id===state.day})) state.day="all";
+Object.keys(pickDays).forEach(function(id){ if(!state.days.some(function(d){return d.id===id})) delete pickDays[id]; });
 [].forEach.call(document.getElementById("secSeg").children,function(c){c.className=c.dataset.sec===state.section?"on":""});
 if(!state.days.length) seedDefault();
 else{
@@ -1963,7 +1859,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v59 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v73 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -1991,7 +1887,6 @@ targetDay=guard(targetDay,"DAY 만들기");
 render=guard(render,"화면 그리기");
 
 // ================= 오늘의 학습 =================
-var pickDays={}, pickRange="unknown", revPick={}, sessionSize=50;
 function studiedOn(key){
   return allWords().filter(function(o){return o.w.last&&dayKey(o.w.last)===key});
 }
@@ -2030,14 +1925,26 @@ function reviewSelected(){
 }
 var showAllDays=false;
 function renderDayPick(){
-  var days=secDays();
+  var groups=groupDays(secDays());
   var more=0;
-  if(!showAllDays&&days.length>14){ more=days.length-14; days=days.slice(-14); }
-  document.getElementById("dayPick").innerHTML=(more?'<button class="dp" data-allday="1">＋ 이전 '+more+'개 DAY</button>':'')+days.map(function(d){
-    var left=d.words.filter(function(w){return !w.known}).length;
-    return '<button class="dp" data-day="'+d.id+'" data-on="'+(pickDays[d.id]?1:0)+'">'+esc(d.name)+
-      '<span style="opacity:.6"> '+left+'</span></button>';
-  }).join("")||'<p class="hint" style="margin:0">이 교재에 DAY가 없습니다.</p>';
+  if(!showAllDays&&groups.length>12){ more=groups.length-12; groups=groups.slice(-12); }
+  var html=(more?'<button class="dp" data-allday="1">＋ 이전 '+more+'개</button>':'');
+  html+=groups.map(function(g){
+    var parts=[];
+    if(g.base){
+      var left=g.base.words.filter(function(w){return !w.known}).length;
+      parts.push('<button data-day="'+g.base.id+'" data-on="'+(pickDays[g.base.id]?1:0)+'">'+
+        esc(g.name)+'<i>'+left+'</i></button>');
+    }
+    g.subs.forEach(function(s){
+      var l=s.words.filter(function(w){return !w.known}).length;
+      var mark=s.name.slice(g.name.length);
+      parts.push('<button class="sub" data-day="'+s.id+'" data-on="'+(pickDays[s.id]?1:0)+'">'+
+        esc(mark)+'<i>'+l+'</i></button>');
+    });
+    return '<span class="dpg">'+parts.join("")+'</span>';
+  }).join("");
+  document.getElementById("dayPick").innerHTML=html||'<p class="hint" style="margin:0">이 교재에 DAY가 없습니다.</p>';
   updatePickCount();
 }
 function pickedWords(){
@@ -2046,7 +1953,6 @@ function pickedWords(){
     if(!pickDays[d.id]) return;
     d.words.forEach(function(w){
       if(pickRange==="unknown"&&w.known) return;
-      if(pickRange==="weak"&&!(w.lapses||0)) return;
       out.push({w:w,dayId:d.id,dayName:d.name});
     });
   });
@@ -2056,7 +1962,7 @@ function finalDeck(){
   var seen={},out=[];
   reviewSelected().forEach(function(o){ if(!seen[o.w.id]){seen[o.w.id]=1;out.push(o);} });  // 복습 먼저
   pickedWords().forEach(function(o){ if(!seen[o.w.id]){seen[o.w.id]=1;out.push(o);} });
-  return sessionSize?out.slice(0,sessionSize):out;
+  return out;
 }
 function updatePickCount(){
   var rev=reviewSelected(), seen={};
@@ -2065,16 +1971,15 @@ function updatePickCount(){
   var parts=reviewGroups().filter(function(g){return revPick[g.key]})
     .map(function(g){ return shortDate(g.key)+" "+g.items.length; });
   var total=rev.length+fresh;
-  var deck=finalDeck().length;
   document.getElementById("pickCount").innerHTML= total
     ? '복습 <b>'+rev.length+'</b>개'+(parts.length?' <span style="font-weight:500;color:#5A6478">('+parts.join(" · ")+')</span>':'')+
-      ' + 새 단어 <b>'+fresh+'</b>개 = '+total+'개'+
-      (deck<total?'<br>이번 세션에 <b>'+deck+'</b>개 풀기 (복습 우선)':'<br>이번 세션에 <b>'+deck+'</b>개 전부')
+      ' + 새 단어 <b>'+fresh+'</b>개 = <b>'+total+'</b>개'
     : 'DAY를 선택하세요';
   document.getElementById("goFlash").disabled=total===0;
 }
 function openStart(){
   document.getElementById("todaySum").innerHTML=todaySummary();
+  [].forEach.call(document.getElementById("rangeSeg").children,function(c){c.className=c.dataset.range===pickRange?"on":""});
   showAllDays=false;
   renderRevList();
   renderDayPick();
@@ -2091,25 +1996,20 @@ document.getElementById("startScrim").addEventListener("click",function(e){
   if(s){
     var days=secDays(); pickDays={};
     if(s.dataset.sel==="all") days.forEach(function(d){pickDays[d.id]=true});
-    else if(s.dataset.sel==="plus") days.forEach(function(d){ if(/\+$/.test(d.name)) pickDays[d.id]=true; });
+    else if(s.dataset.sel==="plus") days.forEach(function(d){ if(/\+/.test(d.name)) pickDays[d.id]=true; });
     renderDayPick(); return;
   }
-  var dp=e.target.closest(".dp");
+  var dp=e.target.closest(".dp,[data-day]");
   if(dp){
     if(dp.dataset.allday){ showAllDays=true; renderDayPick(); return; }
-    pickDays[dp.dataset.day]=!pickDays[dp.dataset.day]; renderDayPick(); return;
-  }
-  var sb=e.target.closest("#sizeSeg button");
-  if(sb){
-    sessionSize=parseInt(sb.dataset.size,10);
-    [].forEach.call(sb.parentNode.children,function(c){c.className=c===sb?"on":""});
-    updatePickCount(); return;
+    if(!dp.dataset.day) return;
+    pickDays[dp.dataset.day]=!pickDays[dp.dataset.day]; renderDayPick(); save(); return;
   }
   var rb=e.target.closest("#rangeSeg button");
   if(rb){
     pickRange=rb.dataset.range;
     [].forEach.call(rb.parentNode.children,function(c){c.className=c===rb?"on":""});
-    updatePickCount(); return;
+    updatePickCount(); save(); return;
   }
 });
 document.getElementById("goFlash").addEventListener("click",function(){
@@ -2142,9 +2042,9 @@ function openCloseDay(){
   var hour=new Date().getHours();
   var sc=document.createElement("div"); sc.className="scrim";
   var body= e&&(e.o||e.x)
-    ? '<p class="hint">지금까지 외움 <b>'+(e.o||0)+'</b>개 · 안 외워짐 <b>'+(e.x||0)+'</b>번이 쌓여 있습니다. 어느 날짜의 기록으로 마감할까요?</p>'
-    : '<p class="hint">아직 마감할 학습 기록이 없습니다.</p>';
-  sc.innerHTML='<div class="sheet"><h2>학습 마감</h2>'+body+
+    ? '<p class="hint">지금까지 외움 <b>'+(e.o||0)+'</b>개 · 다시 <b>'+(e.x||0)+'</b>번이 쌓여 있습니다. 어느 날짜의 기록으로 넣을까요?<br>단어의 외움 표시는 그대로 유지되고, 오늘 집계만 옮겨집니다.</p>'
+    : '<p class="hint">아직 마감할 기록이 없습니다.</p>';
+  sc.innerHTML='<div class="sheet"><h2>오늘 기록 마감</h2>'+body+
     (e&&(e.o||e.x)?
       '<button class="mode" data-end="'+yest+'"><b>'+shortDate(yest)+' (어제) 기록으로</b><span>'+(hour<4?'새벽이면 이쪽':'')+'</span></button>'+
       '<button class="mode" data-end="'+today+'"><b>'+shortDate(today)+' (오늘) 기록으로</b><span>'+(hour>=4?'보통 이쪽':'')+'</span></button>':'')+
@@ -2173,10 +2073,10 @@ function openCloseDay(){
 document.getElementById("tgMore").addEventListener("click",function(){
   var sc=document.createElement("div"); sc.className="scrim";
   sc.innerHTML='<div class="sheet"><h2>더보기</h2>'+
+    '<button class="mode" data-go="news"><b>기사 스크랩</b><span>원문 읽고 단어 뽑기</span></button>'+
     '<button class="mode" data-go="stats"><b>학습 기록</b><span>날짜별 · DAY별</span></button>'+
-    '<button class="mode" data-go="end"><b>학습 마감</b><span>오늘 기록 확정</span></button>'+
+    '<button class="mode" data-go="end"><b>오늘 기록 마감</b><span>단어 상태는 그대로 · 기록만 확정</span></button>'+
     '<button class="mode" data-go="export"><b>백업</b><span>저장 · 복원 · 복사</span></button>'+
-    '<button class="mode" data-go="check"><b>단어장 점검</b><span>빠진 항목 찾기</span></button>'+
     '<button class="mode" data-go="upd"><b>업데이트 확인</b><span>현재 '+APP_VER+'</span></button>'+
     '<div class="acts"><button class="btn ghost" id="moreClose">닫기</button></div></div>';
   document.body.appendChild(sc);
@@ -2187,10 +2087,10 @@ document.getElementById("tgMore").addEventListener("click",function(){
     var b=e.target.closest("[data-go]"); if(!b) return;
     var go=b.dataset.go; close();
     setTimeout(function(){
-      if(go==="stats") openStats();
+      if(go==="news") openArticles();
+      else if(go==="stats") openStats();
       else if(go==="end") openCloseDay();
       else if(go==="export") openBackup();
-      else if(go==="check") openCheck();
       else if(go==="upd") checkUpdate(false);
     },60);
   };
@@ -2201,7 +2101,7 @@ document.getElementById("tgMore").addEventListener("click",function(){
   try{
     var needEl=["addBtn","startBtn","tgMask","tgUnknown","tgMore","listArea","secSeg","dayRow","startScrim","editScrim"];
     var missEl=needEl.filter(function(id){return !document.getElementById(id)});
-    var needFn=["render","openStart","openSheet","openStats","openCheck","openBackup","openCloseDay","startDeck","addOne","targetDay"];
+    var needFn=["render","openStart","openSheet","openStats","openBackup","openCloseDay","startDeck","addOne","targetDay"];
     var missFn=needFn.filter(function(n){return typeof window[n]!=="function"});
     if(missEl.length||missFn.length){
       reportErr("빠진 요소: "+(missEl.join(", ")||"없음")+" / 빠진 기능: "+(missFn.join(", ")||"없음"),"시작 점검");
@@ -2210,7 +2110,7 @@ document.getElementById("tgMore").addEventListener("click",function(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v59";
+var APP_VER="v73";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
@@ -2245,8 +2145,8 @@ setTimeout(function(){checkUpdate(true)},1500);
 document.addEventListener("keydown",function(e){
   if(document.getElementById("quiz").className.indexOf("hide")<0){
     if(e.key===" "||e.key==="Enter"){ e.preventDefault(); document.getElementById("qCard").click(); }
-    else if(e.key==="ArrowRight"){ var g=document.getElementById("qGot"); if(g) g.click(); }
-    else if(e.key==="ArrowLeft"){ var a=document.getElementById("qAgain"); if(a) a.click(); }
+    else if(e.key==="ArrowRight"||e.key==="d"||e.key==="D"){ var g=document.getElementById("qGot"); if(g) g.click(); }
+    else if(e.key==="ArrowLeft"||e.key==="a"||e.key==="A"){ var a=document.getElementById("qAgain"); if(a) a.click(); }
     else if(e.key==="Escape"){ closeQuiz(); }
     return;
   }
@@ -2260,10 +2160,15 @@ document.getElementById("listArea").addEventListener("keydown",function(e){
 });
 document.addEventListener("keydown",function(e){
   if(e.key==="Escape"){
+    var rd=document.getElementById("reader");
+    if(rd&&rd.className.indexOf("hide")<0&&!document.querySelectorAll(".scrim:not(.hide)").length){
+      var tg=(e.target&&e.target.tagName||"").toLowerCase();
+      if(tg!=="input"&&tg!=="textarea"){ closeReader(); return; }
+    }
     var scrims=document.querySelectorAll(".scrim:not(.hide)");
     if(scrims.length){
       var last=scrims[scrims.length-1];
-      var btn=last.querySelector("#startClose,#stClose,#endClose,#expClose,#ckClose,#moreClose,#cpClose,#cancelAdd,#doneAdd");
+      var btn=last.querySelector("#startClose,#stClose,#endClose,#expClose,#moreClose,#cpClose,#cancelAdd,#doneAdd");
       if(btn){ btn.click(); return; }
       if(last.id==="editScrim"){ closeEdit(); return; }
       if(last.parentNode) last.className="scrim hide";
@@ -2272,12 +2177,161 @@ document.addEventListener("keydown",function(e){
   }
   if(document.querySelectorAll(".scrim:not(.hide)").length) return;
   if(document.getElementById("quiz").className.indexOf("hide")<0) return;
+  if(document.getElementById("reader").className.indexOf("hide")<0) return;
   var tag=(e.target&&e.target.tagName||"").toLowerCase();
   if(tag==="input"||tag==="textarea"||tag==="select") return;
   if(e.key==="/"){ e.preventDefault(); var q=document.getElementById("q"); if(q) q.focus(); }
   else if(e.key==="s"||e.key==="S"){ var s=document.getElementById("startBtn"); if(s&&!s.disabled) s.click(); }
   else if(e.key==="a"||e.key==="A"){ var a=document.getElementById("addBtn"); if(a) a.click(); }
 });
+
+// ================= 기사 스크랩 =================
+var curArt=null, readMode="read";
+function artDayName(a){
+  var t=(a.title||"제목 없음").trim();
+  return t.length>18?t.slice(0,18)+"…":t;
+}
+function artDay(a,create){
+  var name=artDayName(a);
+  var d=state.days.filter(function(x){return x.section==="news"&&x.name===name})[0];
+  if(!d&&create){ d={id:uid(),name:name,section:"news",words:[]}; state.days.push(d); }
+  return d||null;
+}
+function openArticles(){
+  var sc=document.createElement("div"); sc.className="scrim";
+  var list=state.articles.slice().sort(function(a,b){return (b.at||0)-(a.at||0)});
+  var rows=list.length?('<div class="arlist">'+list.map(function(a){
+    var d=artDay(a,false);
+    return '<button class="arcard" data-art="'+a.id+'"><b>'+esc(a.title||"제목 없음")+'</b>'+
+      '<span>'+esc(a.source||"출처 없음")+(a.date?' · '+esc(a.date):'')+
+      ' · 뽑은 단어 '+(d?d.words.length:0)+'개</span></button>';
+  }).join("")+'</div>'):'<p class="hint" style="margin:0">아직 스크랩한 기사가 없습니다.</p>';
+  sc.innerHTML='<div class="sheet"><h2>기사 스크랩</h2>'+rows+
+    '<div class="acts"><button class="btn ghost" id="arClose">닫기</button>'+
+    '<button class="btn" id="arNew">새 기사</button></div></div>';
+  document.body.appendChild(sc);
+  var close=function(){if(sc.parentNode)document.body.removeChild(sc)};
+  sc.querySelector("#arClose").onclick=close;
+  sc.querySelector("#arNew").onclick=function(){ close(); newArticle(); };
+  sc.onclick=function(e){
+    if(e.target===sc){close();return;}
+    var b=e.target.closest("[data-art]"); if(!b) return;
+    var a=state.articles.filter(function(x){return x.id===b.dataset.art})[0];
+    if(a){ close(); openReader(a,"read"); }
+  };
+}
+function newArticle(){
+  var a={id:uid(),title:"",source:"",date:"",url:"",text:"",ko:{},note:"",picked:{},at:Date.now()};
+  state.articles.push(a); save();
+  openReader(a,"edit");
+}
+function openReader(a,mode){
+  curArt=a; readMode=mode||"read";
+  document.getElementById("reader").className="reader";
+  renderReader();
+}
+function closeReader(){
+  curArt=null;
+  document.getElementById("reader").className="reader hide";
+  render();
+}
+function paragraphs(text){
+  return String(text||"").split(/\n\s*\n|\n/).map(function(s){return s.trim()}).filter(Boolean);
+}
+function renderReader(){
+  var a=curArt; if(!a) return;
+  document.getElementById("rTitle").textContent=a.title||"새 기사";
+  document.getElementById("rEdit").textContent=readMode==="edit"?"읽기":"편집";
+  var body=document.getElementById("rBody"), dock=document.getElementById("rDock");
+  if(readMode==="edit"){
+    body.innerHTML=
+      '<label class="lb">제목</label><input class="inp" id="aTitle" value="'+esc(a.title||"")+'">'+
+      '<label class="lb">출처 · 날짜</label><div style="display:flex;gap:8px">'+
+        '<input class="inp" id="aSource" placeholder="FT, Economist…" value="'+esc(a.source||"")+'">'+
+        '<input class="inp" id="aDate" placeholder="2026-09-16" value="'+esc(a.date||"")+'"></div>'+
+      '<label class="lb">원문 링크</label><input class="inp" id="aUrl" value="'+esc(a.url||"")+'">'+
+      '<label class="lb">본문 (영어 원문을 붙여넣으세요)</label>'+
+      '<textarea class="arnote" id="aText" style="min-height:260px" autocapitalize="none" autocorrect="off" spellcheck="false">'+esc(a.text||"")+'</textarea>';
+    dock.innerHTML='<div class="dock-in" style="display:flex;gap:8px;max-width:720px;margin:0 auto">'+
+      '<button class="btn ghost" id="aDel">기사 삭제</button>'+
+      '<button class="btn" id="aSave" style="flex:1">저장하고 읽기</button></div>';
+    document.getElementById("aSave").onclick=function(){
+      a.title=document.getElementById("aTitle").value.trim();
+      a.source=document.getElementById("aSource").value.trim();
+      a.date=document.getElementById("aDate").value.trim();
+      a.url=document.getElementById("aUrl").value.trim();
+      a.text=document.getElementById("aText").value;
+      save(); readMode="read"; renderReader(); toast("저장했어요");
+    };
+    document.getElementById("aDel").onclick=function(){
+      if(!window.confirm("이 기사를 삭제할까요? 뽑아둔 단어는 남습니다.")) return;
+      state.articles=state.articles.filter(function(x){return x.id!==a.id});
+      save(); closeReader(); toast("삭제했어요");
+    };
+    return;
+  }
+  var paras=paragraphs(a.text);
+  var head='<div style="margin-bottom:14px"><div style="font-size:19px;font-weight:800;letter-spacing:-.02em;line-height:1.4">'+esc(a.title||"제목 없음")+'</div>'+
+    '<div style="font-size:12.5px;color:var(--ink-soft);margin-top:5px">'+esc(a.source||"")+(a.date?' · '+esc(a.date):'')+
+    (a.url?' · <a href="'+esc(a.url)+'" target="_blank" rel="noopener" style="color:var(--marker-deep)">원문</a>':'')+'</div></div>';
+  var bodyHtml=paras.map(function(p,i){
+    var words=p.split(/(\s+)/).map(function(tok){
+      if(!/[A-Za-z]/.test(tok)) return esc(tok);
+      var clean=tok.replace(/[^A-Za-z'’-]/g,"");
+      if(!clean) return esc(tok);
+      var on=a.picked&&a.picked[clean.toLowerCase()]?" picked":"";
+      return '<span class="w'+on+'" data-word="'+esc(clean)+'">'+esc(tok)+'</span>';
+    }).join("");
+    return '<div class="arpara"><div class="artext">'+words+'</div>'+
+      (a.ko&&a.ko[i]?'<div class="arko">'+esc(a.ko[i])+'</div>':'')+
+      '<button class="link" data-ko="'+i+'" style="margin-top:4px">'+(a.ko&&a.ko[i]?"해석 수정":"해석 달기")+'</button></div>';
+  }).join("");
+  var noteHtml='<div class="sgrp" style="margin-top:20px">내 분석</div>'+
+    '<textarea class="arnote" id="aNote" placeholder="핵심 메시지, 왜 그렇게 읽었는지, 어디에 영향을 줄지…">'+esc(a.note||"")+'</textarea>';
+  body.innerHTML=head+(paras.length?bodyHtml:'<p class="hint">본문이 비어 있습니다. 위 편집을 눌러 원문을 붙여넣으세요.</p>')+noteHtml;
+  var d=artDay(a,false);
+  dock.innerHTML='<div style="display:flex;gap:8px;max-width:720px;margin:0 auto;align-items:center">'+
+    '<span style="flex:1;font-size:12.5px;color:var(--ink-soft)">단어를 탭하면 단어장에 담깁니다 · 담은 단어 '+(d?d.words.length:0)+'개</span>'+
+    '<button class="btn" id="aDone">닫기</button></div>';
+  document.getElementById("aDone").onclick=closeReader;
+  var nt=document.getElementById("aNote");
+  if(nt) nt.onblur=function(){ a.note=nt.value; save(); };
+}
+document.getElementById("rBack").addEventListener("click",closeReader);
+document.getElementById("rEdit").addEventListener("click",function(){
+  readMode=readMode==="edit"?"read":"edit"; renderReader();
+});
+document.getElementById("rBody").addEventListener("click",function(e){
+  var a=curArt; if(!a) return;
+  var kb=e.target.closest("[data-ko]");
+  if(kb){
+    var i=parseInt(kb.dataset.ko,10);
+    var cur=(a.ko&&a.ko[i])||"";
+    var v=window.prompt("이 문단의 해석을 적어주세요",cur);
+    if(v!==null){ a.ko=a.ko||{}; if(v.trim()) a.ko[i]=v.trim(); else delete a.ko[i]; save(); renderReader(); }
+    return;
+  }
+  var w=e.target.closest("[data-word]");
+  if(!w) return;
+  var term=w.dataset.word;
+  var key=term.toLowerCase();
+  if(a.picked&&a.picked[key]){
+    if(!window.confirm("'"+term+"'을(를) 단어장에서 뺄까요?")) return;
+    delete a.picked[key];
+    var d0=artDay(a,false);
+    if(d0) d0.words=d0.words.filter(function(x){return x.term.toLowerCase()!==key});
+    save(); renderReader(); return;
+  }
+  var b=bankLookup(term);
+  var mean=window.prompt("'"+term+"'의 뜻을 적어주세요", b&&b.meaning?b.meaning:"");
+  if(mean===null) return;
+  var day=artDay(a,true);
+  day.words.push({id:uid(),term:term,meaning:mean.trim(),pos:(b&&b.pos)||"",
+    example:(b&&b.ko)?b.example:"", ko:(b&&b.ko)||"", syn:"",ant:"",known:false});
+  a.picked=a.picked||{}; a.picked[key]=1;
+  logAdded(1); save(); renderReader(); toast("단어장에 담았어요");
+});
+
 </script>
 </body>
 </html>
