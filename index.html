@@ -415,6 +415,12 @@ h1 span{color:var(--ink-soft);}
 .rbody textarea.arnote,.rbody textarea.arko-in{overflow:hidden;resize:none;}
 .rbody textarea.arnote{min-height:90px;}
 
+
+.apwrap{position:relative;}
+.apwrap .apcard{padding-right:64px;}
+.apdel{position:absolute;top:8px;right:8px;border:1px solid var(--rule);background:var(--paper);color:var(--miss);
+  border-radius:8px;min-height:36px;min-width:48px;padding:0 10px;font:600 12.5px inherit;font-family:inherit;cursor:pointer;}
+
 @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
 </style>
 </head>
@@ -798,6 +804,36 @@ function findWord(id){
 }
 
 
+
+// ================= 기사 삭제 =================
+function openArtDelete(id,after){
+  var a=state.articles.filter(function(x){return x.id===id})[0]; if(!a) return;
+  var d=artDay(a,false), n=d?d.words.length:0;
+  var sc=document.createElement("div"); sc.className="scrim";
+  sc.innerHTML='<div class="sheet"><h2>기사를 삭제할까요?</h2>'+
+    '<p class="hint" style="margin-bottom:12px"><b>'+esc(a.title||"제목 없음")+'</b><br>본문·해석·요약·분석이 함께 지워지고 되돌릴 수 없습니다.</p>'+
+    (n?'<button class="mode" data-delmode="keep"><b>기사만 삭제</b><span>담은 단어 '+n+'개는 단어장에 남김</span></button>'+
+       '<button class="mode" data-delmode="all"><b>기사와 단어 '+n+'개 모두 삭제</b><span>기사 탭 단어장에서도 지움</span></button>'
+      :'<button class="mode" data-delmode="keep"><b>기사 삭제</b><span>담은 단어 없음</span></button>')+
+    '<div class="acts"><button class="btn ghost" id="artDelCancel">취소<span class="kbd">Esc</span></button></div></div>';
+  document.body.appendChild(sc);
+  var close=function(){ if(sc.parentNode) document.body.removeChild(sc); };
+  sc.querySelector("#artDelCancel").onclick=close;
+  sc.onclick=function(e){
+    if(e.target===sc){ close(); return; }
+    var b=e.target.closest("[data-delmode]"); if(!b) return;
+    var withWords=b.dataset.delmode==="all";
+    state.articles=state.articles.filter(function(x){return x.id!==a.id});
+    if(withWords&&d){
+      state.days=state.days.filter(function(x){return x.id!==d.id});
+      if(pickDays[d.id]) delete pickDays[d.id];
+      if(state.day===d.id) state.day="all";
+    }
+    save(); close();
+    if(after) after(); else render();
+    toast(withWords?"기사와 단어 "+n+"개를 삭제했어요":"기사를 삭제했어요");
+  };
+}
 function articlePanel(){
   var list=state.articles.slice().sort(function(a,b){return (b.at||0)-(a.at||0)});
   var cards=list.map(function(a){
@@ -808,11 +844,12 @@ function articlePanel(){
     if(paras) marks.push('해석 '+done+'/'+paras);
     marks.push('단어 '+(d?d.words.length:0));
     if(a.summary&&a.summary.trim()) marks.push('요약 ✓');
-    return '<button class="apcard" data-art="'+a.id+'">'+
+    return '<div class="apwrap"><button class="apcard" data-art="'+a.id+'">'+
       '<b>'+esc(a.title||"제목 없음")+'</b>'+
       '<span class="apmeta">'+(a.topic?'<i class="aptopic">'+esc(a.topic)+'</i>':'')+
         esc(a.source||"출처 없음")+(a.date?' · '+esc(a.date):'')+'</span>'+
-      '<span class="apstat">'+marks.join(' · ')+'</span></button>';
+      '<span class="apstat">'+marks.join(' · ')+'</span></button>'+
+      '<button class="apdel" data-artdel="'+a.id+'" aria-label="기사 삭제: '+esc(a.title||"제목 없음")+'">삭제</button></div>';
   }).join("");
   return '<div class="appanel">'+
     '<button class="btn" data-newart="1" style="width:100%">＋ 새 기사 스크랩</button>'+
@@ -916,6 +953,8 @@ document.getElementById("dayRow").addEventListener("click",function(e){
 });
 document.getElementById("listArea").addEventListener("click",function(e){
   if(e.target.closest("[data-newart]")){ newArticle(); return; }
+  var adl=e.target.closest("[data-artdel]");
+  if(adl){ openArtDelete(adl.dataset.artdel); return; }
   var ac=e.target.closest("[data-art]");
   if(ac){
     var art=state.articles.filter(function(x){return x.id===ac.dataset.art})[0];
@@ -2068,7 +2107,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v88 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v89 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2315,7 +2354,7 @@ document.getElementById("tgMore").addEventListener("click",function(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v88";
+var APP_VER="v89";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
@@ -2383,7 +2422,7 @@ document.addEventListener("keydown",function(e){
     var scrims=document.querySelectorAll(".scrim:not(.hide)");
     if(scrims.length){
       var last=scrims[scrims.length-1];
-      var btn=last.querySelector("#startClose,#stClose,#endClose,#expClose,#moreClose,#cpClose,#cancelAdd,#doneAdd");
+      var btn=last.querySelector("#startClose,#stClose,#endClose,#expClose,#moreClose,#cpClose,#artDelCancel,#cancelAdd,#doneAdd");
       if(btn){ btn.click(); return; }
       if(last.id==="editScrim"){ closeEdit(); return; }
       if(last.parentNode) last.className="scrim hide";
@@ -2430,6 +2469,9 @@ function openReader(a,mode){
   renderReader();
 }
 function closeReader(){
+  if(curArt&&!String(curArt.text||"").trim()&&!String(curArt.title||"").trim()){
+    var empty=curArt; state.articles=state.articles.filter(function(x){return x!==empty}); save();
+  }
   flushSave();
   hideVInfo(); hideSelBar(); hideUndo();
   if(curArt&&state.section!=="news"){
@@ -2667,9 +2709,7 @@ function renderReader(focusWid){
       save(); readMode="read"; renderReader(); toast("저장했어요");
     };
     document.getElementById("aDel").onclick=function(){
-      if(!window.confirm("이 기사를 삭제할까요? 뽑아둔 단어는 남습니다.")) return;
-      state.articles=state.articles.filter(function(x){return x.id!==a.id});
-      save(); closeReader(); toast("삭제했어요");
+      openArtDelete(a.id,function(){ curArt=null; closeReader(); });
     };
     return;
   }
