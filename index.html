@@ -93,7 +93,10 @@ label.lb{font-size:12px;font-weight:700;color:var(--ink-soft);display:block;marg
 .inp,.area{width:100%;border:1px solid var(--rule);border-radius:10px;padding:11px;font-size:16px;font-family:inherit;background:var(--card);color:var(--ink);}
 .area{min-height:150px;resize:vertical;line-height:1.6;}
 .code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#EBEAE3;padding:1px 4px;border-radius:4px;}
-.sheet .acts{display:flex;gap:8px;margin-top:18px;position:sticky;bottom:0;background:var(--paper);padding:10px 0 2px;box-shadow:0 -8px 12px -8px rgba(22,35,63,.18);}
+.sheet .acts{display:flex;gap:8px;margin-top:18px;position:sticky;background:var(--paper);box-shadow:0 -8px 12px -8px rgba(22,35,63,.18);
+  bottom:calc(-20px - env(safe-area-inset-bottom));
+  padding:10px 0 calc(20px + env(safe-area-inset-bottom));
+  margin-bottom:calc(-20px - env(safe-area-inset-bottom));z-index:2;}
 .sheet .acts .btn{flex:1;}
 .shead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;}
 .shead h2{margin:0;}
@@ -167,11 +170,11 @@ select.inp{-webkit-appearance:none;appearance:none;background-image:linear-gradi
 .logbody{flex:1;min-width:0;font-size:12.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
 .logstat{font-size:12.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;line-height:1.6;}
 .logchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-.sealed{background:var(--ink);color:#fff;border-radius:4px;padding:1px 5px;font-size:10.5px;font-weight:700;margin-left:4px;}
-.mk{display:inline-flex;align-items:center;flex:0 0 auto;white-space:nowrap;
+.sealed{background:var(--ink);color:var(--paper);border-radius:4px;padding:1px 5px;font-size:10.5px;font-weight:700;margin-left:4px;}
+.lmk{display:inline-flex;align-items:center;flex:0 0 auto;white-space:nowrap;
   border-radius:6px;padding:4px 9px;font-size:11.5px;font-weight:600;line-height:1.3;}
-.mk-new{background:#EAF6F1;color:var(--done);}
-.mk-rev{background:#FDF3D0;color:#8A6A00;}
+.lmk-new{background:#EAF6F1;color:var(--done);}
+.lmk-rev{background:#FDF3D0;color:#8A6A00;}
 .logchip{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;white-space:nowrap;
   background:#EFEEE7;border-radius:6px;padding:4px 8px;font-size:11.5px;color:var(--ink);line-height:1.3;}
 .logchip b{font-weight:700;}
@@ -198,8 +201,8 @@ select.inp{-webkit-appearance:none;appearance:none;background-image:linear-gradi
     --shadow:0 1px 2px rgba(0,0,0,.4);
   }
   .bar{background:#262C37;} .sbar{background:#262C37;} .seg{background:#1D222B;}
-  .logchip{background:#1D222B;} .sumline{background:#1D222B;} .mk-new{background:#102A22;}
-  .mk-rev{background:#2A2413;color:var(--marker);} .totalbox{background:#1D222B;}
+  .logchip{background:#1D222B;} .sumline{background:#1D222B;} .lmk-new{background:#102A22;}
+  .lmk-rev{background:#2A2413;color:var(--marker);} .totalbox{background:#1D222B;}
   .warn{background:#2A2413;color:#FFE9A8;border-color:#5A4A12;}
   .err{background:#2A1614;color:#FFC9C3;}
   .rel-syn{background:#12291F;} .rel-ant{background:#2A1614;}
@@ -363,11 +366,14 @@ h1 span{color:var(--ink-soft);}
   font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.2);}
 .undobar button{border:0;background:var(--marker);color:#11151F;border-radius:7px;padding:8px 12px;font:700 13px inherit;font-family:inherit;cursor:pointer;min-height:36px;}
 .paradel{color:var(--miss)!important;}
-.artext{-webkit-user-select:text;user-select:text;}
+.artext{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;}
+.artext .w.sel{background:rgba(255,216,77,.55);outline:2px dashed var(--marker-deep);outline-offset:1px;}
+.pw.flash{animation:pwflash 1s ease;}
+@keyframes pwflash{0%{background:var(--marker)}100%{background:transparent}}
+@media (prefers-reduced-motion: reduce){ .pw.flash{animation:none;outline:2px solid var(--marker-deep);} }
 
 
 .artext .w.vk{background:rgba(59,130,246,.14);border-bottom:2px dotted #3B82F6;border-radius:3px 3px 0 0;}
-.artext .w.vk.vdone{background:rgba(21,127,91,.12);border-bottom-color:var(--done);}
 .vlegend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:12px;color:var(--ink-soft);
   background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:8px 11px;margin-bottom:18px;}
 .vlegend span{display:inline-flex;align-items:center;gap:5px;}
@@ -375,7 +381,6 @@ h1 span{color:var(--ink-soft);}
 .lg{display:inline-block;width:14px;height:10px;border-radius:3px;}
 .lg-new{background:var(--marker);}
 .lg-vk{background:rgba(59,130,246,.25);border-bottom:2px dotted #3B82F6;}
-.lg-done{background:rgba(21,127,91,.2);border-bottom:2px dotted var(--done);}
 .vinfo{position:fixed;left:12px;right:12px;bottom:calc(74px + env(safe-area-inset-bottom));z-index:61;max-width:720px;margin:0 auto;
   background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,.18);}
 .vinfoterm{flex:1;font-size:16px;font-weight:800;color:var(--ink);}
@@ -1757,7 +1762,7 @@ function dueDays(w){
   if(!w.due) return null;
   return Math.ceil((w.due-nowMs())/DAYMS);
 }
-function isDue(w){return w.due&&w.due<=nowMs()}
+
 function allWords(){
   var out=[];
   state.days.forEach(function(d){d.words.forEach(function(w){out.push({w:w,dayId:d.id,dayName:d.name})})});
@@ -1910,11 +1915,11 @@ function roundLabel(n){ return n+"회차"; }
 
 function makeupLine(e){
   var parts=[];
-  if(e.fn) parts.push('<span class="mk mk-new">새 단어 '+e.fn+'</span>');
+  if(e.fn) parts.push('<span class="lmk lmk-new">새 단어 '+e.fn+'</span>');
   if(e.rev){
     var ks=Object.keys(e.rev).sort();
     ks.forEach(function(kk){
-      parts.push('<span class="mk mk-rev">'+shortDate(kk)+' 복습 '+e.rev[kk]+'</span>');
+      parts.push('<span class="lmk lmk-rev">'+shortDate(kk)+' 복습 '+e.rev[kk]+'</span>');
     });
   }
   return parts.length?'<div class="logchips">'+parts.join("")+'</div>':'';
@@ -1937,7 +1942,7 @@ function openStats(){
       return '<span class="logchip"><b>'+esc(nm)+'</b> '+roundLabel(info[nm].round)+'</span>';
     }).join("");
     rows+='<div class="logrow"><div class="logdate">'+md+'</div>'+
-      '<div class="logbody"><div class="logstat">외움 <b>'+(e.o||0)+'</b>개 · 안 외워짐 <b>'+(e.x||0)+'</b>번'+
+      '<div class="logbody"><div class="logstat">외움 <b>'+(e.o||0)+'</b>개 · 다시 <b>'+(e.x||0)+'</b>번'+
       (e.closed?' <span class="sealed">마감</span>':'')+
       (e.n?' · 추가 '+e.n+'개':'')+'</div>'+makeupLine(e)+
       (items?'<div class="logchips">'+items+'</div>':'')+'</div></div>';
@@ -2044,7 +2049,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v84 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v86 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2256,7 +2261,6 @@ function openCloseDay(){
 document.getElementById("tgMore").addEventListener("click",function(){
   var sc=document.createElement("div"); sc.className="scrim";
   sc.innerHTML='<div class="sheet"><h2>더보기</h2>'+
-    '<button class="mode" data-go="news"><b>기사 스크랩</b><span>원문 읽고 단어 뽑기</span></button>'+
     '<button class="mode" data-go="stats"><b>학습 기록</b><span>날짜별 · DAY별</span></button>'+
     '<button class="mode" data-go="end"><b>오늘 기록 마감</b><span>단어 상태는 그대로 · 기록만 확정</span></button>'+
     '<button class="mode" data-go="export"><b>백업</b><span>저장 · 복원 · 복사</span></button>'+
@@ -2270,8 +2274,7 @@ document.getElementById("tgMore").addEventListener("click",function(){
     var b=e.target.closest("[data-go]"); if(!b) return;
     var go=b.dataset.go; close();
     setTimeout(function(){
-      if(go==="news") openArticles();
-      else if(go==="stats") openStats();
+      if(go==="stats") openStats();
       else if(go==="end") openCloseDay();
       else if(go==="export") openBackup();
       else if(go==="upd") checkUpdate(false);
@@ -2293,7 +2296,7 @@ document.getElementById("tgMore").addEventListener("click",function(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v84";
+var APP_VER="v86";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
@@ -2395,29 +2398,7 @@ function artDay(a,create){
   if(d) a.dayId=d.id;
   return d;
 }
-function openArticles(){
-  var sc=document.createElement("div"); sc.className="scrim";
-  var list=state.articles.slice().sort(function(a,b){return (b.at||0)-(a.at||0)});
-  var rows=list.length?('<div class="arlist">'+list.map(function(a){
-    var d=artDay(a,false);
-    return '<button class="arcard" data-art="'+a.id+'"><b>'+esc(a.title||"제목 없음")+'</b>'+
-      '<span>'+(a.topic?esc(a.topic)+' · ':'')+esc(a.source||"출처 없음")+(a.date?' · '+esc(a.date):'')+
-      ' · 뽑은 단어 '+(d?d.words.length:0)+'개</span></button>';
-  }).join("")+'</div>'):'<p class="hint" style="margin:0">아직 스크랩한 기사가 없습니다.</p>';
-  sc.innerHTML='<div class="sheet"><h2>기사 스크랩</h2>'+rows+
-    '<div class="acts"><button class="btn ghost" id="arClose">닫기</button>'+
-    '<button class="btn" id="arNew">새 기사</button></div></div>';
-  document.body.appendChild(sc);
-  var close=function(){if(sc.parentNode)document.body.removeChild(sc)};
-  sc.querySelector("#arClose").onclick=close;
-  sc.querySelector("#arNew").onclick=function(){ close(); newArticle(); };
-  sc.onclick=function(e){
-    if(e.target===sc){close();return;}
-    var b=e.target.closest("[data-art]"); if(!b) return;
-    var a=state.articles.filter(function(x){return x.id===b.dataset.art})[0];
-    if(a){ close(); openReader(a,"read"); }
-  };
-}
+
 function newArticle(){
   var a={id:uid(),title:"",source:"",date:"",url:"",text:"",ko:{},note:"",picked:{},pv:2,at:Date.now()};
   state.articles.push(a); save();
@@ -2588,23 +2569,25 @@ function highlightPara(p,terms,vindex){
   var idx=[]; parts.forEach(function(t,i){ if(normTok(t)) idx.push(i); });
   var vm=vindex?vocabMarks(parts,idx,vindex):{};
   var mark={};
-  terms.forEach(function(term){
+  // 짧은 것부터 칠하고 긴 표현이 덮어쓰게 (표현 안의 단어를 두 번 탭하면 표현이 지워짐)
+  terms.slice().sort(function(a,b){return String(a.term||a).split(/\s+/).length-String(b.term||b).split(/\s+/).length})
+  .forEach(function(item){
+    var term=item&&item.term!=null?item.term:item, wid=item&&item.id?item.id:1;
     var tw=String(term).split(/\s+/).map(normTok).filter(Boolean); if(!tw.length) return;
     for(var i=0;i+tw.length<=idx.length;i++){
       var ok=true; for(var j=0;j<tw.length;j++){ if(normTok(parts[idx[i+j]])!==tw[j]){ok=false;break;} }
-      if(ok){ for(var j2=0;j2<tw.length;j2++) mark[idx[i+j2]]=1; }
+      if(ok){ for(var j2=0;j2<tw.length;j2++) mark[idx[i+j2]]=wid; }
     }
   });
   return parts.map(function(tok,i){
     var n=normTok(tok);
     if(!n) return esc(tok);
     var clean=tok.replace(/’/g,"'").replace(/^[^A-Za-z]+|[^A-Za-z]+$/g,"");
-    if(!mark[i]&&vm[i]){
+    if(!mark[i]&&vm[i]&&!vm[i].refs.every(function(r){return r.w.known})){   // 이미 외운 단어는 표시하지 않음
       var e=vm[i], k=vEntries.indexOf(e); if(k<0){ vEntries.push(e); k=vEntries.length-1; }
-      var allKnown=e.refs.every(function(r){return r.w.known});
-      return '<span class="w vk'+(allKnown?" vdone":"")+'" data-word="'+esc(clean)+'" data-vk="'+k+'">'+esc(tok)+'</span>';
+      return '<span class="w vk" data-ti="'+i+'" data-word="'+esc(clean)+'" data-vk="'+k+'">'+esc(tok)+'</span>';
     }
-    return '<span class="w'+(mark[i]?" picked":"")+'" data-word="'+esc(clean)+'">'+esc(tok)+'</span>';
+    return '<span class="w'+(mark[i]?" picked":"")+'" data-ti="'+i+'"'+(mark[i]&&mark[i]!==1?' data-pid="'+esc(mark[i])+'"':'')+' data-word="'+esc(clean)+'">'+esc(tok)+'</span>';
   }).join("");
 }
 var artAddOpen={};
@@ -2671,7 +2654,7 @@ function renderReader(focusWid){
     (a.topic?'<div class="artopic">'+esc(a.topic)+'</div>':'')+'</div>';
 
   var dd0=artDay(a,false), aw=dd0?dd0.words:[];
-  var terms=aw.map(function(w){return w.term});
+  var terms=aw.map(function(w){return {term:w.term,id:w.id}});
   var byPara={};
   aw.forEach(function(w){ var k=wordParaIdx(w,paras); w.artPara=k; (byPara[k]=byPara[k]||[]).push(w); });
 
@@ -2700,7 +2683,7 @@ function renderReader(focusWid){
   var vcount=vEntries.length;
   var legend='<div class="vlegend">'+
     '<span><i class="lg lg-new"></i>이 기사에서 담은 단어</span>'+
-    (state.vmark===false?'':'<span><i class="lg lg-vk"></i>단어장에 있음</span><span><i class="lg lg-done"></i>이미 외움</span>')+
+    (state.vmark===false?'':'<span><i class="lg lg-vk"></i>단어장에 있는데 아직 외우는 중</span>')+
     '<button class="link" data-vtoggle="1">'+(state.vmark===false?'단어장 표시 켜기':'단어장 표시 끄기')+'</button>'+
     (state.vmark===false?'':'<span class="vcount">단어장 단어 '+vcount+'개 발견</span>')+'</div>';
   bodyHtml=legend+bodyHtml;
@@ -2722,7 +2705,7 @@ function renderReader(focusWid){
 
   var extra=wordHtml+
     '<div class="sgrp arsec">발췌</div>'+
-    '<textarea class="arnote" id="aQuote" placeholder="인상 깊은 문장을 모아두세요. 문단의 ‘발췌에 담기’를 누르면 여기로 들어옵니다.">'+esc(a.quote||"")+'</textarea>'+
+    '<textarea class="arnote" id="aQuote" placeholder="인상 깊은 문장을 모아두세요. 문단의 ‘발췌’를 누르면 여기로 들어옵니다.">'+esc(a.quote||"")+'</textarea>'+
     '<div class="sgrp arsec">전체 요약</div>'+
     '<textarea class="arnote" id="aSum" placeholder="기사 전체를 3~4문장으로 요약해보세요">'+esc(a.summary||"")+'</textarea>'+
     '<div class="sgrp arsec">내 분석</div>'+
@@ -2733,7 +2716,7 @@ function renderReader(focusWid){
     extra;
 
   dock.innerHTML='<div style="display:flex;gap:8px;max-width:720px;margin:0 auto;align-items:center">'+
-    '<span style="flex:1;font-size:12.5px;color:var(--ink-soft)">단어 탭 또는 드래그 → 형광펜 · 입력은 자동 저장</span>'+
+    '<span style="flex:1;font-size:12.5px;color:var(--ink-soft)">탭 = 담기 · 두 번 탭 = 취소 · 길게 눌러 밀기 = 어구 선택</span>'+
     '<button class="btn" id="aDone">닫기<span class="kbd">Esc</span></button></div>';
   document.getElementById("aDone").onclick=closeReader;
 
@@ -2783,12 +2766,10 @@ document.getElementById("rBody").addEventListener("click",function(e){
   }
   if(e.target.closest("[data-vtoggle]")){ state.vmark=state.vmark===false?true:false; save(); renderReader(); return; }
   var vk=e.target.closest("[data-vk]");
-  if(vk&&!(document.getElementById("selBar").className==="selbar"||Date.now()-selClearedAt<700)){
-    var cs=window.getSelection&&window.getSelection();
-    if(!(cs&&!cs.isCollapsed&&String(cs).trim())){
-      showVInfo(vEntries[parseInt(vk.dataset.vk,10)],vk);
-      return;
-    }
+  if(vk&&Date.now()>=suppressClickUntil){
+    if(document.getElementById("selBar").className==="selbar"){ hideSelBar(); return; }
+    showVInfo(vEntries[parseInt(vk.dataset.vk,10)],vk);
+    return;
   }
   var dp=e.target.closest("[data-delpara]");
   if(dp){ deleteParagraph(a,parseInt(dp.dataset.delpara,10)); return; }
@@ -2807,31 +2788,60 @@ document.getElementById("rBody").addEventListener("click",function(e){
     return;
   }
   var dw=e.target.closest("[data-delw]");
-  if(dw){
-    var tw=findWord(dw.dataset.delw); if(!tw) return;
-    if(tw.meaning&&tw.meaning.trim()&&!window.confirm("'"+tw.term+"'을(를) 빼면 적어둔 뜻도 지워집니다. 뺄까요?")) return;
-    var dd1=artDay(a,false);
-    if(dd1) dd1.words=dd1.words.filter(function(x){return x.id!==tw.id});
-    if(a.picked) delete a.picked[tw.term.toLowerCase()];
-    save(); renderReader(); return;
-  }
+  if(dw){ removeArticleWord(a,dw.dataset.delw); return; }
   var w=e.target.closest("[data-word]");
   if(!w) return;
-  // 선택을 풀려고 누른 탭이면 단어를 담지 않음
-  if(document.getElementById("selBar").className==="selbar"||Date.now()-selClearedAt<700){
-    try{ window.getSelection().removeAllRanges(); }catch(e2){}
-    hideSelBar(); return;
-  }
-  var cur=window.getSelection&&window.getSelection();
-  if(cur&&!cur.isCollapsed&&String(cur).trim()) return;
-  var term=w.dataset.word; if(!term) return;
-  var pi=parseInt((w.closest("[data-pi]")||{dataset:{pi:"0"}}).dataset.pi,10);
-  var dd2=artDay(a,false);
-  var hit=dd2&&dd2.words.filter(function(x){return x.term.toLowerCase()===term.toLowerCase()})[0];
-  if(hit){ renderReader(hit.id); return; }            // 이미 표시한 단어 → 뜻 칸으로 이동
-  var nw=artAddWord(a,term,pi,"");
-  renderReader(nw&&nw.id);
+  if(Date.now()<suppressClickUntil) return;               // 길게 눌러 드래그한 직후의 클릭은 무시
+  if(document.getElementById("selBar").className==="selbar"){ hideSelBar(); return; }
+  handleWordTap(a,w);
 });
+var suppressClickUntil=0;
+var tapState={id:null,t:0,added:false,timer:null};
+function handleWordTap(a,w){
+  var now=Date.now();
+  var pid=w.dataset.pid;
+  var pi=parseInt((w.closest("[data-pi]")||{dataset:{pi:"0"}}).dataset.pi,10);
+  if(pid){
+    if(tapState.id===pid&&now-tapState.t<450){
+      if(tapState.added){                                 // 두 번 탭해서 담은 경우 → 두 번째 탭은 뜻 칸으로
+        tapState.t=0; focusMeaning(pid,true); return;
+      }
+      clearTimeout(tapState.timer); tapState={id:null,t:0,added:false,timer:null};
+      removeArticleWord(a,pid);                           // 표시된 단어를 두 번 탭 → 취소
+      return;
+    }
+    clearTimeout(tapState.timer);
+    tapState={id:pid,t:now,added:false,timer:setTimeout(function(){
+      tapState.timer=null; focusMeaning(pid,false);        // 한 번만 탭 → 그 단어 뜻 칸 보여주기
+    },360)};
+    return;
+  }
+  var term=w.dataset.word; if(!term) return;
+  var dd=artDay(a,false);
+  var hit=dd&&dd.words.filter(function(x){return x.term.toLowerCase()===term.toLowerCase()})[0];
+  if(hit){ focusMeaning(hit.id,true); return; }
+  var nw=artAddWord(a,term,pi,"");
+  tapState={id:nw&&nw.id,t:now,added:true,timer:null};
+  renderReader(nw&&nw.id);
+}
+function focusMeaning(wid,withKeyboard){
+  var inp=document.querySelector('[data-wid="'+wid+'"]'); if(!inp) return;
+  var row=inp.closest(".pw")||inp;
+  if(row.scrollIntoView) try{ row.scrollIntoView({block:"nearest"}); }catch(e){}
+  row.classList.remove("flash"); void row.offsetWidth; row.classList.add("flash");
+  if(withKeyboard){ try{ inp.focus({preventScroll:true}); }catch(e){ inp.focus(); } }
+}
+function removeArticleWord(a,wid){
+  var day=artDay(a,false); if(!day) return;
+  var pos=-1, w=null;
+  day.words.forEach(function(x,i){ if(x.id===wid){pos=i;w=x;} });
+  if(!w) return;
+  day.words.splice(pos,1);
+  if(a.picked) delete a.picked[w.term.toLowerCase()];
+  undoState={kind:"word",artId:a.id,dayId:day.id,word:w,pos:pos};
+  save(); renderReader();
+  showUndo("'"+w.term+"' 표시를 지웠어요");
+}
 function artAddWord(a,term,pi,meaning){
   var day=artDay(a,true);
   var exists=day.words.filter(function(x){return x.term.toLowerCase()===term.toLowerCase()})[0];
@@ -2933,7 +2943,7 @@ var undoState=null, undoTimer=null;
 function deleteParagraph(a,i){
   var paras=artParas(a);
   if(i<0||i>=paras.length) return;
-  undoState={id:a.id,text:a.text,pv:a.pv,ko:JSON.parse(JSON.stringify(a.ko||{})),quote:a.quote};
+  undoState={kind:"para",id:a.id,text:a.text,pv:a.pv,ko:JSON.parse(JSON.stringify(a.ko||{})),quote:a.quote};
   paras.splice(i,1);
   a.text=paras.join("\n\n"); a.pv=2;
   var ko={};
@@ -2955,8 +2965,16 @@ function showUndo(msg){
 }
 document.getElementById("undoGo").addEventListener("click",function(){
   if(!undoState) return;
-  var a=state.articles.filter(function(x){return x.id===undoState.id})[0];
-  if(a){ a.text=undoState.text; a.pv=undoState.pv; a.ko=undoState.ko; a.quote=undoState.quote; save(); if(curArt===a) renderReader(); }
+  if(undoState.kind==="word"){
+    var aw=state.articles.filter(function(x){return x.id===undoState.artId})[0];
+    var dw=state.days.filter(function(d){return d.id===undoState.dayId})[0];
+    if(dw){ dw.words.splice(Math.min(undoState.pos,dw.words.length),0,undoState.word); }
+    if(aw){ aw.picked=aw.picked||{}; aw.picked[undoState.word.term.toLowerCase()]=1; }
+    save(); if(curArt&&aw===curArt) renderReader(undoState.word.id);
+  }else{
+    var a=state.articles.filter(function(x){return x.id===undoState.id})[0];
+    if(a){ a.text=undoState.text; a.pv=undoState.pv; a.ko=undoState.ko; a.quote=undoState.quote; save(); if(curArt===a) renderReader(); }
+  }
   undoState=null;
   document.getElementById("undoBar").className="undobar hide";
   toast("되돌렸어요");
@@ -2967,19 +2985,6 @@ var selPick=null;
 function cleanSel(s){
   return String(s||"").replace(/\s+/g," ").trim()
     .replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9]+$/g,"").replace(/’/g,"'");
-}
-function readSelection(){
-  if(!curArt||readMode!=="read") return null;
-  var sel=window.getSelection&&window.getSelection();
-  if(!sel||sel.isCollapsed||!sel.rangeCount) return null;
-  var node=sel.anchorNode; if(node&&node.nodeType===3) node=node.parentNode;
-  var box=node&&node.closest?node.closest(".artext"):null;
-  if(!box) return null;
-  var term=cleanSel(sel.toString());
-  if(!term||!/[A-Za-z]/.test(term)) return null;
-  if(term.split(" ").length>8) return null;         // 너무 긴 선택은 무시
-  var pi=parseInt((box.closest("[data-pi]")||{dataset:{pi:"0"}}).dataset.pi,10);
-  return {term:term,pi:pi};
 }
 function showSelBar(pick){
   hideVInfo();
@@ -2995,19 +3000,69 @@ function hideSelBar(){
   document.getElementById("selMean").value="";
 }
 var selClearedAt=0;
-document.addEventListener("selectionchange",function(){
-  var pick=readSelection();
-  if(pick){ showSelBar(pick); return; }
-  if(selPick) selClearedAt=Date.now();
-  // 선택이 풀려도 뜻을 입력 중이면 입력줄은 유지
-  var active=document.activeElement;
-  if(active&&active.closest&&active.closest("#selBar")) return;
-  setTimeout(function(){
-    var act=document.activeElement;
-    if(act&&act.closest&&act.closest("#selBar")) return;
-    if(!readSelection()) hideSelBar();
-  },350);
+// 길게 눌러(0.35초) 붙잡은 뒤 손가락을 밀면 여러 단어를 한 번에 선택
+var drag=null;
+function dragSpans(){
+  if(!drag) return [];
+  var lo=Math.min(drag.startTi,drag.endTi), hi=Math.max(drag.startTi,drag.endTi);
+  return [].filter.call(drag.box.querySelectorAll(".w[data-ti]"),function(s){
+    var t=parseInt(s.dataset.ti,10); return t>=lo&&t<=hi;
+  });
+}
+function paintDrag(){
+  if(!drag) return;
+  [].forEach.call(drag.box.querySelectorAll(".w.sel"),function(s){s.classList.remove("sel")});
+  dragSpans().forEach(function(s){s.classList.add("sel")});
+}
+function endDrag(open){
+  if(!drag) return;
+  clearTimeout(drag.timer);
+  var spans=drag.active?dragSpans():[];
+  [].forEach.call(drag.box.querySelectorAll(".w.sel"),function(s){s.classList.remove("sel")});
+  var d=drag; drag=null;
+  if(!open||!d.active||!spans.length) return;
+  suppressClickUntil=Date.now()+600;
+  var term=cleanSel(spans.map(function(s){return s.dataset.word}).join(" "));
+  if(!term) return;
+  hideVInfo();
+  showSelBar({term:term,pi:d.pi});
+  var m=document.getElementById("selMean");
+  try{ m.focus({preventScroll:true}); }catch(e){ try{m.focus();}catch(e2){} }
+}
+function activateDrag(){
+  if(!drag) return;
+  drag.active=true;
+  if(navigator.vibrate) try{ navigator.vibrate(10); }catch(e){}
+  paintDrag();
+}
+var rb=document.getElementById("rBody");
+rb.addEventListener("pointerdown",function(e){
+  if(readMode!=="read"||!curArt) return;
+  if(e.pointerType==="mouse"&&e.button!==0) return;
+  var s=e.target.closest&&e.target.closest(".artext .w[data-ti]"); if(!s) return;
+  var box=s.closest(".artext"), para=box.closest("[data-pi]");
+  endDrag(false);
+  drag={id:e.pointerId,type:e.pointerType,x:e.clientX,y:e.clientY,box:box,
+    pi:parseInt(para?para.dataset.pi:"0",10),startTi:parseInt(s.dataset.ti,10),endTi:parseInt(s.dataset.ti,10),active:false,timer:null};
+  if(e.pointerType!=="mouse") drag.timer=setTimeout(activateDrag,350);
 });
+rb.addEventListener("pointermove",function(e){
+  if(!drag||e.pointerId!==drag.id) return;
+  var dx=e.clientX-drag.x, dy=e.clientY-drag.y, far=Math.abs(dx)+Math.abs(dy)>10;
+  if(!drag.active){
+    if(!far) return;
+    if(drag.type==="mouse") activateDrag();
+    else { endDrag(false); return; }                      // 길게 누르기 전에 움직이면 스크롤
+  }
+  var el=document.elementFromPoint?document.elementFromPoint(e.clientX,e.clientY):null;
+  var s=el&&el.closest?el.closest(".w[data-ti]"):null;
+  if(s&&drag.box.contains(s)){ var t=parseInt(s.dataset.ti,10); if(t!==drag.endTi){ drag.endTi=t; paintDrag(); } }
+  if(e.cancelable) e.preventDefault();
+});
+rb.addEventListener("pointerup",function(e){ if(drag&&e.pointerId===drag.id) endDrag(true); });
+rb.addEventListener("pointercancel",function(e){ if(drag&&e.pointerId===drag.id) endDrag(drag.active); });
+rb.addEventListener("touchmove",function(e){ if(drag&&drag.active&&e.cancelable) e.preventDefault(); },{passive:false});
+rb.addEventListener("contextmenu",function(e){ if(e.target.closest&&e.target.closest(".artext")) e.preventDefault(); });
 function commitSel(){
   if(!selPick||!curArt) return;
   var a=curArt, term=selPick.term, mean=document.getElementById("selMean").value.trim();
