@@ -40,8 +40,8 @@ h1 span{color:var(--ink-soft);font-weight:500;}
 .days::-webkit-scrollbar{display:none;}
 .chip{flex:0 0 auto;border:1px solid var(--rule);background:var(--card);border-radius:10px;padding:8px 12px 7px;cursor:pointer;text-align:left;min-width:74px;font-family:inherit;color:inherit;}
 .chip.on{border-color:var(--ink);background:var(--ink);color:#fff;}
-.chip .nm{font-size:13px;font-weight:700;display:block;letter-spacing:-.01em;}
-.chip .sb{font-size:11px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+.chip .nm{font-size:13px;font-weight:700;display:block;letter-spacing:-.01em;color:var(--ink);}
+.chip .sb{font-size:11.5px;color:var(--ink-soft);font-weight:600;font-variant-numeric:tabular-nums;}
 .chip.on .sb{color:rgba(255,255,255,.72);}
 .chip .ln{display:block;height:3px;border-radius:2px;background:#EBEAE3;margin-top:6px;overflow:hidden;}
 .chip .ln i{display:block;height:100%;background:var(--marker);}
@@ -272,14 +272,65 @@ h1 span{color:var(--ink-soft);}
 .qacts .kbd{border-color:currentColor;opacity:.65;}
 
 
-.dpg{display:inline-flex;flex:0 0 auto;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--card);}
-.dpg button{border:0;background:transparent;padding:8px 11px;min-height:38px;font:600 12.5px inherit;font-family:inherit;
-  color:var(--ink-soft);cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.dpg{display:inline-flex;flex:0 0 auto;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--card);box-shadow:var(--shadow);}
+.dpg button{border:0;background:transparent;padding:8px 11px;min-height:38px;font:700 13px inherit;font-family:inherit;
+  color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
 .dpg button+button{border-left:1px solid var(--rule);padding-left:9px;padding-right:9px;}
 .dpg button.sub{font-size:12px;letter-spacing:-.5px;}
-.dpg button i{font-style:normal;font-size:11px;opacity:.6;font-variant-numeric:tabular-nums;}
+.dpg button i{font-style:normal;font-size:11.5px;color:var(--ink-soft);opacity:1;font-weight:600;font-variant-numeric:tabular-nums;}
 .dpg button[data-on="1"]{background:var(--ink);color:#fff;}
-.dpg button[data-on="1"] i{opacity:.75;}
+.dpg button[data-on="1"] i{color:rgba(255,255,255,.8);}
+
+
+.sense{margin-top:9px;padding-left:10px;border-left:2px solid var(--rule);}
+.sensemean{font-size:13.5px;color:var(--ink);line-height:1.5;}
+.sensemean b{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:4px;
+  background:var(--ink);color:#fff;font-size:10.5px;margin-right:5px;vertical-align:1px;}
+.qsense{font-size:14px;line-height:1.7;margin-top:8px;text-align:left;}
+.qsense b{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:4px;
+  background:var(--ink);color:#fff;font-size:11px;margin-right:6px;}
+
+
+.sbox{border:1px solid var(--rule);border-radius:10px;padding:10px 11px 11px;margin-top:10px;background:var(--card);}
+.sboxhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.sboxhead b{font-size:12px;font-weight:700;color:var(--ink-soft);}
+.sbox .inp{margin-top:6px;}
+.sbox .inp:first-of-type{margin-top:0;}
+
+
+.wroot{font-size:12px;color:var(--ink-soft);background:#EFEEE7;border-radius:6px;padding:6px 9px;margin-top:9px;}
+.wblock{display:flex;gap:8px;margin-top:9px;align-items:flex-start;}
+.wlabel{flex:0 0 auto;font-size:10.5px;font-weight:700;color:#fff;background:var(--ink);border-radius:4px;padding:3px 6px;margin-top:1px;}
+.wlabel.wconf{background:var(--miss);}
+.wline{font-size:13px;line-height:1.6;color:var(--ink);}
+@media (prefers-color-scheme: dark){ .wroot{background:#1D222B;} }
+
+
+.arhead{margin-bottom:18px;}
+.artitle{font-size:19px;font-weight:800;letter-spacing:-.02em;line-height:1.4;color:var(--ink);}
+.armeta{font-size:12.5px;color:var(--ink-soft);margin-top:6px;}
+.armeta a{color:var(--marker-deep);font-weight:600;}
+.artopic{display:inline-block;margin-top:9px;background:var(--marker);color:#11151F;border-radius:6px;padding:4px 9px;font-size:12px;font-weight:700;}
+.parahead{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.paranum{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:6px;
+  background:var(--ink);color:var(--paper);font-size:11.5px;font-weight:700;}
+.arko-in{display:block;width:100%;box-sizing:border-box;margin-top:10px;border:1px solid var(--rule);border-left:3px solid var(--marker);
+  border-radius:0 8px 8px 0;padding:9px 11px;font:14px/1.6 inherit;font-family:inherit;background:var(--card);color:var(--ink);resize:vertical;}
+.arsec{margin-top:24px;}
+.arwords{display:flex;flex-wrap:wrap;gap:6px;}
+.arword{background:var(--card);border:1px solid var(--rule);border-radius:7px;padding:5px 9px;font-size:13px;color:var(--ink-soft);}
+.arword b{color:var(--ink);font-weight:700;}
+.arpara{margin-bottom:24px;}
+
+
+.appanel{margin-top:4px;}
+.aplist{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.apcard{width:100%;text-align:left;border:1px solid var(--rule);background:var(--card);border-radius:12px;padding:13px 14px;
+  font-family:inherit;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;gap:5px;box-shadow:var(--shadow);}
+.apcard b{font-size:15px;font-weight:700;letter-spacing:-.01em;line-height:1.4;}
+.apmeta{font-size:12.5px;color:var(--ink-soft);display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.aptopic{font-style:normal;background:var(--marker);color:#11151F;border-radius:5px;padding:2px 7px;font-size:11.5px;font-weight:700;}
+.apstat{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
 
 @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
 </style>
@@ -335,31 +386,32 @@ h1 span{color:var(--ink-soft);}
     <input class="inp hide" id="dayName" autocomplete="off" style="margin-top:8px">
 
     <div id="oneMode">
-      <div class="pair">
-        <input class="inp" id="fTerm" placeholder="단어" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
-        <input class="inp" id="fMean" placeholder="뜻" autocomplete="off">
+      <label class="lb">단어</label>
+      <input class="inp" id="fTerm" placeholder="단어" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input class="inp" id="fPos" placeholder="품사 (n. / v. / adj.)" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" style="flex:0 0 40%">
+        <input class="inp" id="fEx" placeholder="예문 (선택)" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
       </div>
-      <button class="link" id="moreBtn">자세히 접기</button>
-      <div class="lookup" id="lookupN"></div>
-      <div id="moreWrap">
-        <label class="lb">품사</label>
-        <input class="inp" id="fPos" placeholder="v. / n. / adj. / phrase" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
-        <label class="lb">예문</label>
-        <input class="inp" id="fEx" placeholder="영어 예문" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
-        <label class="lb">유의어</label>
-        <input class="inp" id="fSyn" placeholder="쉼표로 구분 · 개수 제한 없음" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
-        <label class="lb">반의어</label>
-        <input class="inp" id="fAnt" placeholder="쉼표로 구분" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+      <div id="fSenses"></div>
+      <button class="link" id="fAddSense">＋ 뜻 추가</button>
+      <button class="link" id="fDetailBtn" style="margin-left:12px">＋ 파생어·표현</button>
+      <div id="fDetail" class="hide">
+        <label class="lb">파생어 <span style="font-weight:500;color:var(--ink-soft)">· 여러 개면 / 로 구분</span></label>
+        <input class="inp" id="fForms" placeholder="scrutiny n. 정밀한 조사 / scrutator n. 검사자" autocapitalize="none" autocorrect="off" spellcheck="false">
+        <label class="lb">표현·숙어</label>
+        <input class="inp" id="fIdiom" placeholder="be under close scrutiny 엄밀한 조사를 받다" autocapitalize="none" autocorrect="off" spellcheck="false">
+        <label class="lb">혼동어</label>
+        <input class="inp" id="fConf" placeholder="tribe 부족, 종족" autocapitalize="none" autocorrect="off" spellcheck="false">
       </div>
       <div class="added" id="addedN"></div>
       <div class="acts">
-        <button class="btn ghost" id="doneAdd">닫기</button>
+        <button class="btn ghost" id="doneAdd">닫기<span class="kbd">Esc</span></button>
         <button class="btn" id="addOne" disabled>추가</button>
       </div>
     </div>
 
     <div id="bulkMode" class="hide">
-      <p class="hint">한 줄에 한 단어씩. <span class="code">단어 | 뜻 | 품사 | 예문 | 해석 | 유의어 | 반의어</span> 순서이며 뒤쪽은 비워도 됩니다. <span class="code">[DAY 4]</span> 같은 줄이 있으면 그 DAY로 들어가고, 이미 있는 단어는 덮어씁니다.</p>
+      <p class="hint">한 줄에 한 단어씩. <span class="code">단어 | 뜻 | 품사 | 예문 | 해석 | 유의어 | 반의어</span><br>편입영어는 뒤에 <span class="code">| 파생어 | 표현 | 혼동어</span> 를 더 붙일 수 있습니다 · 뜻이 여러 개면 뜻·유의어·반의어를 <span class="code">;;</span> 로 같은 순서로 나눠 적으세요 순서이며 뒤쪽은 비워도 됩니다. <span class="code">[DAY 4]</span> 같은 줄이 있으면 그 DAY로 들어가고, 이미 있는 단어는 덮어씁니다.</p>
       <textarea class="area" id="bulk" placeholder="comply 준수하다
 invoice 송장, 청구서
 tentative 잠정적인" autocapitalize="none" autocorrect="off" spellcheck="false"></textarea>
@@ -376,13 +428,17 @@ tentative 잠정적인" autocapitalize="none" autocorrect="off" spellcheck="fals
   <h2>단어 수정</h2>
   <p class="hint">자동으로 채워진 내용이 어색하면 직접 고치세요.</p>
   <label class="lb">단어</label><input class="inp" id="eTerm" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
-  <label class="lb">뜻</label><input class="inp" id="eMean" autocomplete="off">
-  <label class="lb">품사</label><input class="inp" id="ePos" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
-  <label class="lb">예문</label><textarea class="area" id="eEx" style="min-height:70px" autocapitalize="none" autocorrect="off" spellcheck="false"></textarea>
-  <label class="lb">예문 해석</label><textarea class="area" id="eKo" style="min-height:70px"></textarea>
-  <label class="lb">유의어</label><input class="inp" id="eSyn" autocomplete="off" placeholder="쉼표로 구분" autocapitalize="none" autocorrect="off" spellcheck="false">
-  <label class="lb">반의어</label><input class="inp" id="eAnt" autocomplete="off" placeholder="쉼표로 구분" autocapitalize="none" autocorrect="off" spellcheck="false">
-  <button class="link" id="eAuto">내장 데이터에서 가져오기</button>
+  <div id="eSenses"></div>
+  <button class="link" id="eAddSense">＋ 뜻 추가</button>
+  <label class="lb">품사</label><input class="inp" id="ePos" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="n. / v. / adj.">
+  <label class="lb">예문</label><input class="inp" id="eEx" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="영어 예문">
+  <label class="lb">해석</label><input class="inp" id="eKo" autocomplete="off" placeholder="예문 해석">
+  <label class="lb">파생어 <span style="font-weight:500;color:var(--ink-soft)">· 여러 개면 / 로 구분</span></label>
+  <input class="inp" id="eForms" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="scrutiny n. 정밀한 조사 / scrutator n. 검사자">
+  <label class="lb">표현·숙어</label>
+  <input class="inp" id="eIdiom" autocapitalize="none" autocorrect="off" spellcheck="false">
+  <label class="lb">혼동어</label>
+  <input class="inp" id="eConf" autocapitalize="none" autocorrect="off" spellcheck="false">
   <div class="acts">
     <button class="btn ghost" id="eDelete">삭제</button>
     <button class="btn" id="eSave">저장</button>
@@ -614,7 +670,8 @@ function parseGroups(text,defSec){
     var p=/[|\t]/.test(line)?line.split(/\s*[|\t]\s*/):splitLine(line);
     if(!p[0]||!p[0].trim()) return;
     var w={term:p[0].trim(),meaning:(p[1]||"").trim(),pos:(p[2]||"").trim(),
-           example:(p[3]||"").trim(),ko:(p[4]||"").trim(),syn:(p[5]||"").trim(),ant:(p[6]||"").trim()};
+           example:(p[3]||"").trim(),ko:(p[4]||"").trim(),syn:(p[5]||"").trim(),ant:(p[6]||"").trim(),
+        forms:(p[7]||"").trim(),idiom:(p[8]||"").trim(),conf:(p[9]||"").trim()};
     if(!cur){cur={section:defSec,name:null,words:[]};groups.push(cur);}
     cur.words.push(w);
   });
@@ -636,6 +693,29 @@ function findWord(id){
   return null;
 }
 
+
+function articlePanel(){
+  var list=state.articles.slice().sort(function(a,b){return (b.at||0)-(a.at||0)});
+  var cards=list.map(function(a){
+    var d=artDay(a,false);
+    var paras=paragraphs(a.text).length;
+    var done=a.ko?Object.keys(a.ko).filter(function(k){return String(a.ko[k]).trim()}).length:0;
+    var marks=[];
+    if(paras) marks.push('해석 '+done+'/'+paras);
+    marks.push('단어 '+(d?d.words.length:0));
+    if(a.summary&&a.summary.trim()) marks.push('요약 ✓');
+    return '<button class="apcard" data-art="'+a.id+'">'+
+      '<b>'+esc(a.title||"제목 없음")+'</b>'+
+      '<span class="apmeta">'+(a.topic?'<i class="aptopic">'+esc(a.topic)+'</i>':'')+
+        esc(a.source||"출처 없음")+(a.date?' · '+esc(a.date):'')+'</span>'+
+      '<span class="apstat">'+marks.join(' · ')+'</span></button>';
+  }).join("");
+  return '<div class="appanel">'+
+    '<button class="btn" data-newart="1" style="width:100%">＋ 새 기사 스크랩</button>'+
+    (cards?'<div class="aplist">'+cards+'</div>'
+          :'<p class="hint" style="margin:12px 0 0;text-align:center">아직 스크랩한 기사가 없습니다.<br>언론사·링크·주제를 적고 영어 원문을 붙여넣으면 문단별로 나뉩니다.</p>')+
+    '</div>';
+}
 function render(){
   var sc=scopeWords(), total=sc.length;
   var known=sc.filter(function(o){return o.w.known}).length;
@@ -672,23 +752,31 @@ function render(){
 
   // list
   var area=document.getElementById("listArea");
+  var isNews=state.section==="news";
+  document.getElementById("addBtn").innerHTML=isNews?'새 기사<span class="kbd">A</span>':'단어 추가<span class="kbd">A</span>';
+  var panel=isNews?articlePanel():"";
+  if(isNews&&total===0){
+    area.innerHTML=panel;
+    return;
+  }
   if(total===0){
     area.innerHTML='<div class="empty"><p>단어장이 비어 있습니다</p><small>DAY를 만들고 단어를 붙여넣으면 시작됩니다.<br>엑셀·메모에서 복사한 목록을 한 번에 넣을 수 있어요.</small><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn" data-add="1">단어 추가</button><button class="btn ghost" id="sampleBtn">샘플 5개로 둘러보기</button></div></div>';
     return;
   }
   var vis=visibleWords();
   if(!vis.length){
-    area.innerHTML='<div class="empty"><p>조건에 맞는 단어가 없습니다</p><small>검색어를 지우거나 \'미암기만\'을 꺼보세요.</small></div>';
+    area.innerHTML=(isNews?panel:'')+'<div class="empty"><p>조건에 맞는 단어가 없습니다</p><small>검색어를 지우거나 \'미암기만\'을 꺼보세요.</small></div>';
     return;
   }
   var shown=vis.slice(0,listCap);
   var rows=shown.map(function(o){
     var w=o.w;
     var mean="";
+    var firstMean=hasSenses(w)?splitSense(w.meaning)[0]+" …":w.meaning;
     if(w.meaning){
       mean=(state.mask&&!state.revealed[w.id])
-        ? '<div class="mn"><span class="mask" data-reveal="'+w.id+'">'+esc(w.meaning)+'</span></div>'
-        : '<div class="mn">'+esc(w.meaning)+'</div>';
+        ? '<div class="mn"><span class="mask" data-reveal="'+w.id+'">'+esc(firstMean)+'</span></div>'
+        : '<div class="mn">'+esc(firstMean)+'</div>';
     }
     return '<div class="row'+(w.known?" known":"")+'">'+
       '<button class="mk'+(w.known?" on":"")+'" data-toggle="'+w.id+'" aria-label="암기 표시"></button>'+
@@ -699,12 +787,12 @@ function render(){
       (expOpen[w.id]
         ? (w.example?'<div class="ex">'+esc(w.example)+'</div>':'')+
           (w.ko?'<div class="ko">'+esc(w.ko)+'</div>':'')+
-          ((w.syn||w.ant)?relHtml(w):'')
-        : ((w.example||w.ko||w.syn||w.ant)?'<div class="exhint">자세히 보기</div>':''))+'</div>'+
+          (hasSenses(w)?senseHtml(w):((w.syn||w.ant)?relHtml(w):''))+detailHtml(w)
+        : ((w.example||w.ko||w.syn||w.ant||w.forms||w.idiom||w.conf)?'<div class="exhint">자세히 보기</div>':''))+'</div>'+
       '<button class="edit" data-editbtn="'+w.id+'" aria-label="수정">✎</button>'+
       '<button class="del" data-del="'+w.id+'" aria-label="삭제">×</button></div>';
   }).join("");
-  area.innerHTML='<div class="list">'+rows+'</div>'+
+  area.innerHTML=(isNews?panel+'<div class="sgrp" style="margin-top:22px">기사에서 뽑은 단어</div>':'')+'<div class="list">'+rows+'</div>'+
     (vis.length>shown.length?'<button class="btn ghost" id="moreBtn2" style="width:100%;margin-top:10px">더 보기 ('+(vis.length-shown.length)+'개 남음)</button>':'');
   var mb=document.getElementById("moreBtn2");
   if(mb) mb.onclick=function(){ listCap+=150; render(); };
@@ -723,6 +811,13 @@ document.getElementById("dayRow").addEventListener("click",function(e){
   listCap=150; state.day=b.dataset.day; state.revealed={}; render();
 });
 document.getElementById("listArea").addEventListener("click",function(e){
+  if(e.target.closest("[data-newart]")){ newArticle(); return; }
+  var ac=e.target.closest("[data-art]");
+  if(ac){
+    var art=state.articles.filter(function(x){return x.id===ac.dataset.art})[0];
+    if(art) openReader(art,"read");
+    return;
+  }
   var t=e.target.closest("[data-toggle]");
   if(t){var w=findWord(t.dataset.toggle); if(w){w.known=!w.known; save(); render();} return;}
   var r=e.target.closest("[data-reveal]");
@@ -752,7 +847,7 @@ function backupText(){
   return state.days.map(function(d){
     return "["+secLabel(d.section)+" "+d.name+"]\n"+
       d.words.map(function(w){
-        return w.term+" | "+(w.meaning||"")+" | "+(w.pos||"")+" | "+(w.example||"")+" | "+(w.ko||"")+" | "+(w.syn||"")+" | "+(w.ant||"");
+        return w.term+" | "+(w.meaning||"")+" | "+(w.pos||"")+" | "+(w.example||"")+" | "+(w.ko||"")+" | "+(w.syn||"")+" | "+(w.ant||"")+((w.forms||w.idiom||w.conf)?" | "+(w.forms||"")+" | "+(w.idiom||"")+" | "+(w.conf||""):"");
       }).join("\n");
   }).join("\n\n");
 }
@@ -762,7 +857,7 @@ function backupFileName(){
 }
 function saveBackupFile(){
   try{
-    var payload=JSON.stringify({app:"toeic-vocab",version:1,savedAt:new Date().toISOString(),days:state.days});
+    var payload=JSON.stringify({app:"toeic-vocab",version:2,savedAt:new Date().toISOString(),days:state.days,log:state.log,articles:state.articles});
     var blob=new Blob([payload],{type:"application/json"});
     var url=URL.createObjectURL(blob);
     var a=document.createElement("a");
@@ -783,14 +878,16 @@ function applyBackup(obj){
       var w=d.words[j];
       if(!w||!w.term) continue;
       words.push({id:w.id||uid(),term:String(w.term),meaning:w.meaning||"",pos:w.pos||"",
-        example:w.example||"",ko:w.ko||"",syn:w.syn||"",ant:w.ant||"",known:!!w.known,
-        stage:w.stage||0,due:w.due||0,lapses:w.lapses||0});
+        example:w.example||"",ko:w.ko||"",syn:w.syn||"",ant:w.ant||"",forms:w.forms||"",idiom:w.idiom||"",conf:w.conf||"",known:!!w.known,
+        stage:w.stage||0,due:w.due||0,lapses:w.lapses||0,reps:w.reps||0,last:w.last||0});
       n++;
     }
     if(words.length) days.push({id:d.id||uid(),name:String(d.name),section:normSec(d.section),words:words});
   }
   if(!days.length) return {ok:false,msg:"복원할 단어를 찾지 못했어요"};
-  return {ok:true,days:days,count:n};
+  var log=(obj.log&&typeof obj.log==="object"&&!Array.isArray(obj.log))?obj.log:null;
+  var arts=Array.isArray(obj.articles)?obj.articles.filter(function(a){return a&&a.id}):null;
+  return {ok:true,days:days,count:n,log:log,articles:arts};
 }
 function restoreFromFile(file){
   var r=new FileReader();
@@ -800,8 +897,12 @@ function restoreFromFile(file){
     var res=applyBackup(obj);
     if(!res.ok){toast(res.msg);return;}
     var cur=state.days.reduce(function(a,d){return a+d.words.length},0);
-    if(!window.confirm("백업의 단어 "+res.count+"개로 되돌립니다.\n현재 "+cur+"개는 사라집니다. 계속할까요?")) return;
-    state.days=res.days; state.day="all"; save(); render();
+    var extra=(res.log?" · 학습 기록":"")+(res.articles&&res.articles.length?" · 기사 "+res.articles.length+"개":"");
+    if(!window.confirm("백업의 단어 "+res.count+"개"+extra+"로 되돌립니다.\n현재 "+cur+"개는 사라집니다. 계속할까요?")) return;
+    state.days=res.days; state.day="all";
+    if(res.log) state.log=res.log;
+    if(res.articles) state.articles=res.articles;
+    save(); render();
     toast(res.count+"개를 복원했어요");
   };
   r.onerror=function(){toast("파일을 읽지 못했어요")};
@@ -1340,14 +1441,15 @@ function focusDay(day){
   [].forEach.call($("secSeg").children,function(c){c.className=c.dataset.sec===day.section?"on":""});
 }
 function openSheet(){
+  if(state.section==="news"){ newArticle(); return; }
   addedCount=0;
   setMode("one");
   fillDaySel();
-  ["fTerm","fMean","fPos","fEx","fSyn","fAnt","bulk"].forEach(function(id){$(id).value=""});
-  $("addedN").textContent=""; pendingKo=""; lookupFor="";
+  ["fTerm","fPos","fEx","fForms","fIdiom","fConf","bulk"].forEach(function(id){$(id).value=""});
+  $("fDetail").className=state.section==="transfer"?"":"hide";
+  renderSenses("fSenses",[]);
+  $("addedN").textContent="";
   $("addOne").disabled=true;
-  $("moreWrap").className="";
-  $("moreBtn").textContent="자세히 접기";
   $("parsedN").textContent="0개 인식됨";
   $("saveAdd").disabled=true; $("saveAdd").textContent="저장";
   $("scrim").className="scrim";
@@ -1362,16 +1464,12 @@ $("modeBtn").addEventListener("click",function(){
   setMode($("bulkMode").className==="hide"?"bulk":"one");
 });
 $("daySel").addEventListener("change",syncDayName);
-$("moreBtn").addEventListener("click",function(){
-  var open=$("moreWrap").className==="hide";
-  $("moreWrap").className=open?"":"hide";
-  this.textContent=open?"자세히 접기":"품사·예문·유의어 넣기";
-});
 function checkOne(){
-  $("addOne").disabled=!$("fTerm").value.trim();
+  var s=readSenses("fSenses");
+  $("addOne").disabled=!($("fTerm").value.trim()&&s.length);
 }
 var composing=false;
-["fTerm","fMean","fPos","fEx","bulk","q"].forEach(function(id){
+["fTerm","fPos","fEx","bulk","q"].forEach(function(id){
   var el=$(id); if(!el) return;
   el.addEventListener("compositionstart",function(){composing=true});
   el.addEventListener("compositionend",function(){composing=false;checkOne();});
@@ -1380,24 +1478,26 @@ $("fTerm").addEventListener("input",checkOne);
 
 var pendingKo="",lookupFor="";
 function bankFill(){ /* 자동 채움 사용 안 함 */ }
-["fTerm","fMean","fPos","fEx","fSyn","fAnt"].forEach(function(id){
+["fTerm","fPos","fEx"].forEach(function(id){
   $(id).addEventListener("keydown",function(e){
     if(e.key!=="Enter") return;
-    if(composing||e.isComposing||e.keyCode===229||e.which===229) return; // 한글 조합 확정용 엔터
-    e.preventDefault();
-    addOne();
+    if(composing||e.isComposing||e.keyCode===229||e.which===229) return;
+    e.preventDefault(); addOne();
   });
 });
 function addOne(){
   var term=$("fTerm").value.trim(); if(!term) return;
+  var s=joinSenses(readSenses("fSenses"));
   var day=targetDay();
   if(!day){ toast("DAY를 만들지 못했어요. DAY를 다시 선택해주세요"); return; }
-  day.words.push({id:uid(),term:term,meaning:$("fMean").value.trim(),pos:$("fPos").value.trim(),example:$("fEx").value.trim(),ko:"",syn:$("fSyn").value.trim(),ant:$("fAnt").value.trim(),known:false});
+  day.words.push({id:uid(),term:term,meaning:s.meaning,pos:$("fPos").value.trim(),
+    example:$("fEx").value.trim(),ko:"",syn:s.syn,ant:s.ant,
+    forms:$("fForms").value.trim(),idiom:$("fIdiom").value.trim(),conf:$("fConf").value.trim(),known:false});
   addedCount++;
   logAdded(1);
   focusDay(day); save(); render();
-  ["fTerm","fMean","fEx","fSyn","fAnt"].forEach(function(id){$(id).value=""});
-  $("fPos").value=""; $("lookupN").textContent=""; $("lookupN").className="lookup"; lookupFor=""; pendingKo="";
+  ["fTerm","fEx","fForms","fIdiom","fConf"].forEach(function(id){$(id).value=""});
+  renderSenses("fSenses",[]);
   $("addedN").textContent=day.name+"에 "+addedCount+"개 추가됨";
   $("addOne").disabled=true;
   $("fTerm").focus();
@@ -1446,10 +1546,11 @@ $("saveAdd").addEventListener("click",function(){
         if(nw.ko) ex.ko=nw.ko;
         if(nw.syn) ex.syn=nw.syn;
         if(nw.ant) ex.ant=nw.ant;
+        ["forms","idiom","conf"].forEach(function(k){ if(nw[k]) ex[k]=nw[k]; });
         updated++;
       }else{
         day.words.push({id:uid(),term:nw.term,meaning:nw.meaning,pos:nw.pos,
-          example:nw.example,ko:nw.ko,syn:nw.syn||"",ant:nw.ant||"",known:false});
+          example:nw.example,ko:nw.ko,syn:nw.syn||"",ant:nw.ant||"",forms:nw.forms||"",idiom:nw.idiom||"",conf:nw.conf||"",known:false});
         added++;
       }
     });
@@ -1525,13 +1626,13 @@ function renderQuiz(){
   }
   var c=o.w;
   card.className="qcard";
-  var front=quiz.front==="term"?c.term:(c.meaning||c.term);
-  var backMain=(quiz.front==="term"?(c.meaning||"(뜻 없음)"):c.term)+(c.pos?" · "+c.pos:"");
+  var front=quiz.front==="term"?c.term:((hasSenses(c)?splitSense(c.meaning).join(" / "):c.meaning)||c.term);
+  var backMain=(quiz.front==="term"?(hasSenses(c)?c.term:(c.meaning||"(뜻 없음)")):c.term)+(c.pos?" · "+c.pos:"");
   var hint=c.example?'<div class="qex">'+blankTag(esc(blankOut(c.example,c.term)))+'</div>'
                     :(quiz.flipped?'<div class="qex" style="opacity:.6">예문 없음 — 목록에서 \'예문 채우기\'를 눌러보세요</div>':"");
   card.innerHTML='<div class="qfront">'+esc(front)+'</div>'+hint+
     (quiz.flipped
-      ? '<div class="qback"><div class="qmean">'+esc(backMain)+'</div>'+(c.example?'<div class="qex" style="color:#16233F">'+esc(c.example)+'</div>':'')+(c.ko?'<div class="qko">'+esc(c.ko)+'</div>':'')+(c.syn?'<div class="qko" style="color:var(--done);font-weight:600">유의 '+esc(c.syn)+'</div>':'')+(c.ant?'<div class="qko" style="color:var(--miss);font-weight:600">반의 '+esc(c.ant)+'</div>':'')+'</div>'
+      ? '<div class="qback"><div class="qmean">'+esc(backMain)+'</div>'+(c.example?'<div class="qex" style="color:#16233F">'+esc(c.example)+'</div>':'')+(c.ko?'<div class="qko">'+esc(c.ko)+'</div>':'')+(hasSenses(c)?senseList(c).map(function(s,i){return '<div class="qsense"><b>'+(i+1)+'</b> '+esc(s.mean)+(s.syn?'<span style="color:var(--done)"> 유의 '+esc(s.syn)+'</span>':'')+(s.ant?'<span style="color:var(--miss)"> 반의 '+esc(s.ant)+'</span>':'')+'</div>'}).join(''):((c.syn?'<div class="qko" style="color:var(--done);font-weight:600">유의 '+esc(c.syn)+'</div>':'')+(c.ant?'<div class="qko" style="color:var(--miss);font-weight:600">반의 '+esc(c.ant)+'</div>':'')))+'</div>'
       : '<div class="qtap">탭해서 뒤집기<span class="kbd">Space</span></div>');
   acts.innerHTML='<button class="again" id="qAgain">다시<span class="kbd">←</span></button>'+
     '<button class="got" id="qGot">외웠어요<span class="kbd">→</span></button>';
@@ -1671,12 +1772,13 @@ function openEdit(id){
   if(!found) return;
   editing=found;
   document.getElementById("eTerm").value=found.w.term||"";
-  document.getElementById("eMean").value=found.w.meaning||"";
+  renderSenses("eSenses",senseList(found.w));
   document.getElementById("ePos").value=found.w.pos||"";
   document.getElementById("eEx").value=found.w.example||"";
   document.getElementById("eKo").value=found.w.ko||"";
-  document.getElementById("eSyn").value=found.w.syn||"";
-  document.getElementById("eAnt").value=found.w.ant||"";
+  ["Forms","Idiom","Conf"].forEach(function(k){
+    var el=document.getElementById("e"+k); if(el) el.value=found.w[k.toLowerCase()]||"";
+  });
   document.getElementById("editScrim").className="scrim";
 }
 function closeEdit(){editing=null;document.getElementById("editScrim").className="scrim hide"}
@@ -1692,12 +1794,16 @@ document.getElementById("eSave").addEventListener("click",function(){
   if(!editing) return;
   var w=editing.w;
   w.term=document.getElementById("eTerm").value.trim()||w.term;
-  w.meaning=document.getElementById("eMean").value.trim();
+  var es=joinSenses(readSenses("eSenses"));
+  w.meaning=es.meaning;
   w.pos=document.getElementById("ePos").value.trim();
   w.example=document.getElementById("eEx").value.trim();
   w.ko=document.getElementById("eKo").value.trim();
-  w.syn=document.getElementById("eSyn").value.trim();
-  w.ant=document.getElementById("eAnt").value.trim();
+  ["Forms","Idiom","Conf"].forEach(function(k){
+    var el=document.getElementById("e"+k); if(el) w[k.toLowerCase()]=el.value.trim();
+  });
+  w.syn=es.syn;
+  w.ant=es.ant;
   save(); closeEdit(); render(); toast("수정했어요");
 });
 document.getElementById("eDelete").addEventListener("click",function(){
@@ -1706,21 +1812,6 @@ document.getElementById("eDelete").addEventListener("click",function(){
   var id=editing.w.id;
   editing.d.words=editing.d.words.filter(function(x){return x.id!==id});
   save(); closeEdit(); render(); toast("삭제했어요");
-});
-document.getElementById("eAuto").addEventListener("click",function(){
-  if(!editing) return;
-  var term=document.getElementById("eTerm").value.trim();
-  var self=this; self.textContent="가져오는 중…";
-  var b=bankFull(term);
-  if(b){
-    if(b.pos) document.getElementById("ePos").value=b.pos;
-    if(b.example) document.getElementById("eEx").value=b.example;
-    if(b.ko) document.getElementById("eKo").value=b.ko;
-    if(b.meaning&&!document.getElementById("eMean").value.trim()) document.getElementById("eMean").value=b.meaning;
-    self.textContent="가져왔어요 · 확인 후 저장하세요";
-    return;
-  }
-  self.textContent="내장 데이터에 없는 단어예요 · 직접 입력해주세요";
 });
 
 // ================= 학습 기록 =================
@@ -1814,6 +1905,32 @@ function uniqueMissed(list){
   return out;
 }
 
+
+// ---- 여러 뜻 + 뜻별 유의어 (;; 로 구분) ----
+function splitSense(v){ return String(v||"").split(";;").map(function(s){return s.trim()}); }
+function hasSenses(w){ return String(w.meaning||"").indexOf(";;")>-1; }
+function senseList(w){
+  var ms=splitSense(w.meaning), ss=splitSense(w.syn), as=splitSense(w.ant);
+  var out=ms.map(function(m,i){ return {mean:m, syn:ss[i]||"", ant:as[i]||""}; });
+  return out.length?out:[{mean:"",syn:"",ant:""}];
+}
+function chipRow(label,raw,cls,key,openMap){
+  var list=String(raw).split(",").map(function(s){return s.trim()}).filter(Boolean);
+  if(!list.length) return "";
+  var open=openMap[key];
+  var show=(list.length<=4||open)?list:list.slice(0,4);
+  return '<div class="rel"><span class="rellabel">'+label+'</span>'+
+    show.map(function(t){return '<span class="'+cls+'">'+esc(t)+'</span>'}).join("")+
+    (list.length>4?'<button class="relmore" data-syn="'+key+'">'+(open?'접기':'+'+(list.length-4))+'</button>':'')+
+    '</div>';
+}
+function senseHtml(w){
+  return senseList(w).map(function(s,i){
+    return '<div class="sense"><div class="sensemean"><b>'+(i+1)+'</b> '+esc(s.mean)+'</div>'+
+      chipRow("유의",s.syn,"rel-syn",w.id+":syn"+i,synOpen)+
+      chipRow("반의",s.ant,"rel-ant",w.id+":ant"+i,synOpen)+'</div>';
+  }).join("");
+}
 function relHtml(w){
   var out="";
   [["syn","유의","rel-syn"],["ant","반의","rel-ant"]].forEach(function(cfg){
@@ -1859,7 +1976,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v73 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v80 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2110,7 +2227,7 @@ document.getElementById("tgMore").addEventListener("click",function(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v73";
+var APP_VER="v80";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
@@ -2120,6 +2237,10 @@ function checkUpdate(silent){
         if(!t) return;
         var m=t.match(/APP_VER="(v\d+)"/);
         if(!m||m[1]===APP_VER) { if(!silent) toast("최신 버전입니다 ("+APP_VER+")"); return; }
+        var seen="";
+        try{ seen=localStorage.getItem("toeic-vocab-updseen")||""; }catch(e){}
+        if(silent&&seen===m[1]) return;          // 이미 알린 버전이면 다시 띄우지 않음
+        try{ localStorage.setItem("toeic-vocab-updseen",m[1]); }catch(e){}
         showUpdate(m[1]);
       })
       .catch(function(){});
@@ -2130,12 +2251,15 @@ function showUpdate(ver){
   if(!box) return;
   box.innerHTML='<div class="upd"><b>새 버전이 있습니다 ('+esc(ver)+')</b>'+
     '지금 받으면 단어와 기록은 그대로 유지됩니다.'+
-    '<button id="updNow">지금 업데이트</button></div>';
+    '<button id="updNow">지금 업데이트</button>'+
+    '<button id="updHide" style="background:transparent;color:rgba(255,255,255,.7);margin-left:6px">나중에</button></div>';
   var b=document.getElementById("updNow");
   if(b) b.onclick=function(){
     try{ if(window.caches&&caches.keys) caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k)})}); }catch(e){}
     location.replace(location.pathname+"?v="+ver+"&_="+Date.now());
   };
+  var x=document.getElementById("updHide");
+  if(x) x.onclick=function(){ var bx=document.getElementById("updBox"); if(bx) bx.innerHTML=""; };
 }
 document.addEventListener("visibilitychange",function(){
   if(document.visibilityState==="visible") checkUpdate(true);
@@ -2192,10 +2316,15 @@ function artDayName(a){
   return t.length>18?t.slice(0,18)+"…":t;
 }
 function artDay(a,create){
-  var name=artDayName(a);
-  var d=state.days.filter(function(x){return x.section==="news"&&x.name===name})[0];
-  if(!d&&create){ d={id:uid(),name:name,section:"news",words:[]}; state.days.push(d); }
-  return d||null;
+  var d=null;
+  if(a.dayId) d=state.days.filter(function(x){return x.id===a.dayId})[0]||null;
+  if(!d){
+    var name=artDayName(a);
+    d=state.days.filter(function(x){return x.section==="news"&&x.name===name})[0]||null;
+  }
+  if(!d&&create){ d={id:uid(),name:artDayName(a),section:"news",words:[]}; state.days.push(d); }
+  if(d) a.dayId=d.id;
+  return d;
 }
 function openArticles(){
   var sc=document.createElement("div"); sc.className="scrim";
@@ -2203,7 +2332,7 @@ function openArticles(){
   var rows=list.length?('<div class="arlist">'+list.map(function(a){
     var d=artDay(a,false);
     return '<button class="arcard" data-art="'+a.id+'"><b>'+esc(a.title||"제목 없음")+'</b>'+
-      '<span>'+esc(a.source||"출처 없음")+(a.date?' · '+esc(a.date):'')+
+      '<span>'+(a.topic?esc(a.topic)+' · ':'')+esc(a.source||"출처 없음")+(a.date?' · '+esc(a.date):'')+
       ' · 뽑은 단어 '+(d?d.words.length:0)+'개</span></button>';
   }).join("")+'</div>'):'<p class="hint" style="margin:0">아직 스크랩한 기사가 없습니다.</p>';
   sc.innerHTML='<div class="sheet"><h2>기사 스크랩</h2>'+rows+
@@ -2231,6 +2360,10 @@ function openReader(a,mode){
   renderReader();
 }
 function closeReader(){
+  if(curArt&&state.section!=="news"){
+    state.section="news"; state.day="all";
+    [].forEach.call(document.getElementById("secSeg").children,function(c){c.className=c.dataset.sec==="news"?"on":""});
+  }
   curArt=null;
   document.getElementById("reader").className="reader hide";
   render();
@@ -2249,7 +2382,8 @@ function renderReader(){
       '<label class="lb">출처 · 날짜</label><div style="display:flex;gap:8px">'+
         '<input class="inp" id="aSource" placeholder="FT, Economist…" value="'+esc(a.source||"")+'">'+
         '<input class="inp" id="aDate" placeholder="2026-09-16" value="'+esc(a.date||"")+'"></div>'+
-      '<label class="lb">원문 링크</label><input class="inp" id="aUrl" value="'+esc(a.url||"")+'">'+
+      '<label class="lb">원문 링크</label><input class="inp" id="aUrl" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="https://" value="'+esc(a.url||"")+'">'+
+      '<label class="lb">주제</label><input class="inp" id="aTopic" placeholder="예: 해운 · 공급망 / 통화정책" value="'+esc(a.topic||"")+'">'+
       '<label class="lb">본문 (영어 원문을 붙여넣으세요)</label>'+
       '<textarea class="arnote" id="aText" style="min-height:260px" autocapitalize="none" autocorrect="off" spellcheck="false">'+esc(a.text||"")+'</textarea>';
     dock.innerHTML='<div class="dock-in" style="display:flex;gap:8px;max-width:720px;margin:0 auto">'+
@@ -2260,6 +2394,8 @@ function renderReader(){
       a.source=document.getElementById("aSource").value.trim();
       a.date=document.getElementById("aDate").value.trim();
       a.url=document.getElementById("aUrl").value.trim();
+      a.topic=document.getElementById("aTopic").value.trim();
+      var dd=artDay(a,false); if(dd) dd.name=artDayName(a);
       a.text=document.getElementById("aText").value;
       save(); readMode="read"; renderReader(); toast("저장했어요");
     };
@@ -2271,31 +2407,62 @@ function renderReader(){
     return;
   }
   var paras=paragraphs(a.text);
-  var head='<div style="margin-bottom:14px"><div style="font-size:19px;font-weight:800;letter-spacing:-.02em;line-height:1.4">'+esc(a.title||"제목 없음")+'</div>'+
-    '<div style="font-size:12.5px;color:var(--ink-soft);margin-top:5px">'+esc(a.source||"")+(a.date?' · '+esc(a.date):'')+
-    (a.url?' · <a href="'+esc(a.url)+'" target="_blank" rel="noopener" style="color:var(--marker-deep)">원문</a>':'')+'</div></div>';
+  var head='<div class="arhead"><div class="artitle">'+esc(a.title||"제목 없음")+'</div>'+
+    '<div class="armeta">'+esc(a.source||"출처 없음")+(a.date?' · '+esc(a.date):'')+
+    (a.url?' · <a href="'+esc(a.url)+'" target="_blank" rel="noopener">원문 열기</a>':'')+'</div>'+
+    (a.topic?'<div class="artopic">'+esc(a.topic)+'</div>':'')+'</div>';
+
   var bodyHtml=paras.map(function(p,i){
     var words=p.split(/(\s+)/).map(function(tok){
       if(!/[A-Za-z]/.test(tok)) return esc(tok);
-      var clean=tok.replace(/[^A-Za-z'’-]/g,"");
+      var clean=tok.replace(/[^A-Za-z'’-]/g,"").replace(/^['’-]+|['’-]+$/g,"");
       if(!clean) return esc(tok);
       var on=a.picked&&a.picked[clean.toLowerCase()]?" picked":"";
       return '<span class="w'+on+'" data-word="'+esc(clean)+'">'+esc(tok)+'</span>';
     }).join("");
-    return '<div class="arpara"><div class="artext">'+words+'</div>'+
-      (a.ko&&a.ko[i]?'<div class="arko">'+esc(a.ko[i])+'</div>':'')+
-      '<button class="link" data-ko="'+i+'" style="margin-top:4px">'+(a.ko&&a.ko[i]?"해석 수정":"해석 달기")+'</button></div>';
+    return '<div class="arpara"><div class="parahead"><span class="paranum">'+(i+1)+'</span>'+
+      '<button class="link" data-quote="'+i+'">발췌에 담기</button></div>'+
+      '<div class="artext">'+words+'</div>'+
+      '<textarea class="arko-in" data-koi="'+i+'" rows="2" placeholder="이 문단을 내 말로 해석해보세요">'+esc((a.ko&&a.ko[i])||"")+'</textarea></div>';
   }).join("");
-  var noteHtml='<div class="sgrp" style="margin-top:20px">내 분석</div>'+
-    '<textarea class="arnote" id="aNote" placeholder="핵심 메시지, 왜 그렇게 읽었는지, 어디에 영향을 줄지…">'+esc(a.note||"")+'</textarea>';
-  body.innerHTML=head+(paras.length?bodyHtml:'<p class="hint">본문이 비어 있습니다. 위 편집을 눌러 원문을 붙여넣으세요.</p>')+noteHtml;
+
   var d=artDay(a,false);
+  var wordHtml='<div class="sgrp arsec">모르는 단어 '+(d?d.words.length:0)+'개</div>'+
+    (d&&d.words.length
+      ? '<div class="arwords">'+d.words.map(function(w){
+          return '<span class="arword"><b>'+esc(w.term)+'</b>'+(w.meaning?' '+esc(w.meaning):'')+'</span>';
+        }).join("")+'</div>'
+      : '<p class="hint" style="margin:0">본문에서 모르는 단어를 탭하면 여기에 모이고, 단어장 기사 탭에도 들어갑니다.</p>');
+
+  var extra=wordHtml+
+    '<div class="sgrp arsec">발췌</div>'+
+    '<textarea class="arnote" id="aQuote" placeholder="인상 깊은 문장을 모아두세요. 문단의 ‘발췌에 담기’를 누르면 여기로 들어옵니다.">'+esc(a.quote||"")+'</textarea>'+
+    '<div class="sgrp arsec">전체 요약</div>'+
+    '<textarea class="arnote" id="aSum" placeholder="기사 전체를 3~4문장으로 요약해보세요">'+esc(a.summary||"")+'</textarea>'+
+    '<div class="sgrp arsec">내 분석</div>'+
+    '<textarea class="arnote" id="aNote" placeholder="핵심 메시지, 왜 그렇게 읽었는지, 어디에 영향을 줄지…">'+esc(a.note||"")+'</textarea>';
+
+  body.innerHTML=head+
+    (paras.length?bodyHtml:'<p class="hint">본문이 비어 있습니다. 위 편집을 눌러 원문을 붙여넣으세요.</p>')+
+    extra;
+
   dock.innerHTML='<div style="display:flex;gap:8px;max-width:720px;margin:0 auto;align-items:center">'+
-    '<span style="flex:1;font-size:12.5px;color:var(--ink-soft)">단어를 탭하면 단어장에 담깁니다 · 담은 단어 '+(d?d.words.length:0)+'개</span>'+
-    '<button class="btn" id="aDone">닫기</button></div>';
+    '<span style="flex:1;font-size:12.5px;color:var(--ink-soft)">단어를 탭하면 단어장에 담깁니다 · 입력한 내용은 자동 저장</span>'+
+    '<button class="btn" id="aDone">닫기<span class="kbd">Esc</span></button></div>';
   document.getElementById("aDone").onclick=closeReader;
-  var nt=document.getElementById("aNote");
-  if(nt) nt.onblur=function(){ a.note=nt.value; save(); };
+
+  [["aQuote","quote"],["aSum","summary"],["aNote","note"]].forEach(function(pair){
+    var el=document.getElementById(pair[0]); if(!el) return;
+    el.oninput=function(){ a[pair[1]]=el.value; save(); };
+  });
+  [].forEach.call(body.querySelectorAll("[data-koi]"),function(ta){
+    ta.oninput=function(){
+      var i=parseInt(ta.dataset.koi,10);
+      a.ko=a.ko||{};
+      if(ta.value.trim()) a.ko[i]=ta.value; else delete a.ko[i];
+      save();
+    };
+  });
 }
 document.getElementById("rBack").addEventListener("click",closeReader);
 document.getElementById("rEdit").addEventListener("click",function(){
@@ -2303,12 +2470,12 @@ document.getElementById("rEdit").addEventListener("click",function(){
 });
 document.getElementById("rBody").addEventListener("click",function(e){
   var a=curArt; if(!a) return;
-  var kb=e.target.closest("[data-ko]");
-  if(kb){
-    var i=parseInt(kb.dataset.ko,10);
-    var cur=(a.ko&&a.ko[i])||"";
-    var v=window.prompt("이 문단의 해석을 적어주세요",cur);
-    if(v!==null){ a.ko=a.ko||{}; if(v.trim()) a.ko[i]=v.trim(); else delete a.ko[i]; save(); renderReader(); }
+  var qb=e.target.closest("[data-quote]");
+  if(qb){
+    var para=paragraphs(a.text)[parseInt(qb.dataset.quote,10)]||"";
+    if(!para) return;
+    a.quote=(a.quote&&a.quote.trim()?a.quote.replace(/\s+$/,"")+"\n\n":"")+para;
+    save(); renderReader(); toast("발췌에 담았어요");
     return;
   }
   var w=e.target.closest("[data-word]");
@@ -2322,16 +2489,103 @@ document.getElementById("rBody").addEventListener("click",function(e){
     if(d0) d0.words=d0.words.filter(function(x){return x.term.toLowerCase()!==key});
     save(); renderReader(); return;
   }
-  var b=bankLookup(term);
-  var mean=window.prompt("'"+term+"'의 뜻을 적어주세요", b&&b.meaning?b.meaning:"");
+  var mean=window.prompt("'"+term+"'의 뜻을 적어주세요","");
   if(mean===null) return;
   var day=artDay(a,true);
-  day.words.push({id:uid(),term:term,meaning:mean.trim(),pos:(b&&b.pos)||"",
-    example:(b&&b.ko)?b.example:"", ko:(b&&b.ko)||"", syn:"",ant:"",known:false});
+  var sentence="";
+  paragraphs(a.text).some(function(p){
+    var ss=p.split(/(?<=[.!?])\s+/);
+    for(var k=0;k<ss.length;k++){ if(ss[k].toLowerCase().indexOf(key)>-1){ sentence=ss[k].trim(); return true; } }
+    return false;
+  });
+  day.words.push({id:uid(),term:term,meaning:mean.trim(),pos:"",
+    example:sentence, ko:"", syn:"",ant:"",known:false});
   a.picked=a.picked||{}; a.picked[key]=1;
   logAdded(1); save(); renderReader(); toast("단어장에 담았어요");
 });
 
+
+// ================= 뜻 블록 입력 =================
+function senseBlockHtml(i,d){
+  return '<div class="sbox" data-i="'+i+'">'+
+    '<div class="sboxhead"><b>뜻 '+(i+1)+'</b>'+(i>0?'<button class="link" data-delsense="'+i+'">삭제</button>':'')+'</div>'+
+    '<input class="inp smean" placeholder="뜻" value="'+esc(d.mean||"")+'">'+
+    '<input class="inp ssyn" placeholder="유의어 (쉼표로 구분)" autocapitalize="none" autocorrect="off" spellcheck="false" value="'+esc(d.syn||"")+'">'+
+    '<input class="inp sant" placeholder="반의어 (쉼표로 구분)" autocapitalize="none" autocorrect="off" spellcheck="false" value="'+esc(d.ant||"")+'">'+
+    '</div>';
+}
+function renderSenses(boxId,list){
+  var box=document.getElementById(boxId); if(!box) return;
+  if(!list||!list.length) list=[{mean:"",syn:"",ant:""}];
+  box.innerHTML=list.map(function(d,i){return senseBlockHtml(i,d)}).join("");
+}
+function readSenses(boxId){
+  var box=document.getElementById(boxId);
+  var out=[];
+  if(!box) return out;
+  [].forEach.call(box.querySelectorAll(".sbox"),function(el){
+    out.push({
+      mean:el.querySelector(".smean").value.trim(),
+      syn:el.querySelector(".ssyn").value.trim(),
+      ant:el.querySelector(".sant").value.trim()
+    });
+  });
+  return out.filter(function(d){return d.mean||d.syn||d.ant});
+}
+function joinSenses(list){
+  if(!list.length) return {meaning:"",syn:"",ant:""};
+  if(list.length===1) return {meaning:list[0].mean,syn:list[0].syn,ant:list[0].ant};
+  return {
+    meaning:list.map(function(d){return d.mean}).join(" ;; "),
+    syn:list.map(function(d){return d.syn}).join(" ;; "),
+    ant:list.map(function(d){return d.ant}).join(" ;; ")
+  };
+}
+function addSenseTo(boxId){
+  var cur=readSenses(boxId);
+  cur.push({mean:"",syn:"",ant:""});
+  renderSenses(boxId,cur);
+  var box=document.getElementById(boxId);
+  var last=box.querySelectorAll(".sbox .smean");
+  if(last.length) last[last.length-1].focus();
+}
+document.getElementById("fAddSense").addEventListener("click",function(){ addSenseTo("fSenses"); });
+document.getElementById("eAddSense").addEventListener("click",function(){ addSenseTo("eSenses"); });
+["fSenses","eSenses"].forEach(function(id){
+  var box=document.getElementById(id);
+  if(!box) return;
+  box.addEventListener("click",function(e){
+    var d=e.target.closest("[data-delsense]"); if(!d) return;
+    var cur=readSenses(id);
+    cur.splice(parseInt(d.dataset.delsense,10),1);
+    renderSenses(id,cur);
+    if(id==="fSenses") checkOne();
+  });
+  box.addEventListener("input",function(e){ if(id==="fSenses") checkOne(); });
+});
+
+document.getElementById("fDetailBtn").addEventListener("click",function(){
+  var d=document.getElementById("fDetail");
+  var open=d.className==="hide";
+  d.className=open?"":"hide";
+  this.textContent=open?"− 상세 접기":"＋ 파생어·표현";
+});
+function detailHtml(w){
+  var out="";
+  if(w.forms){
+    out+='<div class="wblock"><span class="wlabel">파생</span><div>'+
+      String(w.forms).split("/").map(function(s){return '<div class="wline">'+esc(s.trim())+'</div>'}).join("")+'</div></div>';
+  }
+  if(w.idiom){
+    out+='<div class="wblock"><span class="wlabel">표현</span><div>'+
+      String(w.idiom).split("/").map(function(s){return '<div class="wline">'+esc(s.trim())+'</div>'}).join("")+'</div></div>';
+  }
+  if(w.conf){
+    out+='<div class="wblock"><span class="wlabel wconf">혼동</span><div>'+
+      String(w.conf).split("/").map(function(s){return '<div class="wline">'+esc(s.trim())+'</div>'}).join("")+'</div></div>';
+  }
+  return out;
+}
 </script>
 </body>
 </html>
