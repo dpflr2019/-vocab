@@ -332,6 +332,22 @@ h1 span{color:var(--ink-soft);}
 .aptopic{font-style:normal;background:var(--marker);color:#11151F;border-radius:5px;padding:2px 7px;font-size:11.5px;font-weight:700;}
 .apstat{font-size:12px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
 
+
+.artext .w{border-radius:4px;padding:1px 1px;}
+.artext .w.picked{background:var(--marker);color:#11151F;font-weight:700;box-shadow:0 0 0 2px var(--marker);}
+.paraacts{display:flex;gap:14px;}
+.pwbox{margin-top:10px;background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:8px 10px;}
+.pwlabel{font-size:11.5px;font-weight:700;color:var(--ink-soft);margin:2px 0 4px;}
+.pw{display:flex;align-items:center;gap:8px;padding:4px 0;border-top:1px solid var(--rule);}
+.pwlabel+.pw{border-top:0;}
+.pwterm{flex:0 0 auto;max-width:45%;font-size:14px;font-weight:700;color:#11151F;background:var(--marker);border-radius:4px;padding:2px 6px;overflow-wrap:anywhere;}
+.pwmean{flex:1;min-width:0;border:0;border-bottom:1px dashed var(--rule);background:transparent;color:var(--ink);font:14px inherit;font-family:inherit;padding:7px 2px;}
+.pwmean:focus{outline:none;border-bottom-color:var(--marker-deep);}
+.pwdel{flex:0 0 auto;border:0;background:transparent;color:var(--ink-soft);font-size:18px;min-width:36px;min-height:36px;cursor:pointer;}
+.pwadd{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
+.pwadd .inp{flex:1 1 140px;margin:0;}
+.pwadd .btn{flex:0 0 auto;min-height:44px;}
+
 @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
 </style>
 </head>
@@ -698,7 +714,7 @@ function articlePanel(){
   var list=state.articles.slice().sort(function(a,b){return (b.at||0)-(a.at||0)});
   var cards=list.map(function(a){
     var d=artDay(a,false);
-    var paras=paragraphs(a.text).length;
+    var paras=artParas(a).length;
     var done=a.ko?Object.keys(a.ko).filter(function(k){return String(a.ko[k]).trim()}).length:0;
     var marks=[];
     if(paras) marks.push('해석 '+done+'/'+paras);
@@ -1976,7 +1992,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v80 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v81 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2227,7 +2243,7 @@ document.getElementById("tgMore").addEventListener("click",function(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v80";
+var APP_VER="v81";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
@@ -2350,7 +2366,7 @@ function openArticles(){
   };
 }
 function newArticle(){
-  var a={id:uid(),title:"",source:"",date:"",url:"",text:"",ko:{},note:"",picked:{},at:Date.now()};
+  var a={id:uid(),title:"",source:"",date:"",url:"",text:"",ko:{},note:"",picked:{},pv:2,at:Date.now()};
   state.articles.push(a); save();
   openReader(a,"edit");
 }
@@ -2368,11 +2384,61 @@ function closeReader(){
   document.getElementById("reader").className="reader hide";
   render();
 }
-function paragraphs(text){
+function paragraphs(text){   // 예전 규칙 (v80 이전에 저장한 기사용)
   return String(text||"").split(/\n\s*\n|\n/).map(function(s){return s.trim()}).filter(Boolean);
 }
-function renderReader(){
+function splitParas(text){     // 원문의 문단 구분을 그대로 따름
+  var t=String(text||"").replace(/\r\n?/g,"\n").replace(/[\u2028\u2029]/g,"\n").replace(/\u00a0/g," ");
+  if(/\n[ \t]*\n/.test(t)){
+    // 빈 줄이 있으면 빈 줄만 문단 경계로 보고, 문단 안의 줄바꿈은 이어 붙임
+    return t.split(/\n[ \t]*\n+/).map(function(s){return s.replace(/[ \t]*\n[ \t]*/g," ").trim()}).filter(Boolean);
+  }
+  return t.split("\n").map(function(s){return s.trim()}).filter(Boolean);
+}
+function artParas(a){ return a.pv===2?splitParas(a.text):paragraphs(a.text); }
+function normTok(s){ return String(s||"").toLowerCase().replace(/’/g,"'").replace(/[^a-z'-]/g,"").replace(/^['-]+|['-]+$/g,""); }
+function paraHasTerm(p,term){
+  var tw=String(term||"").split(/\s+/).map(normTok).filter(Boolean); if(!tw.length) return false;
+  var toks=String(p).split(/\s+/).map(normTok).filter(Boolean);
+  for(var i=0;i+tw.length<=toks.length;i++){
+    var ok=true; for(var j=0;j<tw.length;j++){ if(toks[i+j]!==tw[j]){ok=false;break;} }
+    if(ok) return true;
+  }
+  return false;
+}
+function sentenceWith(p,term){
+  var ss=String(p).split(/(?<=[.!?]["”’)]?)\s+/);
+  for(var k=0;k<ss.length;k++){ if(paraHasTerm(ss[k],term)) return ss[k].trim(); }
+  return "";
+}
+function wordParaIdx(w,paras){
+  if(typeof w.artPara==="number"&&paras[w.artPara]&&paraHasTerm(paras[w.artPara],w.term)) return w.artPara;
+  for(var i=0;i<paras.length;i++){ if(paraHasTerm(paras[i],w.term)) return i; }
+  return (typeof w.artPara==="number"&&w.artPara<paras.length)?w.artPara:-1;
+}
+function highlightPara(p,terms){
+  // 토큰 단위로 나누고, 모르는 단어·표현(여러 단어 포함)에 해당하는 토큰을 표시
+  var parts=String(p).split(/(\s+)/);
+  var idx=[]; parts.forEach(function(t,i){ if(normTok(t)) idx.push(i); });
+  var mark={};
+  terms.forEach(function(term){
+    var tw=String(term).split(/\s+/).map(normTok).filter(Boolean); if(!tw.length) return;
+    for(var i=0;i+tw.length<=idx.length;i++){
+      var ok=true; for(var j=0;j<tw.length;j++){ if(normTok(parts[idx[i+j]])!==tw[j]){ok=false;break;} }
+      if(ok){ for(var j2=0;j2<tw.length;j2++) mark[idx[i+j2]]=1; }
+    }
+  });
+  return parts.map(function(tok,i){
+    var n=normTok(tok);
+    if(!n) return esc(tok);
+    var clean=tok.replace(/’/g,"'").replace(/^[^A-Za-z]+|[^A-Za-z]+$/g,"");
+    return '<span class="w'+(mark[i]?" picked":"")+'" data-word="'+esc(clean)+'">'+esc(tok)+'</span>';
+  }).join("");
+}
+var artAddOpen={};
+function renderReader(focusWid){
   var a=curArt; if(!a) return;
+  var keepTop=document.getElementById("rBody").scrollTop;
   document.getElementById("rTitle").textContent=a.title||"새 기사";
   document.getElementById("rEdit").textContent=readMode==="edit"?"읽기":"편집";
   var body=document.getElementById("rBody"), dock=document.getElementById("rDock");
@@ -2384,8 +2450,8 @@ function renderReader(){
         '<input class="inp" id="aDate" placeholder="2026-09-16" value="'+esc(a.date||"")+'"></div>'+
       '<label class="lb">원문 링크</label><input class="inp" id="aUrl" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="https://" value="'+esc(a.url||"")+'">'+
       '<label class="lb">주제</label><input class="inp" id="aTopic" placeholder="예: 해운 · 공급망 / 통화정책" value="'+esc(a.topic||"")+'">'+
-      '<label class="lb">본문 (영어 원문을 붙여넣으세요)</label>'+
-      '<textarea class="arnote" id="aText" style="min-height:260px" autocapitalize="none" autocorrect="off" spellcheck="false">'+esc(a.text||"")+'</textarea>';
+      '<label class="lb">본문 <span style="font-weight:500;color:var(--ink-soft)">· 기사를 그대로 붙여넣으세요. 빈 줄로 문단이 나뉩니다</span></label>'+
+      '<textarea class="arnote" id="aText" style="min-height:300px" autocapitalize="none" autocorrect="off" spellcheck="false">'+esc(artParas(a).join("\n\n"))+'</textarea>';
     dock.innerHTML='<div class="dock-in" style="display:flex;gap:8px;max-width:720px;margin:0 auto">'+
       '<button class="btn ghost" id="aDel">기사 삭제</button>'+
       '<button class="btn" id="aSave" style="flex:1">저장하고 읽기</button></div>';
@@ -2396,7 +2462,27 @@ function renderReader(){
       a.url=document.getElementById("aUrl").value.trim();
       a.topic=document.getElementById("aTopic").value.trim();
       var dd=artDay(a,false); if(dd) dd.name=artDayName(a);
+      var oldParas=artParas(a);
       a.text=document.getElementById("aText").value;
+      a.pv=2;
+      var newParas=artParas(a);
+      // 문단이 바뀌어도 이미 적은 해석은 같은 문단을 찾아 옮김
+      if(a.ko&&Object.keys(a.ko).length){
+        var norm=function(s){return String(s).replace(/\s+/g," ").trim().toLowerCase()};
+        var moved={}, lost=[], taken={};
+        Object.keys(a.ko).forEach(function(k){
+          var txt=a.ko[k]; if(!String(txt).trim()) return;
+          var op=norm(oldParas[k]||""), hit=-1;
+          for(var j=0;j<newParas.length;j++){
+            if(taken[j]) continue;
+            var np=norm(newParas[j]);
+            if(op&&(np===op||np.indexOf(op)>-1||op.indexOf(np)>-1)){hit=j;break;}
+          }
+          if(hit>-1){ moved[hit]=txt; taken[hit]=1; } else lost.push(txt);
+        });
+        a.ko=moved;
+        if(lost.length) a.note=(a.note?a.note.replace(/\s+$/,"")+"\n\n":"")+"(문단이 바뀌어 옮긴 해석)\n"+lost.join("\n\n");
+      }
       save(); readMode="read"; renderReader(); toast("저장했어요");
     };
     document.getElementById("aDel").onclick=function(){
@@ -2406,25 +2492,43 @@ function renderReader(){
     };
     return;
   }
-  var paras=paragraphs(a.text);
+  var paras=artParas(a);
   var head='<div class="arhead"><div class="artitle">'+esc(a.title||"제목 없음")+'</div>'+
     '<div class="armeta">'+esc(a.source||"출처 없음")+(a.date?' · '+esc(a.date):'')+
     (a.url?' · <a href="'+esc(a.url)+'" target="_blank" rel="noopener">원문 열기</a>':'')+'</div>'+
     (a.topic?'<div class="artopic">'+esc(a.topic)+'</div>':'')+'</div>';
 
+  var dd0=artDay(a,false), aw=dd0?dd0.words:[];
+  var terms=aw.map(function(w){return w.term});
+  var byPara={};
+  aw.forEach(function(w){ var k=wordParaIdx(w,paras); w.artPara=k; (byPara[k]=byPara[k]||[]).push(w); });
+
   var bodyHtml=paras.map(function(p,i){
-    var words=p.split(/(\s+)/).map(function(tok){
-      if(!/[A-Za-z]/.test(tok)) return esc(tok);
-      var clean=tok.replace(/[^A-Za-z'’-]/g,"").replace(/^['’-]+|['’-]+$/g,"");
-      if(!clean) return esc(tok);
-      var on=a.picked&&a.picked[clean.toLowerCase()]?" picked":"";
-      return '<span class="w'+on+'" data-word="'+esc(clean)+'">'+esc(tok)+'</span>';
+    var list=byPara[i]||[];
+    var rows=list.map(function(w){
+      return '<div class="pw"><span class="pwterm">'+esc(w.term)+'</span>'+
+        '<input class="pwmean" data-wid="'+w.id+'" placeholder="뜻 입력" value="'+esc(w.meaning||"")+'">'+
+        '<button class="pwdel" data-delw="'+w.id+'" aria-label="삭제">×</button></div>';
     }).join("");
-    return '<div class="arpara"><div class="parahead"><span class="paranum">'+(i+1)+'</span>'+
-      '<button class="link" data-quote="'+i+'">발췌에 담기</button></div>'+
-      '<div class="artext">'+words+'</div>'+
+    var form=artAddOpen[i]
+      ? '<div class="pwadd"><input class="inp" data-addterm="'+i+'" placeholder="단어·표현" autocapitalize="none" autocorrect="off" spellcheck="false">'+
+        '<input class="inp" data-addmean="'+i+'" placeholder="뜻">'+
+        '<button class="btn" data-addgo="'+i+'">추가</button></div>'
+      : '';
+    return '<div class="arpara" data-pi="'+i+'"><div class="parahead"><span class="paranum">'+(i+1)+'</span>'+
+      '<span class="paraacts"><button class="link" data-addopen="'+i+'">'+(artAddOpen[i]?'닫기':'＋ 단어')+'</button>'+
+      '<button class="link" data-quote="'+i+'">발췌에 담기</button></span></div>'+
+      '<div class="artext">'+highlightPara(p,terms)+'</div>'+
+      ((rows||form)?'<div class="pwbox">'+(rows?'<div class="pwlabel">모르는 단어 '+list.length+'</div>'+rows:'')+form+'</div>':'')+
       '<textarea class="arko-in" data-koi="'+i+'" rows="2" placeholder="이 문단을 내 말로 해석해보세요">'+esc((a.ko&&a.ko[i])||"")+'</textarea></div>';
   }).join("");
+  if(byPara[-1]&&byPara[-1].length){
+    bodyHtml+='<div class="pwbox"><div class="pwlabel">본문에서 찾지 못한 단어</div>'+byPara[-1].map(function(w){
+      return '<div class="pw"><span class="pwterm">'+esc(w.term)+'</span>'+
+        '<input class="pwmean" data-wid="'+w.id+'" placeholder="뜻 입력" value="'+esc(w.meaning||"")+'">'+
+        '<button class="pwdel" data-delw="'+w.id+'" aria-label="삭제">×</button></div>';
+    }).join("")+'</div>';
+  }
 
   var d=artDay(a,false);
   var wordHtml='<div class="sgrp arsec">모르는 단어 '+(d?d.words.length:0)+'개</div>'+
@@ -2432,7 +2536,7 @@ function renderReader(){
       ? '<div class="arwords">'+d.words.map(function(w){
           return '<span class="arword"><b>'+esc(w.term)+'</b>'+(w.meaning?' '+esc(w.meaning):'')+'</span>';
         }).join("")+'</div>'
-      : '<p class="hint" style="margin:0">본문에서 모르는 단어를 탭하면 여기에 모이고, 단어장 기사 탭에도 들어갑니다.</p>');
+      : '<p class="hint" style="margin:0">본문에서 모르는 단어를 탭하면 형광펜이 칠해지고 그 문단 아래에 뜻 칸이 생깁니다.</p>');
 
   var extra=wordHtml+
     '<div class="sgrp arsec">발췌</div>'+
@@ -2447,13 +2551,24 @@ function renderReader(){
     extra;
 
   dock.innerHTML='<div style="display:flex;gap:8px;max-width:720px;margin:0 auto;align-items:center">'+
-    '<span style="flex:1;font-size:12.5px;color:var(--ink-soft)">단어를 탭하면 단어장에 담깁니다 · 입력한 내용은 자동 저장</span>'+
+    '<span style="flex:1;font-size:12.5px;color:var(--ink-soft)">모르는 단어를 탭하면 형광펜 · 입력은 자동 저장</span>'+
     '<button class="btn" id="aDone">닫기<span class="kbd">Esc</span></button></div>';
   document.getElementById("aDone").onclick=closeReader;
 
   [["aQuote","quote"],["aSum","summary"],["aNote","note"]].forEach(function(pair){
     var el=document.getElementById(pair[0]); if(!el) return;
     el.oninput=function(){ a[pair[1]]=el.value; save(); };
+  });
+  [].forEach.call(body.querySelectorAll("[data-wid]"),function(inp){
+    inp.oninput=function(){ var w=findWord(inp.dataset.wid); if(w){ w.meaning=inp.value; save(); } };
+  });
+  [].forEach.call(body.querySelectorAll("[data-addterm],[data-addmean]"),function(inp){
+    inp.onkeydown=function(e){
+      if(e.key!=="Enter"||e.isComposing||e.keyCode===229) return;
+      e.preventDefault();
+      var i=inp.dataset.addterm||inp.dataset.addmean;
+      var go=body.querySelector('[data-addgo="'+i+'"]'); if(go) go.click();
+    };
   });
   [].forEach.call(body.querySelectorAll("[data-koi]"),function(ta){
     ta.oninput=function(){
@@ -2463,6 +2578,12 @@ function renderReader(){
       save();
     };
   });
+  body.scrollTop=keepTop;
+  if(focusWid){
+    var fi=body.querySelector('[data-wid="'+focusWid+'"]');
+    if(fi){ try{ fi.focus({preventScroll:true}); }catch(e){ fi.focus(); }
+      if(fi.scrollIntoView) try{ fi.scrollIntoView({block:"nearest"}); }catch(e){} }
+  }
 }
 document.getElementById("rBack").addEventListener("click",closeReader);
 document.getElementById("rEdit").addEventListener("click",function(){
@@ -2472,37 +2593,57 @@ document.getElementById("rBody").addEventListener("click",function(e){
   var a=curArt; if(!a) return;
   var qb=e.target.closest("[data-quote]");
   if(qb){
-    var para=paragraphs(a.text)[parseInt(qb.dataset.quote,10)]||"";
+    var para=artParas(a)[parseInt(qb.dataset.quote,10)]||"";
     if(!para) return;
     a.quote=(a.quote&&a.quote.trim()?a.quote.replace(/\s+$/,"")+"\n\n":"")+para;
     save(); renderReader(); toast("발췌에 담았어요");
     return;
   }
-  var w=e.target.closest("[data-word]");
-  if(!w) return;
-  var term=w.dataset.word;
-  var key=term.toLowerCase();
-  if(a.picked&&a.picked[key]){
-    if(!window.confirm("'"+term+"'을(를) 단어장에서 뺄까요?")) return;
-    delete a.picked[key];
-    var d0=artDay(a,false);
-    if(d0) d0.words=d0.words.filter(function(x){return x.term.toLowerCase()!==key});
+  var ao=e.target.closest("[data-addopen]");
+  if(ao){ var oi=ao.dataset.addopen; artAddOpen[oi]=!artAddOpen[oi]; renderReader();
+    if(artAddOpen[oi]){ var t0=document.querySelector('[data-addterm="'+oi+'"]'); if(t0) t0.focus(); } return; }
+  var ag=e.target.closest("[data-addgo]");
+  if(ag){
+    var gi=parseInt(ag.dataset.addgo,10);
+    var tIn=document.querySelector('[data-addterm="'+gi+'"]'), mIn=document.querySelector('[data-addmean="'+gi+'"]');
+    var nt=(tIn&&tIn.value||"").trim(); if(!nt){ if(tIn) tIn.focus(); return; }
+    var added=artAddWord(a,nt,gi,(mIn&&mIn.value||"").trim());
+    renderReader();
+    var t1=document.querySelector('[data-addterm="'+gi+'"]'); if(t1) t1.focus();
+    toast(added?"'"+nt+"'을(를) 담았어요":"이미 담긴 단어예요");
+    return;
+  }
+  var dw=e.target.closest("[data-delw]");
+  if(dw){
+    var tw=findWord(dw.dataset.delw); if(!tw) return;
+    if(tw.meaning&&tw.meaning.trim()&&!window.confirm("'"+tw.term+"'을(를) 빼면 적어둔 뜻도 지워집니다. 뺄까요?")) return;
+    var dd1=artDay(a,false);
+    if(dd1) dd1.words=dd1.words.filter(function(x){return x.id!==tw.id});
+    if(a.picked) delete a.picked[tw.term.toLowerCase()];
     save(); renderReader(); return;
   }
-  var mean=window.prompt("'"+term+"'의 뜻을 적어주세요","");
-  if(mean===null) return;
-  var day=artDay(a,true);
-  var sentence="";
-  paragraphs(a.text).some(function(p){
-    var ss=p.split(/(?<=[.!?])\s+/);
-    for(var k=0;k<ss.length;k++){ if(ss[k].toLowerCase().indexOf(key)>-1){ sentence=ss[k].trim(); return true; } }
-    return false;
-  });
-  day.words.push({id:uid(),term:term,meaning:mean.trim(),pos:"",
-    example:sentence, ko:"", syn:"",ant:"",known:false});
-  a.picked=a.picked||{}; a.picked[key]=1;
-  logAdded(1); save(); renderReader(); toast("단어장에 담았어요");
+  var w=e.target.closest("[data-word]");
+  if(!w) return;
+  var term=w.dataset.word; if(!term) return;
+  var pi=parseInt((w.closest("[data-pi]")||{dataset:{pi:"0"}}).dataset.pi,10);
+  var dd2=artDay(a,false);
+  var hit=dd2&&dd2.words.filter(function(x){return x.term.toLowerCase()===term.toLowerCase()})[0];
+  if(hit){ renderReader(hit.id); return; }            // 이미 표시한 단어 → 뜻 칸으로 이동
+  var nw=artAddWord(a,term,pi,"");
+  renderReader(nw&&nw.id);
 });
+function artAddWord(a,term,pi,meaning){
+  var day=artDay(a,true);
+  var exists=day.words.filter(function(x){return x.term.toLowerCase()===term.toLowerCase()})[0];
+  if(exists) return null;
+  var paras=artParas(a);
+  var nw={id:uid(),term:term,meaning:meaning||"",pos:"",example:sentenceWith(paras[pi]||"",term),
+    ko:"",syn:"",ant:"",known:false,artPara:pi};
+  day.words.push(nw);
+  a.picked=a.picked||{}; a.picked[term.toLowerCase()]=1;
+  logAdded(1); save();
+  return nw;
+}
 
 
 // ================= 뜻 블록 입력 =================
