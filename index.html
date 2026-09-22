@@ -299,6 +299,8 @@ h1 span{color:var(--ink-soft);}
 .sboxhead b{font-size:12px;font-weight:700;color:var(--ink-soft);}
 .sbox .inp{margin-top:6px;}
 .sbox .inp:first-of-type{margin-top:0;}
+#fSenses.simple .ssyn,#fSenses.simple .sant,#fSenses.simple .sboxhead{display:none;}
+#fSenses.simple .sbox{border:0;background:transparent;padding:0;margin-top:8px;}
 .sposrow{display:flex;gap:8px;}
 .sposrow .inp{margin-top:0;}
 .sposrow .spos-in{flex:0 0 34%;min-width:0;}
@@ -374,6 +376,20 @@ h1 span{color:var(--ink-soft);}
 .dockmsg{flex:1;min-width:0;font-size:12.5px;color:var(--ink-soft);}
 .undobar:not(.hide)+.dockmsg{display:none;}
 .undobar button{border:0;background:var(--marker);color:#11151F;border-radius:7px;padding:8px 12px;font:700 13px inherit;font-family:inherit;cursor:pointer;min-height:36px;}
+.arimgs{margin:10px 0 2px;display:flex;flex-direction:column;gap:10px;}
+.arimg{margin:0;position:relative;border:1px solid var(--rule);border-radius:12px;overflow:hidden;background:var(--card);}
+.arimg img{display:block;width:100%;height:auto;max-height:52vh;object-fit:contain;background:#fff;cursor:zoom-in;}
+.arimg img.imgmiss{min-height:60px;background:var(--card);}
+.arimg figcaption{padding:6px 8px;border-top:1px solid var(--rule);}
+.imgcap{width:100%;border:0;background:transparent;color:var(--ink);font:13px inherit;font-family:inherit;padding:6px 2px;min-height:34px;}
+.imgcap:focus{outline:none;border-bottom:1px dashed var(--marker-deep);}
+.imgdel{position:absolute;top:6px;right:6px;z-index:2;border:0;border-radius:50%;width:32px;height:32px;
+  background:rgba(17,21,31,.72);color:#fff;font-size:17px;line-height:1;cursor:pointer;}
+.imgscrim{align-items:center;justify-content:center;padding:16px;}
+.imgbig{max-width:min(960px,96vw);width:100%;text-align:center;}
+.imgbig img{max-width:100%;max-height:78vh;border-radius:12px;background:#fff;cursor:zoom-out;}
+.imgbigcap{color:var(--paper);font-size:13px;margin-top:8px;}
+.imgbig .btn{margin-top:12px;}
 .paradel{color:var(--miss)!important;}
 .artext{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;}
 .artext .w.sel{background:rgba(255,216,77,.55);outline:2px dashed var(--marker-deep);outline-offset:1px;}
@@ -466,6 +482,7 @@ h1 span{color:var(--ink-soft);}
 </div>
 
 <input type="file" id="restoreInput" accept=".json,application/json" style="display:none">
+<input type="file" id="imgInput" accept="image/*" multiple style="display:none">
 <div class="dock"><div>
   <button class="btn ghost" id="addBtn">단어 추가<span class="kbd">A</span></button>
   <button class="btn quizbtn" id="startBtn" aria-label="학습 시작">학습 시작<span class="kbd">S</span></button>
@@ -484,13 +501,13 @@ h1 span{color:var(--ink-soft);}
     <div id="oneMode">
       <label class="lb">단어</label>
       <input class="inp" id="fTerm" placeholder="단어" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
-      <div style="display:flex;gap:8px;margin-top:8px">
+      <div id="fSenses"></div>
+      <button class="link" id="fAddSense" tabindex="-1">＋ 뜻 추가</button>
+      <div id="fPosEx" style="display:flex;gap:8px;margin-top:10px">
         <input class="inp" id="fPos" placeholder="품사 (n. / v. / adj.)" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" style="flex:0 0 40%">
         <input class="inp" id="fEx" placeholder="예문 (선택)" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
       </div>
-      <div id="fSenses"></div>
-      <button class="link" id="fAddSense">＋ 뜻 추가</button>
-      <button class="link" id="fDetailBtn" style="margin-left:12px">＋ 파생어·표현</button>
+      <button class="link" id="fDetailBtn" tabindex="-1" style="display:inline-block;margin-top:10px">＋ 파생어·표현</button>
       <div id="fDetail" class="hide">
         <div id="fFormsWrap"><label class="lb">파생어 <span style="font-weight:500;color:var(--ink-soft)">· 여러 개면 / 로 구분</span></label>
         <input class="inp" id="fForms" placeholder="scrutiny n. 정밀한 조사 / scrutator n. 검사자" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
@@ -830,6 +847,7 @@ function openArtDelete(id,after){
     if(e.target===sc){ close(); return; }
     var b=e.target.closest("[data-delmode]"); if(!b) return;
     var withWords=b.dataset.delmode==="all";
+    artImgIds(a).forEach(function(gid){ imgDrop(gid); });
     state.articles=state.articles.filter(function(x){return x.id!==a.id});
     if(withWords&&d){
       state.days=state.days.filter(function(x){return x.id!==d.id});
@@ -851,6 +869,7 @@ function articlePanel(){
     if(paras) marks.push('해석 '+done+'/'+paras);
     marks.push('단어 '+(d?d.words.length:0));
     if(a.summary&&a.summary.trim()) marks.push('요약 ✓');
+    var nImg=artImgIds(a).length; if(nImg) marks.push('그림 '+nImg);
     return '<div class="apwrap"><button class="apcard" data-art="'+a.id+'">'+
       '<b>'+esc(a.title||"제목 없음")+'</b>'+
       '<span class="apmeta">'+(a.topic?'<i class="aptopic">'+esc(a.topic)+'</i>':'')+
@@ -1005,17 +1024,54 @@ function backupFileName(){
   var d=new Date(),p=function(n){return (n<10?"0":"")+n};
   return "toeic-vocab-"+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+".json";
 }
-function saveBackupFile(){
+function downloadJson(obj){
   try{
-    var payload=JSON.stringify({app:"toeic-vocab",version:2,savedAt:new Date().toISOString(),days:state.days,log:state.log,articles:state.articles});
-    var blob=new Blob([payload],{type:"application/json"});
+    var blob=new Blob([JSON.stringify(obj)],{type:"application/json"});
     var url=URL.createObjectURL(blob);
     var a=document.createElement("a");
     a.href=url; a.download=backupFileName();
     document.body.appendChild(a); a.click();
     setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url)},1000);
-    toast("백업 파일을 저장했어요");
-  }catch(e){ toast("저장에 실패했어요"); }
+    return true;
+  }catch(e){ return false; }
+}
+function saveBackupFile(){
+  var base={app:"toeic-vocab",version:3,savedAt:new Date().toISOString(),days:state.days,log:state.log,articles:state.articles};
+  var ids=Object.keys(allImgIds());
+  if(!ids.length||!IMG_OK){ toast(downloadJson(base)?"백업 파일을 저장했어요":"저장에 실패했어요"); return; }
+  toast("그림 "+ids.length+"장까지 담는 중…");
+  var imgs={}, left=ids.length;
+  var done=function(){
+    base.images=imgs;
+    toast(downloadJson(base)?"백업 파일을 저장했어요 (그림 "+Object.keys(imgs).length+"장 포함)":"저장에 실패했어요");
+  };
+  ids.forEach(function(id){
+    imgBlob(id,function(b){
+      if(!b){ left--; if(!left) done(); return; }
+      var fr=new FileReader();
+      fr.onload=function(){ imgs[id]=String(fr.result); left--; if(!left) done(); };
+      fr.onerror=function(){ left--; if(!left) done(); };
+      fr.readAsDataURL(b);
+    });
+  });
+}
+function dataUrlToBlob(u){
+  try{
+    var parts=String(u).split(","), mime=(parts[0].match(/:(.*?);/)||[])[1]||"image/jpeg";
+    var bin=atob(parts[1]), n=bin.length, arr=new Uint8Array(n);
+    for(var i=0;i<n;i++) arr[i]=bin.charCodeAt(i);
+    return new Blob([arr],{type:mime});
+  }catch(e){ return null; }
+}
+function restoreImages(map,cb){
+  var ids=map?Object.keys(map):[];
+  if(!ids.length||!IMG_OK){ cb&&cb(0); return; }
+  var left=ids.length, okN=0;
+  ids.forEach(function(id){
+    var b=dataUrlToBlob(map[id]);
+    if(!b){ left--; if(!left) cb&&cb(okN); return; }
+    imgPut(id,b,function(okk){ if(okk) okN++; left--; if(!left) cb&&cb(okN); });
+  });
 }
 function applyBackup(obj){
   if(!obj||!obj.days||!obj.days.length) return {ok:false,msg:"단어가 없는 파일이에요"};
@@ -1039,8 +1095,10 @@ function applyBackup(obj){
   var arts=Array.isArray(obj.articles)?obj.articles.filter(function(a){return a&&typeof a==="object"&&a.id}).map(function(a){
     a.title=a.title==null?"":String(a.title); a.text=a.text==null?"":String(a.text);
     if(!a.ko||typeof a.ko!=="object") a.ko={}; if(!a.picked||typeof a.picked!=="object") a.picked={};
+    if(!a.img||typeof a.img!=="object") a.img={};
     return a; }):null;
-  return {ok:true,days:days,count:n,log:log,articles:arts};
+  var images=(obj.images&&typeof obj.images==="object")?obj.images:null;
+  return {ok:true,days:days,count:n,log:log,articles:arts,images:images};
 }
 function restoreFromFile(file){
   var r=new FileReader();
@@ -1057,6 +1115,7 @@ function restoreFromFile(file){
     if(res.articles) state.articles=res.articles;
     save(); render();
     toast(res.count+"개를 복원했어요");
+    if(res.images) restoreImages(res.images,function(nImg){ if(nImg) toast("그림 "+nImg+"장도 복원했어요"); });
   };
   r.onerror=function(){toast("파일을 읽지 못했어요")};
   r.readAsText(file);
@@ -1070,6 +1129,7 @@ function openBackup(){
   var sc=document.createElement("div"); sc.className="scrim";
   sc.innerHTML='<div class="sheet"><h2>백업</h2>'+
     '<p class="hint">단어 '+total+'개, 암기 상태와 복습 일정까지 함께 저장됩니다.</p>'+
+    '<p class="hint" id="bkImgInfo" style="margin-top:-4px"></p>'+
     '<button class="mode" id="bkSave"><b>파일로 저장</b><span>'+backupFileName()+'</span></button>'+
     '<button class="mode" id="bkLoad"><b>파일에서 복원</b><span>현재 단어는 교체됨</span></button>'+
     '<button class="mode" id="bkCopy"><b>텍스트로 복사</b><span>대화창에 붙여넣기용</span></button>'+
@@ -1079,6 +1139,10 @@ function openBackup(){
   var close=function(){if(sc.parentNode)document.body.removeChild(sc)};
   sc.querySelector("#expClose").onclick=close;
   sc.onclick=function(e){if(e.target===sc)close()};
+  imgTotal(function(n,bytes){
+    var el=sc.querySelector("#bkImgInfo");
+    if(el) el.textContent=n?("문단에 넣은 그림 "+n+"장 · 약 "+mbText(bytes)+" 도 함께 저장됩니다"):"";
+  });
   sc.querySelector("#bkSave").onclick=function(){saveBackupFile()};
   sc.querySelector("#bkLoad").onclick=function(){close();document.getElementById("restoreInput").click()};
   sc.querySelector("#bkCopy").onclick=function(){
@@ -1600,12 +1664,16 @@ function openSheet(){
   fillDaySel();
   ["fTerm","fPos","fEx","fForms","fIdiom","fConf","bulk"].forEach(function(id){$(id).value=""});
   var rich=state.section==="transfer";
+  var simple=(state.section==="v2026"||state.section==="v2023"||state.section==="colloc");   // 토익 단어장·Collocation은 단어·뜻·예문만
   senseRich.fSenses=rich;
-  $("fPos").style.display=rich?"none":"";
+  $("fSenses").className=simple?"simple":"";
+  $("fPos").style.display=(rich||simple)?"none":"";
   $("fFormsWrap").style.display=rich?"none":"";
+  $("fAddSense").style.display=simple?"none":"";
   $("fAddSense").textContent=rich?"＋ 품사 추가":"＋ 뜻 추가";
+  $("fDetailBtn").style.display=simple?"none":"inline-block";
   $("fDetailBtn").textContent=rich?"− 표현·혼동어 접기":"＋ 파생어·표현";
-  $("fDetail").className=rich?"":"hide";
+  $("fDetail").className=(rich&&!simple)?"":"hide";
   renderSenses("fSenses",[]);
   $("addedN").textContent="";
   $("addOne").disabled=true;
@@ -1628,22 +1696,41 @@ function checkOne(){
   $("addOne").disabled=!($("fTerm").value.trim()&&s.length);
 }
 var composing=false;
-["fTerm","fPos","fEx","bulk","q"].forEach(function(id){
+["bulk","q"].forEach(function(id){
   var el=$(id); if(!el) return;
   el.addEventListener("compositionstart",function(){composing=true});
-  el.addEventListener("compositionend",function(){composing=false;checkOne();});
+  el.addEventListener("compositionend",function(){composing=false;});
 });
 $("fTerm").addEventListener("input",checkOne);
 
-var pendingKo="",lookupFor="";
-
-["fTerm","fPos","fEx"].forEach(function(id){
-  $(id).addEventListener("keydown",function(e){
-    if(e.key!=="Enter") return;
-    if(composing||e.isComposing||e.keyCode===229||e.which===229) return;
-    e.preventDefault(); addOne();
-  });
+// 추가창 안에서는 어느 칸에서 엔터를 쳐도 단어가 담긴다 (한글 입력 중이면 조합이 끝난 뒤)
+var oneComposing=false, enterWaiting=0;
+var oneBox=$("oneMode");
+function tryAddOne(){
+  var btn=$("addOne");
+  if(btn&&btn.disabled) checkOne();
+  if($("fTerm").value.trim()&&readSenses("fSenses").length){ addOne(); return true; }
+  if(!$("fTerm").value.trim()){ $("fTerm").focus(); return false; }
+  var m=oneBox.querySelector("#fSenses .smean");
+  if(m) m.focus();
+  return false;
+}
+oneBox.addEventListener("compositionstart",function(){ oneComposing=true; });
+oneBox.addEventListener("compositionend",function(){
+  oneComposing=false; checkOne();
+  if(enterWaiting&&Date.now()-enterWaiting<600){ enterWaiting=0; setTimeout(tryAddOne,0); }
+  enterWaiting=0;
 });
+oneBox.addEventListener("keydown",function(e){
+  if(e.key!=="Enter"&&e.keyCode!==13) return;
+  var t=e.target;
+  if(!t||t.tagName!=="INPUT") return;
+  e.preventDefault();
+  if(oneComposing||e.isComposing||e.keyCode===229||e.which===229){ enterWaiting=Date.now(); return; }
+  tryAddOne();
+});
+
+var pendingKo="",lookupFor="";
 function addOne(){
   var term=$("fTerm").value.trim(); if(!term) return;
   var s=joinSenses(readSenses("fSenses"));
@@ -2146,7 +2233,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v90 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v94 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2379,6 +2466,9 @@ document.getElementById("tgMore").addEventListener("click",function(){
   };
 });
 
+// 안 쓰는 그림 정리 (시작할 때 한 번)
+setTimeout(function(){ try{ imgGC(); }catch(e){} },4000);
+
 // ---- 시작 자가 점검 (업데이트 후 버튼이 안 눌리는 문제 조기 발견) ----
 (function(){
   try{
@@ -2393,7 +2483,7 @@ document.getElementById("tgMore").addEventListener("click",function(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v90";
+var APP_VER="v94";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
@@ -2461,7 +2551,7 @@ document.addEventListener("keydown",function(e){
     var scrims=document.querySelectorAll(".scrim:not(.hide)");
     if(scrims.length){
       var last=scrims[scrims.length-1];
-      var btn=last.querySelector("#startClose,#stClose,#endClose,#expClose,#moreClose,#cpClose,#artDelCancel,#cancelAdd,#doneAdd");
+      var btn=last.querySelector("#startClose,#stClose,#endClose,#expClose,#moreClose,#cpClose,#imgClose,#artDelCancel,#cancelAdd,#doneAdd");
       if(btn){ btn.click(); return; }
       if(last.id==="editScrim"){ closeEdit(); return; }
       if(last.parentNode) last.className="scrim hide";
@@ -2477,6 +2567,223 @@ document.addEventListener("keydown",function(e){
   else if(e.key==="s"||e.key==="S"){ var s=document.getElementById("startBtn"); if(s&&!s.disabled) s.click(); }
   else if(e.key==="a"||e.key==="A"){ var a=document.getElementById("addBtn"); if(a) a.click(); }
 });
+
+
+// ================= 문단 그림(사진·그래프) =================
+var IMG_OK=(function(){ try{ return !!window.indexedDB&&!!window.FileReader; }catch(e){ return false; } })();
+var imgDbRef=null, imgUrls={}, imgTrash=[];
+function imgDb(cb){
+  if(!IMG_OK){ cb(null); return; }
+  if(imgDbRef){ cb(imgDbRef); return; }
+  try{
+    var rq=indexedDB.open("vocab-img",1);
+    rq.onupgradeneeded=function(){ var db=rq.result; if(!db.objectStoreNames.contains("img")) db.createObjectStore("img"); };
+    rq.onsuccess=function(){ imgDbRef=rq.result; cb(imgDbRef); };
+    rq.onerror=function(){ cb(null); };
+  }catch(e){ cb(null); }
+}
+function imgPut(id,blob,cb){
+  imgDb(function(db){
+    if(!db){ cb&&cb(false); return; }
+    try{ var tx=db.transaction("img","readwrite"); tx.objectStore("img").put(blob,id);
+      tx.oncomplete=function(){ cb&&cb(true) }; tx.onerror=function(){ cb&&cb(false) };
+    }catch(e){ cb&&cb(false); }
+  });
+}
+function imgBlob(id,cb){
+  imgDb(function(db){
+    if(!db){ cb(null); return; }
+    try{ var rq=db.transaction("img","readonly").objectStore("img").get(id);
+      rq.onsuccess=function(){ cb(rq.result||null) }; rq.onerror=function(){ cb(null) };
+    }catch(e){ cb(null); }
+  });
+}
+function imgUrl(id,cb){
+  if(imgUrls[id]){ cb(imgUrls[id]); return; }
+  imgBlob(id,function(b){
+    if(!b){ cb(""); return; }
+    var u=""; try{ u=URL.createObjectURL(b) }catch(e){}
+    if(u) imgUrls[id]=u;
+    cb(u);
+  });
+}
+function imgDrop(id){
+  if(imgUrls[id]){ try{ URL.revokeObjectURL(imgUrls[id]) }catch(e){} delete imgUrls[id]; }
+  imgDb(function(db){ if(!db) return; try{ db.transaction("img","readwrite").objectStore("img")["delete"](id); }catch(e){} });
+}
+function allImgIds(){
+  var out={};
+  (state.articles||[]).forEach(function(a){
+    if(!a.img) return;
+    Object.keys(a.img).forEach(function(k){
+      (a.img[k]||[]).forEach(function(g){ if(g&&g.id) out[g.id]=1; });
+    });
+  });
+  return out;
+}
+function artImgIds(a){
+  var out=[];
+  if(a&&a.img) Object.keys(a.img).forEach(function(k){ (a.img[k]||[]).forEach(function(g){ if(g&&g.id) out.push(g.id); }); });
+  return out;
+}
+// 어느 기사에서도 쓰지 않는 그림은 정리
+function imgGC(){
+  imgDb(function(db){
+    if(!db) return;
+    try{
+      var keep=allImgIds(), st=db.transaction("img","readwrite").objectStore("img");
+      var rq=st.getAllKeys?st.getAllKeys():null;
+      if(!rq) return;
+      rq.onsuccess=function(){
+        (rq.result||[]).forEach(function(k){ if(!keep[k]) try{ st["delete"](k) }catch(e){} });
+      };
+    }catch(e){}
+  });
+}
+function imgTotal(cb){
+  imgDb(function(db){
+    if(!db){ cb(0,0); return; }
+    var ids=Object.keys(allImgIds()), n=ids.length, left=n, bytes=0;
+    if(!n){ cb(0,0); return; }
+    ids.forEach(function(id){ imgBlob(id,function(b){ if(b) bytes+=b.size||0; left--; if(!left) cb(n,bytes); }); });
+  });
+}
+function mbText(b){ return b>=1048576?(b/1048576).toFixed(1)+"MB":Math.max(1,Math.round(b/1024))+"KB"; }
+// 큰 사진은 줄여서 저장 (가로·세로 최대 1600px)
+function shrinkImage(file,cb){
+  var fr=new FileReader();
+  fr.onload=function(){
+    var im=new Image();
+    im.onload=function(){
+      try{
+        var MAX=1600, r=Math.min(1,MAX/Math.max(im.width,im.height));
+        var cw=Math.max(1,Math.round(im.width*r)), ch=Math.max(1,Math.round(im.height*r));
+        var cv=document.createElement("canvas"); cv.width=cw; cv.height=ch;
+        var cx=cv.getContext("2d"); cx.fillStyle="#fff"; cx.fillRect(0,0,cw,ch); cx.drawImage(im,0,0,cw,ch);
+        if(cv.toBlob) cv.toBlob(function(b){ cb(b||file,cw,ch) },"image/jpeg",0.86);
+        else cb(file,cw,ch);
+      }catch(e){ cb(file,im.width,im.height); }
+    };
+    im.onerror=function(){ cb(null,0,0) };
+    im.src=fr.result;
+  };
+  fr.onerror=function(){ cb(null,0,0) };
+  fr.readAsDataURL(file);
+}
+function addParaImages(a,pi,files){
+  if(!IMG_OK){ toast("이 기기에서는 그림을 저장할 수 없어요"); return; }
+  var list=[].slice.call(files||[]).filter(function(f){ return f&&/^image\//.test(f.type||"") });
+  if(!list.length){ toast("사진·이미지 파일만 넣을 수 있어요"); return; }
+  toast("그림을 넣는 중…");
+  var left=list.length, added=0, fail=0;
+  var finish=function(){
+    save(); renderReader();
+    if(added) toast(added+"장을 "+(pi+1)+"번 문단에 넣었어요");
+    else toast("그림을 넣지 못했어요"+(fail?" ("+fail+"장)":""));
+  };
+  list.forEach(function(f){
+    shrinkImage(f,function(blob,w,h){
+      if(!blob){ fail++; left--; if(!left) finish(); return; }
+      var id="im"+uid();
+      imgPut(id,blob,function(okk){
+        if(okk){
+          a.img=a.img||{};
+          if(!a.img[pi]) a.img[pi]=[];
+          a.img[pi].push({id:id,cap:"",w:w||0,h:h||0,size:blob.size||0});
+          added++;
+        } else fail++;
+        left--; if(!left) finish();
+      });
+    });
+  });
+}
+var pendingImgPara=-1, lastParaTouch=0;
+document.addEventListener("paste",function(e){
+  var a=curArt;
+  if(!a||readMode!=="read") return;
+  if(document.getElementById("reader").className.indexOf("hide")>-1) return;
+  var dt=e.clipboardData; if(!dt) return;
+  var files=[];
+  if(dt.files&&dt.files.length) files=[].slice.call(dt.files);
+  else if(dt.items){
+    [].forEach.call(dt.items,function(it){
+      if(it.kind==="file"&&/^image\//.test(it.type||"")){ var f=it.getAsFile(); if(f) files.push(f); }
+    });
+  }
+  files=files.filter(function(f){ return f&&/^image\//.test(f.type||"") });
+  if(!files.length) return;
+  e.preventDefault();
+  var el=document.activeElement, box=el&&el.closest?el.closest(".arpara"):null;
+  var pi=box?parseInt(box.dataset.pi,10):lastParaTouch;
+  var paras=artParas(a);
+  if(!(pi>=0)||pi>=paras.length) pi=Math.max(0,paras.length-1);
+  addParaImages(a,pi,files);
+});
+document.getElementById("imgInput").addEventListener("change",function(){
+  var a=curArt, pi=pendingImgPara;
+  if(a&&pi>-1&&this.files&&this.files.length) addParaImages(a,pi,this.files);
+  this.value=""; pendingImgPara=-1;
+});
+function pickParaImage(pi){
+  if(!IMG_OK){ toast("이 기기에서는 그림을 저장할 수 없어요"); return; }
+  pendingImgPara=pi;
+  document.getElementById("imgInput").click();
+}
+function paraImgHtml(a,i){
+  var list=(a.img&&a.img[i])||[];
+  if(!list.length) return "";
+  return '<div class="arimgs">'+list.map(function(g,k){
+    return '<figure class="arimg">'+
+      '<button class="imgdel" data-imgdel="'+i+'.'+k+'" aria-label="그림 삭제">×</button>'+
+      '<img data-imgid="'+esc(g.id)+'" data-imgopen="'+i+'.'+k+'" alt="'+esc(g.cap||"기사 그림")+'"'+
+        (g.w&&g.h?' width="'+g.w+'" height="'+g.h+'"':'')+'>'+
+      '<figcaption><input class="imgcap" data-imgcap="'+i+'.'+k+'" placeholder="그림 설명 (선택)" value="'+esc(g.cap||"")+'"></figcaption>'+
+      '</figure>';
+  }).join("")+'</div>';
+}
+function hydrateImages(root){
+  [].forEach.call(root.querySelectorAll("img[data-imgid]"),function(im){
+    if(im.getAttribute("src")) return;
+    imgUrl(im.dataset.imgid,function(u){
+      if(u) im.src=u; else { im.alt="그림을 찾지 못했어요"; im.className="imgmiss"; }
+    });
+  });
+}
+function imgAt(a,key){
+  var p=String(key).split("."), i=p[0], k=parseInt(p[1],10);
+  var list=(a.img&&a.img[i])||[];
+  return {i:i,k:k,list:list,g:list[k]};
+}
+function openImgView(a,key){
+  var t=imgAt(a,key); if(!t.g) return;
+  var sc=document.createElement("div"); sc.className="scrim imgscrim";
+  sc.innerHTML='<div class="imgbig"><img alt="'+esc(t.g.cap||"기사 그림")+'" data-imgid="'+esc(t.g.id)+'">'+
+    (t.g.cap?'<div class="imgbigcap">'+esc(t.g.cap)+'</div>':'')+
+    '<button class="btn" id="imgClose">닫기<span class="kbd">Esc</span></button></div>';
+  document.body.appendChild(sc);
+  var close=function(){ if(sc.parentNode) document.body.removeChild(sc) };
+  sc.querySelector("#imgClose").onclick=close;
+  sc.onclick=function(e){ if(e.target===sc||e.target.tagName==="IMG") close(); };
+  hydrateImages(sc);
+}
+function deleteParaImage(a,key){
+  var t=imgAt(a,key); if(!t.g) return;
+  t.list.splice(t.k,1);
+  if(!t.list.length) delete a.img[t.i];
+  undoState={kind:"img",artId:a.id,pi:t.i,gi:t.k,item:t.g};
+  save(); renderReader();
+  showUndo("그림을 지웠어요");
+  imgTrash.push({id:t.g.id,at:Date.now()});
+  purgeImgTrash();
+}
+function purgeImgTrash(){
+  var keep=[], now=Date.now(), used=allImgIds();
+  imgTrash.forEach(function(x){
+    if(used[x.id]) return;                    // 되돌리기로 살아났으면 그대로 둠
+    if(now-x.at>20000) imgDrop(x.id); else keep.push(x);
+  });
+  imgTrash=keep;
+}
 
 // ================= 기사 스크랩 =================
 var curArt=null, readMode="read";
@@ -2512,6 +2819,7 @@ function closeReader(){
     var empty=curArt; state.articles=state.articles.filter(function(x){return x!==empty}); save();
   }
   flushSave();
+  purgeImgTrash();
   hideVInfo(); hideSelBar(); hideUndo();
   if(curArt&&state.section!=="news"){
     state.section="news"; state.day="all";
@@ -2729,21 +3037,36 @@ function renderReader(focusWid){
       if(wasEmpty){ if(cleanPastedArticle(a)){ var tt=document.getElementById("rTitle"); if(tt) tt.textContent=a.title||"새 기사"; } a.junkOk=false; }
       var newParas=artParas(a);
       // 문단이 바뀌어도 이미 적은 해석은 같은 문단을 찾아 옮김
+      var normP=function(s){return String(s).replace(/\s+/g," ").trim().toLowerCase()};
+      var findPara=function(k,taken){
+        var op=normP(oldParas[k]||"");
+        for(var j=0;j<newParas.length;j++){
+          if(taken&&taken[j]) continue;
+          var np=normP(newParas[j]);
+          if(op&&(np===op||np.indexOf(op)>-1||op.indexOf(np)>-1)) return j;
+        }
+        return -1;
+      };
       if(a.ko&&Object.keys(a.ko).length){
-        var norm=function(s){return String(s).replace(/\s+/g," ").trim().toLowerCase()};
         var moved={}, lost=[], taken={};
         Object.keys(a.ko).forEach(function(k){
           var txt=a.ko[k]; if(!String(txt).trim()) return;
-          var op=norm(oldParas[k]||""), hit=-1;
-          for(var j=0;j<newParas.length;j++){
-            if(taken[j]) continue;
-            var np=norm(newParas[j]);
-            if(op&&(np===op||np.indexOf(op)>-1||op.indexOf(np)>-1)){hit=j;break;}
-          }
+          var hit=findPara(k,taken);
           if(hit>-1){ moved[hit]=txt; taken[hit]=1; } else lost.push(txt);
         });
         a.ko=moved;
         if(lost.length) a.note=(a.note?a.note.replace(/\s+$/,"")+"\n\n":"")+"(문단이 바뀌어 옮긴 해석)\n"+lost.join("\n\n");
+      }
+      if(a.img&&Object.keys(a.img).length){
+        var mi={}, tk={};
+        Object.keys(a.img).forEach(function(k){
+          var arr=a.img[k]; if(!arr||!arr.length) return;
+          var hit=findPara(k,tk);
+          if(hit<0) hit=Math.min(parseInt(k,10),Math.max(0,newParas.length-1));   // 못 찾으면 자리만 지킴
+          else tk[hit]=1;
+          mi[hit]=(mi[hit]||[]).concat(arr);
+        });
+        a.img=mi;
       }
       save(); readMode="read"; renderReader(); toast("저장했어요");
     };
@@ -2782,8 +3105,10 @@ function renderReader(focusWid){
       (junkIdx.indexOf(i)>-1?'<span class="junktag">광고?</span>':'')+
       '<span class="paraacts"><button class="link" data-addopen="'+i+'">'+(artAddOpen[i]?'닫기':'＋ 단어')+'</button>'+
       '<button class="link" data-quote="'+i+'">발췌</button>'+
+      (IMG_OK?'<button class="link" data-addimg="'+i+'">＋ 그림</button>':'')+
       '<button class="link paradel" data-delpara="'+i+'">문단 삭제</button></span></div>'+
       '<div class="artext">'+highlightPara(p,terms,vindex)+'</div>'+
+      paraImgHtml(a,i)+
       ((rows||form)?'<div class="pwbox">'+(rows?'<div class="pwlabel">모르는 단어 '+list.length+'</div>'+rows:'')+form+'</div>':'')+
       '<textarea class="arko-in" data-koi="'+i+'" rows="2" placeholder="이 문단을 내 말로 해석해보세요">'+esc((a.ko&&a.ko[i])||"")+'</textarea></div>';
   }).join("");
@@ -2827,7 +3152,7 @@ function renderReader(focusWid){
   var undoOn=undoState&&Date.now()<undoUntil;
   dock.innerHTML='<div style="display:flex;gap:8px;max-width:720px;margin:0 auto;align-items:center">'+
     '<span class="undobar'+(undoOn?'':' hide')+'" id="undoBar"><span id="undoMsg">'+esc(undoOn?undoText:'')+'</span><button id="undoGo">되돌리기</button></span>'+
-    '<span class="dockmsg">탭 = 담기 · 두 번 탭 = 취소 · 길게 눌러 밀기 = 어구 선택</span>'+
+    '<span class="dockmsg">탭 = 담기 · 두 번 탭 = 취소 · 길게 눌러 밀기 = 어구 선택'+(IMG_OK?' · 그림은 문단의 ＋ 그림 또는 붙여넣기(⌘V)':'')+'</span>'+
     '<button class="btn" id="aDone">닫기<span class="kbd">Esc</span></button></div>';
   document.getElementById("aDone").onclick=closeReader;
 
@@ -2850,6 +3175,10 @@ function renderReader(focusWid){
       var go=body.querySelector('[data-addgo="'+i+'"]'); if(go) go.click();
     };
   });
+  hydrateImages(body);
+  [].forEach.call(body.querySelectorAll("[data-imgcap]"),function(inp){
+    inp.oninput=function(){ var t=imgAt(a,inp.dataset.imgcap); if(t.g){ t.g.cap=inp.value; saveSoon(); } };
+  });
   [].forEach.call(body.querySelectorAll("[data-koi]"),function(ta){
     ta.oninput=function(){
       var i=parseInt(ta.dataset.koi,10);
@@ -2871,6 +3200,14 @@ document.getElementById("rEdit").addEventListener("click",function(){
 });
 document.getElementById("rBody").addEventListener("click",function(e){
   var a=curArt; if(!a) return;
+  var pnow=e.target.closest(".arpara");
+  if(pnow) lastParaTouch=parseInt(pnow.dataset.pi,10);
+  var ib=e.target.closest("[data-addimg]");
+  if(ib){ pickParaImage(parseInt(ib.dataset.addimg,10)); return; }
+  var idel=e.target.closest("[data-imgdel]");
+  if(idel){ deleteParaImage(a,idel.dataset.imgdel); return; }
+  var iop=e.target.closest("[data-imgopen]");
+  if(iop){ openImgView(a,iop.dataset.imgopen); return; }
   var qb=e.target.closest("[data-quote]");
   if(qb){
     var para=artParas(a)[parseInt(qb.dataset.quote,10)]||"";
@@ -2894,7 +3231,9 @@ document.getElementById("rBody").addEventListener("click",function(e){
     var keep=[], map={};
     ps.forEach(function(p,i){ if(rm.indexOf(i)<0){ map[i]=keep.length; keep.push(p); } });
     var ko={}; Object.keys(a.ko||{}).forEach(function(k){ if(map[k]!==undefined) ko[map[k]]=a.ko[k]; });
-    a.text=keep.join("\n\n"); a.pv=2; a.ko=ko; artAddOpen={};
+    var im0={}; Object.keys(a.img||{}).forEach(function(k){ if(map[k]!==undefined) im0[map[k]]=a.img[k]; });
+    undoState.img=JSON.parse(JSON.stringify(a.img||{}));
+    a.text=keep.join("\n\n"); a.pv=2; a.ko=ko; a.img=im0; artAddOpen={};
     save(); renderReader(); showUndo("광고 문단 "+rm.length+"개를 지웠어요");
     return;
   }
@@ -3019,6 +3358,22 @@ function readSenses(boxId){
   });
   return out.filter(function(d){return d.mean||d.syn||d.ant||d.pos||d.forms});
 }
+// 빈 칸도 그대로 둔 채 읽기 (칸을 더하거나 지울 때)
+function readSensesRaw(boxId){
+  var box=document.getElementById(boxId), out=[];
+  if(!box) return out;
+  [].forEach.call(box.querySelectorAll(".sbox"),function(el){
+    var p=el.querySelector(".spos-in"), f=el.querySelector(".sforms");
+    out.push({
+      mean:el.querySelector(".smean").value.trim(),
+      syn:el.querySelector(".ssyn").value.trim(),
+      ant:el.querySelector(".sant").value.trim(),
+      pos:p?p.value.trim():"",
+      forms:f?f.value.trim():""
+    });
+  });
+  return out;
+}
 function joinSenses(list){
   if(!list.length) return {meaning:"",syn:"",ant:"",pos:"",forms:""};
   if(list.length===1) return {meaning:list[0].mean,syn:list[0].syn,ant:list[0].ant,pos:list[0].pos||"",forms:list[0].forms||""};
@@ -3026,7 +3381,7 @@ function joinSenses(list){
   return {meaning:list.map(function(d){return d.mean}).join(" ;; "),syn:j("syn"),ant:j("ant"),pos:j("pos"),forms:j("forms")};
 }
 function addSenseTo(boxId){
-  var cur=readSenses(boxId);
+  var cur=readSensesRaw(boxId);
   cur.push({mean:"",syn:"",ant:"",pos:"",forms:""});
   renderSenses(boxId,cur);
   var box=document.getElementById(boxId);
@@ -3040,7 +3395,7 @@ document.getElementById("eAddSense").addEventListener("click",function(){ addSen
   if(!box) return;
   box.addEventListener("click",function(e){
     var d=e.target.closest("[data-delsense]"); if(!d) return;
-    var cur=readSenses(id);
+    var cur=readSensesRaw(id);
     cur.splice(parseInt(d.dataset.delsense,10),1);
     renderSenses(id,cur);
     if(id==="fSenses") checkOne();
@@ -3097,7 +3452,7 @@ var undoState=null, undoTimer=null, undoUntil=0, undoText="";
 function deleteParagraph(a,i){
   var paras=artParas(a);
   if(i<0||i>=paras.length) return;
-  undoState={kind:"para",id:a.id,text:a.text,pv:a.pv,ko:JSON.parse(JSON.stringify(a.ko||{})),quote:a.quote};
+  undoState={kind:"para",id:a.id,text:a.text,pv:a.pv,ko:JSON.parse(JSON.stringify(a.ko||{})),quote:a.quote,img:JSON.parse(JSON.stringify(a.img||{}))};
   paras.splice(i,1);
   a.text=paras.join("\n\n"); a.pv=2;
   var ko={};
@@ -3106,6 +3461,13 @@ function deleteParagraph(a,i){
     if(n<i) ko[n]=a.ko[k]; else if(n>i) ko[n-1]=a.ko[k];
   });
   a.ko=ko;
+  var im1={};
+  Object.keys(a.img||{}).forEach(function(k){
+    var n=parseInt(k,10);
+    if(n<i) im1[n]=a.img[k]; else if(n>i) im1[n-1]=a.img[k];
+    else (a.img[k]||[]).forEach(function(g){ imgTrash.push({id:g.id,at:Date.now()}); });
+  });
+  a.img=im1;
   artAddOpen={};
   save(); renderReader();
   showUndo((i+1)+"번 문단을 지웠어요");
@@ -3123,6 +3485,17 @@ function hideUndo(){ undoUntil=0; var b=document.getElementById("undoBar"); if(b
 document.getElementById("reader").addEventListener("click",function(ev){
   if(!ev.target.closest("#undoGo")) return;
   if(!undoState) return;
+  if(undoState.kind==="img"){
+    var ai=state.articles.filter(function(x){return x.id===undoState.artId})[0];
+    if(ai){
+      ai.img=ai.img||{};
+      if(!ai.img[undoState.pi]) ai.img[undoState.pi]=[];
+      ai.img[undoState.pi].splice(undoState.gi,0,undoState.item);
+      save(); if(curArt===ai) renderReader();
+    }
+    undoState=null; hideUndo(); toast("그림을 되돌렸어요");
+    return;
+  }
   if(undoState.kind==="word"){
     var aw=state.articles.filter(function(x){return x.id===undoState.artId})[0];
     var dw=state.days.filter(function(d){return d.id===undoState.dayId})[0];
@@ -3131,7 +3504,7 @@ document.getElementById("reader").addEventListener("click",function(ev){
     save(); if(curArt&&aw===curArt) renderReader(undoState.word.id);
   }else{
     var a=state.articles.filter(function(x){return x.id===undoState.id})[0];
-    if(a){ a.text=undoState.text; a.pv=undoState.pv; a.ko=undoState.ko; a.quote=undoState.quote; if("junkOk" in undoState) a.junkOk=undoState.junkOk; save(); if(curArt===a) renderReader(); }
+    if(a){ a.text=undoState.text; a.pv=undoState.pv; a.ko=undoState.ko; a.quote=undoState.quote; if(undoState.img) a.img=undoState.img; if("junkOk" in undoState) a.junkOk=undoState.junkOk; save(); if(curArt===a) renderReader(); }
   }
   undoState=null; hideUndo();
   toast("되돌렸어요");
