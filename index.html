@@ -303,10 +303,18 @@ h1 span{color:var(--ink-soft);}
 #fSenses.simple .sbox{border:0;background:transparent;padding:0;margin-top:8px;}
 .sposrow{display:flex;gap:8px;}
 .sposrow .inp{margin-top:0;}
-.sposrow .spos-in{flex:0 0 34%;min-width:0;}
+.sposrow .spos-in{flex:0 0 30%;min-width:0;}
 .sposrow .smean{flex:1 1 auto;min-width:0;}
 .spos{display:inline-block;font-size:11px;font-weight:700;color:var(--ink-soft);border:1px solid var(--rule);border-radius:4px;padding:0 5px;margin-right:5px;vertical-align:1px;}
 .sense .wblock{margin-top:6px;}
+.fbox{border:1px solid var(--rule);border-radius:10px;padding:10px 11px 11px;margin-top:10px;background:var(--card);}
+.fbox .inp{margin-top:6px;}
+.fbox .sposrow .inp{margin-top:0;}
+.fbox .sposrow .fwpos{flex:0 0 30%;min-width:0;}
+.fbox .sposrow .fwterm{flex:1 1 auto;min-width:0;}
+.fline{font-size:13.5px;line-height:1.6;margin-bottom:3px;}
+.fline b{font-weight:700;}
+.fsyn{display:inline-flex;flex-wrap:wrap;gap:4px;margin-left:6px;vertical-align:1px;}
 .qpos{font-style:normal;font-weight:700;opacity:.75;}
 
 
@@ -511,6 +519,9 @@ h1 span{color:var(--ink-soft);}
       <div id="fDetail" class="hide">
         <div id="fFormsWrap"><label class="lb">파생어 <span style="font-weight:500;color:var(--ink-soft)">· 여러 개면 / 로 구분</span></label>
         <input class="inp" id="fForms" placeholder="scrutiny n. 정밀한 조사 / scrutator n. 검사자" autocapitalize="none" autocorrect="off" spellcheck="false"></div>
+        <div id="fForms2Wrap"><label class="lb">파생어 <span style="font-weight:500;color:var(--ink-soft)">· 다른 품사의 단어와 그 동의어</span></label>
+        <div id="fForms2"></div>
+        <button class="link" id="fAddForm" tabindex="-1">＋ 파생어 추가</button></div>
         <label class="lb">표현·숙어</label>
         <input class="inp" id="fIdiom" placeholder="be under close scrutiny 엄밀한 조사를 받다" autocapitalize="none" autocorrect="off" spellcheck="false">
         <label class="lb">혼동어</label>
@@ -548,6 +559,9 @@ tentative 잠정적인" autocapitalize="none" autocorrect="off" spellcheck="fals
   <label class="lb">해석</label><input class="inp" id="eKo" autocomplete="off" placeholder="예문 해석">
   <div id="eFormsWrap"><label class="lb">파생어 <span style="font-weight:500;color:var(--ink-soft)">· 여러 개면 / 로 구분</span></label>
   <input class="inp" id="eForms" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="scrutiny n. 정밀한 조사 / scrutator n. 검사자"></div>
+  <div id="eForms2Wrap"><label class="lb">파생어 <span style="font-weight:500;color:var(--ink-soft)">· 다른 품사의 단어와 그 동의어</span></label>
+  <div id="eForms2"></div>
+  <button class="link" id="eAddForm" tabindex="-1">＋ 파생어 추가</button></div>
   <label class="lb">표현·숙어</label>
   <input class="inp" id="eIdiom" autocapitalize="none" autocorrect="off" spellcheck="false">
   <label class="lb">혼동어</label>
@@ -1084,7 +1098,8 @@ function applyBackup(obj){
       var w=d.words[j];
       if(!w||!w.term) continue;
       words.push({id:w.id||uid(),term:String(w.term),meaning:w.meaning||"",pos:w.pos||"",
-        example:w.example||"",ko:w.ko||"",syn:w.syn||"",ant:w.ant||"",forms:w.forms||"",idiom:w.idiom||"",conf:w.conf||"",known:!!w.known,
+        example:w.example||"",ko:w.ko||"",syn:w.syn||"",ant:w.ant||"",forms:w.forms||"",
+        formsx:Array.isArray(w.formsx)?w.formsx:[],idiom:w.idiom||"",conf:w.conf||"",known:!!w.known,
         stage:w.stage||0,due:w.due||0,lapses:w.lapses||0,reps:w.reps||0,last:w.last||0});
       n++;
     }
@@ -1669,8 +1684,10 @@ function openSheet(){
   $("fSenses").className=simple?"simple":"";
   $("fPos").style.display=(rich||simple)?"none":"";
   $("fFormsWrap").style.display=rich?"none":"";
+  $("fForms2Wrap").style.display=rich?"":"none";
+  renderForms("fForms2",[]);
   $("fAddSense").style.display=simple?"none":"";
-  $("fAddSense").textContent=rich?"＋ 품사 추가":"＋ 뜻 추가";
+  $("fAddSense").textContent="＋ 뜻 추가";
   $("fDetailBtn").style.display=simple?"none":"inline-block";
   $("fDetailBtn").textContent=rich?"− 표현·혼동어 접기":"＋ 파생어·표현";
   $("fDetail").className=(rich&&!simple)?"":"hide";
@@ -1739,12 +1756,14 @@ function addOne(){
   var rich=senseRich.fSenses;
   day.words.push({id:uid(),term:term,meaning:s.meaning,pos:rich?s.pos:$("fPos").value.trim(),
     example:$("fEx").value.trim(),ko:"",syn:s.syn,ant:s.ant,
-    forms:rich?s.forms:$("fForms").value.trim(),idiom:$("fIdiom").value.trim(),conf:$("fConf").value.trim(),known:false});
+    forms:rich?formsToText(readForms("fForms2")):$("fForms").value.trim(),
+    formsx:rich?readForms("fForms2"):[],idiom:$("fIdiom").value.trim(),conf:$("fConf").value.trim(),known:false});
   addedCount++;
   logAdded(1);
   focusDay(day); save(); render();
   ["fTerm","fEx","fForms","fIdiom","fConf"].forEach(function(id){$(id).value=""});
   renderSenses("fSenses",[]);
+  renderForms("fForms2",[]);
   $("addedN").textContent=day.name+"에 "+addedCount+"개 추가됨";
   $("addOne").disabled=true;
   $("fTerm").focus();
@@ -2013,7 +2032,9 @@ function openEdit(id){
   senseRich.eSenses=rich;
   document.getElementById("ePosWrap").style.display=rich?"none":"";
   document.getElementById("eFormsWrap").style.display=rich?"none":"";
-  document.getElementById("eAddSense").textContent=rich?"＋ 품사 추가":"＋ 뜻 추가";
+  document.getElementById("eForms2Wrap").style.display=rich?"":"none";
+  renderForms("eForms2",wordForms2(found.w));
+  document.getElementById("eAddSense").textContent="＋ 뜻 추가";
   renderSenses("eSenses",senseList(found.w));
   document.getElementById("ePos").value=found.w.pos||"";
   document.getElementById("eEx").value=found.w.example||"";
@@ -2046,7 +2067,11 @@ document.getElementById("eSave").addEventListener("click",function(){
   });
   w.syn=es.syn;
   w.ant=es.ant;
-  if(senseRich.eSenses){ w.pos=es.pos; w.forms=es.forms; }
+  if(senseRich.eSenses){
+    w.pos=es.pos;
+    var fx=readForms("eForms2");
+    w.formsx=fx; w.forms=formsToText(fx);
+  }
   save(); closeEdit(); render(); toast("수정했어요");
 });
 document.getElementById("eDelete").addEventListener("click",function(){
@@ -2233,7 +2258,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v94 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v96 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2483,7 +2508,7 @@ setTimeout(function(){ try{ imgGC(); }catch(e){} },4000);
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v94";
+var APP_VER="v96";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
@@ -3327,13 +3352,12 @@ var NOAC=' autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck
 var senseRich={fSenses:false,eSenses:false};   // 편입영어: 품사·파생어도 칸마다
 function senseBlockHtml(i,d,rich){
   return '<div class="sbox'+(rich?' rich':'')+'" data-i="'+i+'">'+
-    '<div class="sboxhead"><b>'+(rich?'품사 ':'뜻 ')+(i+1)+'</b>'+(i>0?'<button class="link" data-delsense="'+i+'">삭제</button>':'')+'</div>'+
-    (rich?'<div class="sposrow"><input class="inp spos-in" placeholder="품사 (n. / v. / adj.)"'+NOAC+' value="'+esc(d.pos||"")+'">'+
-      '<input class="inp smean" placeholder="뜻" value="'+esc(d.mean||"")+'"></div>'
+    '<div class="sboxhead"><b>뜻 '+(i+1)+'</b>'+(i>0?'<button class="link" data-delsense="'+i+'">삭제</button>':'')+'</div>'+
+    (rich?'<div class="sposrow"><input class="inp smean" placeholder="뜻" value="'+esc(d.mean||"")+'">'+
+      '<input class="inp spos-in" placeholder="품사 (선택)"'+NOAC+' value="'+esc(d.pos||"")+'"></div>'
      :'<input class="inp smean" placeholder="뜻" value="'+esc(d.mean||"")+'">')+
     '<input class="inp ssyn" placeholder="유의어 (쉼표로 구분)" autocapitalize="none" autocorrect="off" spellcheck="false" value="'+esc(d.syn||"")+'">'+
     '<input class="inp sant" placeholder="반의어 (쉼표로 구분)" autocapitalize="none" autocorrect="off" spellcheck="false" value="'+esc(d.ant||"")+'">'+
-    (rich?'<input class="inp sforms" placeholder="파생어 (여러 개면 / 로 구분) 예: scrutiny n. 정밀 조사"'+NOAC+' value="'+esc(d.forms||"")+'">':'')+
     '</div>';
 }
 function renderSenses(boxId,list){
@@ -3385,7 +3409,7 @@ function addSenseTo(boxId){
   cur.push({mean:"",syn:"",ant:"",pos:"",forms:""});
   renderSenses(boxId,cur);
   var box=document.getElementById(boxId);
-  var last=box.querySelectorAll(senseRich[boxId]?".sbox .spos-in":".sbox .smean");
+  var last=box.querySelectorAll(".sbox .smean");
   if(last.length) last[last.length-1].focus();
 }
 document.getElementById("fAddSense").addEventListener("click",function(){ addSenseTo("fSenses"); });
@@ -3403,6 +3427,78 @@ document.getElementById("eAddSense").addEventListener("click",function(){ addSen
   box.addEventListener("input",function(e){ if(id==="fSenses") checkOne(); });
 });
 
+
+// ---- 파생어(다른 품사의 단어) 블록 ----
+var POS_RE=/^(n|v|adj|adv|prep|conj|pron|phr)\.?$/i;
+function formBlockHtml(i,d){
+  return '<div class="fbox" data-i="'+i+'">'+
+    '<div class="sboxhead"><b>파생어 '+(i+1)+'</b>'+(i>0?'<button class="link" data-delform="'+i+'">삭제</button>':'')+'</div>'+
+    '<div class="sposrow"><input class="inp fwterm" placeholder="단어 (예: scrutiny)"'+NOAC+' value="'+esc(d.term||"")+'">'+
+      '<input class="inp fwpos" placeholder="품사"'+NOAC+' value="'+esc(d.pos||"")+'"></div>'+
+    '<input class="inp fwmean" placeholder="뜻" value="'+esc(d.mean||"")+'">'+
+    '<input class="inp fwsyn" placeholder="동의어 (쉼표로 구분)"'+NOAC+' value="'+esc(d.syn||"")+'">'+
+    '</div>';
+}
+function renderForms(boxId,list){
+  var box=document.getElementById(boxId); if(!box) return;
+  if(!list||!list.length) list=[{term:"",pos:"",mean:"",syn:""}];
+  box.innerHTML=list.map(function(d,i){return formBlockHtml(i,d)}).join("");
+}
+function readFormsRaw(boxId){
+  var box=document.getElementById(boxId), out=[];
+  if(!box) return out;
+  [].forEach.call(box.querySelectorAll(".fbox"),function(el){
+    out.push({term:el.querySelector(".fwterm").value.trim(),
+      pos:el.querySelector(".fwpos").value.trim(),
+      mean:el.querySelector(".fwmean").value.trim(),
+      syn:el.querySelector(".fwsyn").value.trim()});
+  });
+  return out;
+}
+function readForms(boxId){
+  return readFormsRaw(boxId).filter(function(d){return d.term||d.mean||d.syn});
+}
+// 예전처럼 한 줄 글자로도 남겨둔다 (내보내기·붙여넣기 호환)
+function formsToText(list){
+  return list.map(function(d){
+    var t=[d.term,d.pos,d.mean].filter(Boolean).join(" ");
+    return d.syn?t+" = "+d.syn:t;
+  }).filter(Boolean).join(" / ");
+}
+function parseFormsText(str){
+  if(!str) return [];
+  return String(str).split("/").map(function(chunk){
+    var c=chunk.trim(); if(!c) return null;
+    var syn=""; var eq=c.indexOf(" = ");
+    if(eq>-1){ syn=c.slice(eq+3).trim(); c=c.slice(0,eq).trim(); }
+    var parts=c.split(/\s+/), term=parts.shift()||"", pos="";
+    if(parts.length&&POS_RE.test(parts[0])) pos=parts.shift();
+    return {term:term,pos:pos,mean:parts.join(" "),syn:syn};
+  }).filter(Boolean);
+}
+function wordForms2(w){
+  if(w.formsx&&w.formsx.length) return w.formsx;
+  return parseFormsText(w.forms);
+}
+function addFormTo(boxId){
+  var cur=readFormsRaw(boxId);
+  cur.push({term:"",pos:"",mean:"",syn:""});
+  renderForms(boxId,cur);
+  var box=document.getElementById(boxId), all=box.querySelectorAll(".fbox .fwterm");
+  if(all.length) all[all.length-1].focus();
+}
+["fForms2","eForms2"].forEach(function(id){
+  var box=document.getElementById(id); if(!box) return;
+  box.addEventListener("click",function(e){
+    var d=e.target.closest("[data-delform]"); if(!d) return;
+    var cur=readFormsRaw(id);
+    cur.splice(parseInt(d.dataset.delform,10),1);
+    renderForms(id,cur);
+  });
+});
+document.getElementById("fAddForm").addEventListener("click",function(){ addFormTo("fForms2"); });
+document.getElementById("eAddForm").addEventListener("click",function(){ addFormTo("eForms2"); });
+
 document.getElementById("fDetailBtn").addEventListener("click",function(){
   var d=document.getElementById("fDetail");
   var open=d.className==="hide";
@@ -3411,7 +3507,14 @@ document.getElementById("fDetailBtn").addEventListener("click",function(){
 });
 function detailHtml(w){
   var out="";
-  if(w.forms&&!perForms(w)){
+  if(w.formsx&&w.formsx.length){
+    out+='<div class="wblock"><span class="wlabel">파생</span><div>'+w.formsx.map(function(d){
+      return '<div class="fline"><b>'+esc(d.term||"")+'</b>'+(d.pos?'<span class="spos">'+esc(d.pos)+'</span>':'')+
+        (d.mean?' '+esc(d.mean):'')+
+        (d.syn?'<span class="fsyn">'+String(d.syn).split(",").map(function(t){return t.trim()}).filter(Boolean)
+          .map(function(t){return '<span class="rel-syn">'+esc(t)+'</span>'}).join("")+'</span>':'')+'</div>';
+    }).join("")+'</div></div>';
+  }else if(w.forms&&!perForms(w)){
     out+='<div class="wblock"><span class="wlabel">파생</span><div>'+
       String(w.forms).split("/").map(function(s){return '<div class="wline">'+esc(s.trim())+'</div>'}).join("")+'</div></div>';
   }
