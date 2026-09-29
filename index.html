@@ -305,6 +305,8 @@ h1 span{color:var(--ink-soft);}
 .sposrow .inp{margin-top:0;}
 .sposrow .spos-in{flex:0 0 30%;min-width:0;}
 .sposrow .smean{flex:1 1 auto;min-width:0;}
+.ipa{display:inline-block;font-size:12px;font-weight:500;color:var(--ink-soft);margin-left:6px;letter-spacing:0;}
+.qipa{font-size:15px;color:var(--ink-soft);margin-top:6px;}
 .spos{display:inline-block;font-size:11px;font-weight:700;color:var(--ink-soft);border:1px solid var(--rule);border-radius:4px;padding:0 5px;margin-right:5px;vertical-align:1px;}
 .sense .wblock{margin-top:6px;}
 .fbox{border:1px solid var(--rule);border-radius:10px;padding:10px 11px 11px;margin-top:10px;background:var(--card);}
@@ -535,7 +537,7 @@ h1 span{color:var(--ink-soft);}
     </div>
 
     <div id="bulkMode" class="hide">
-      <p class="hint">한 줄에 한 단어씩. <span class="code">단어 | 뜻 | 품사 | 예문 | 해석 | 유의어 | 반의어</span><br>편입영어는 뒤에 <span class="code">| 파생어 | 표현 | 혼동어</span> 를 더 붙일 수 있습니다 · 품사·뜻이 여러 개면 뜻·품사·유의어·반의어·파생어를 <span class="code">;;</span> 로 같은 순서로 나눠 적으세요. 뒤쪽 칸은 비워도 됩니다. <span class="code">[DAY 4]</span> 같은 줄이 있으면 그 DAY로 들어가고, 이미 있는 단어는 덮어씁니다.</p>
+      <p class="hint">한 줄에 한 단어씩. <span class="code">단어 | 뜻 | 품사 | 예문 | 해석 | 유의어 | 반의어</span><br>발음기호는 단어 뒤에 <span class="code">scrutinize [ˈskruːtənaɪz]</span> 처럼 대괄호로 붙이면 따로 저장됩니다<br>편입영어는 뒤에 <span class="code">| 파생어 | 표현 | 혼동어</span> 를 더 붙일 수 있습니다 · 품사·뜻이 여러 개면 뜻·품사·유의어·반의어·파생어를 <span class="code">;;</span> 로 같은 순서로 나눠 적으세요. 뒤쪽 칸은 비워도 됩니다. <span class="code">[DAY 4]</span> 같은 줄이 있으면 그 DAY로 들어가고, 이미 있는 단어는 덮어씁니다.</p>
       <textarea class="area" id="bulk" placeholder="comply 준수하다
 invoice 송장, 청구서
 tentative 잠정적인" autocapitalize="none" autocorrect="off" spellcheck="false"></textarea>
@@ -554,6 +556,8 @@ tentative 잠정적인" autocapitalize="none" autocorrect="off" spellcheck="fals
   <label class="lb">단어</label><input class="inp" id="eTerm" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
   <div id="eSenses"></div>
   <button class="link" id="eAddSense">＋ 뜻 추가</button>
+  <label class="lb">발음기호 <span style="font-weight:500;color:var(--ink-soft)">· 비워도 됩니다</span></label>
+  <input class="inp" id="eIpa" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="ˈskruːtənaɪz">
   <div id="ePosWrap"><label class="lb">품사</label><input class="inp" id="ePos" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="n. / v. / adj."></div>
   <label class="lb">예문</label><input class="inp" id="eEx" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="영어 예문">
   <label class="lb">해석</label><input class="inp" id="eKo" autocomplete="off" placeholder="예문 해석">
@@ -823,7 +827,8 @@ function parseGroups(text,defSec){
     }
     var p=/[|\t]/.test(line)?line.split(/\s*[|\t]\s*/):splitLine(line);
     if(!p[0]||!p[0].trim()) return;
-    var w={term:p[0].trim(),meaning:(p[1]||"").trim(),pos:(p[2]||"").trim(),
+    var ti=splitIpa(p[0]);
+    var w={term:ti.term,ipa:ti.ipa,meaning:(p[1]||"").trim(),pos:(p[2]||"").trim(),
            example:(p[3]||"").trim(),ko:(p[4]||"").trim(),syn:(p[5]||"").trim(),ant:(p[6]||"").trim(),
         forms:(p[7]||"").trim(),idiom:(p[8]||"").trim(),conf:(p[9]||"").trim()};
     if(!cur){cur={section:defSec,name:null,words:[]};groups.push(cur);}
@@ -831,6 +836,15 @@ function parseGroups(text,defSec){
   });
   return groups.filter(function(g){return g.words.length});
 }
+
+// ---- 발음기호: 단어 뒤 [..] / /../ 를 떼어 따로 보관 ----
+function splitIpa(raw){
+  var t=String(raw||"").trim(), ipa="";
+  var m=t.match(/[\[\/]([^\[\]\/]{1,40})[\]\/]\s*$/);
+  if(m){ ipa=m[1].trim(); t=t.slice(0,m.index).trim(); }
+  return {term:t,ipa:ipa};
+}
+function ipaText(w){ return w&&w.ipa?"["+w.ipa+"]":""; }
 
 function findWord(id){
   for(var i=0;i<state.days.length;i++){
@@ -962,6 +976,7 @@ function render(){
     return '<div class="row'+(w.known?" known":"")+'">'+
       '<button class="mk'+(w.known?" on":"")+'" data-toggle="'+w.id+'" aria-label="암기 표시"></button>'+
       '<div class="bd" tabindex="0" role="button" data-exp="'+w.id+'"><div class="tm">'+esc(w.term)+
+        (w.ipa?'<span class="ipa">'+esc(ipaText(w))+'</span>':'')+
         (posLabel(w)?'<span class="tag">'+esc(posLabel(w))+'</span>':'')+
         (state.day==="all"?'<span class="tag">'+esc(o.dayName)+'</span>':'')+(srsTag(w)?'<span class="tag srs">'+srsTag(w)+'</span>':'')+(isLeech(w)?'<span class="tag leech">취약 '+(w.lapses||0)+'</span>':'')+
       '</div>'+mean+
@@ -1030,7 +1045,7 @@ function backupText(){
   return state.days.map(function(d){
     return "["+secLabel(d.section)+" "+d.name+"]\n"+
       d.words.map(function(w){
-        return w.term+" | "+(w.meaning||"")+" | "+(w.pos||"")+" | "+(w.example||"")+" | "+(w.ko||"")+" | "+(w.syn||"")+" | "+(w.ant||"")+((w.forms||w.idiom||w.conf)?" | "+(w.forms||"")+" | "+(w.idiom||"")+" | "+(w.conf||""):"");
+        return w.term+(w.ipa?" ["+w.ipa+"]":"")+" | "+(w.meaning||"")+" | "+(w.pos||"")+" | "+(w.example||"")+" | "+(w.ko||"")+" | "+(w.syn||"")+" | "+(w.ant||"")+((w.forms||w.idiom||w.conf)?" | "+(w.forms||"")+" | "+(w.idiom||"")+" | "+(w.conf||""):"");
       }).join("\n");
   }).join("\n\n");
 }
@@ -1097,7 +1112,7 @@ function applyBackup(obj){
     for(var j=0;j<d.words.length;j++){
       var w=d.words[j];
       if(!w||!w.term) continue;
-      words.push({id:w.id||uid(),term:String(w.term),meaning:w.meaning||"",pos:w.pos||"",
+      words.push({id:w.id||uid(),term:String(w.term),ipa:w.ipa||"",meaning:w.meaning||"",pos:w.pos||"",
         example:w.example||"",ko:w.ko||"",syn:w.syn||"",ant:w.ant||"",forms:w.forms||"",
         formsx:Array.isArray(w.formsx)?w.formsx:[],idiom:w.idiom||"",conf:w.conf||"",known:!!w.known,
         stage:w.stage||0,due:w.due||0,lapses:w.lapses||0,reps:w.reps||0,last:w.last||0});
@@ -1749,12 +1764,12 @@ oneBox.addEventListener("keydown",function(e){
 
 var pendingKo="",lookupFor="";
 function addOne(){
-  var term=$("fTerm").value.trim(); if(!term) return;
+  var ti0=splitIpa($("fTerm").value); var term=ti0.term; if(!term) return;
   var s=joinSenses(readSenses("fSenses"));
   var day=targetDay();
   if(!day){ toast("DAY를 만들지 못했어요. DAY를 다시 선택해주세요"); return; }
   var rich=senseRich.fSenses;
-  day.words.push({id:uid(),term:term,meaning:s.meaning,pos:rich?s.pos:$("fPos").value.trim(),
+  day.words.push({id:uid(),term:term,ipa:ti0.ipa,meaning:s.meaning,pos:rich?s.pos:$("fPos").value.trim(),
     example:$("fEx").value.trim(),ko:"",syn:s.syn,ant:s.ant,
     forms:rich?formsToText(readForms("fForms2")):$("fForms").value.trim(),
     formsx:rich?readForms("fForms2"):[],idiom:$("fIdiom").value.trim(),conf:$("fConf").value.trim(),known:false});
@@ -1812,10 +1827,10 @@ $("saveAdd").addEventListener("click",function(){
         if(nw.ko) ex.ko=nw.ko;
         if(nw.syn) ex.syn=nw.syn;
         if(nw.ant) ex.ant=nw.ant;
-        ["forms","idiom","conf"].forEach(function(k){ if(nw[k]) ex[k]=nw[k]; });
+        ["forms","idiom","conf","ipa"].forEach(function(k){ if(nw[k]) ex[k]=nw[k]; });
         updated++;
       }else{
-        day.words.push({id:uid(),term:nw.term,meaning:nw.meaning,pos:nw.pos,
+        day.words.push({id:uid(),term:nw.term,ipa:nw.ipa||"",meaning:nw.meaning,pos:nw.pos,
           example:nw.example,ko:nw.ko,syn:nw.syn||"",ant:nw.ant||"",forms:nw.forms||"",idiom:nw.idiom||"",conf:nw.conf||"",known:false});
         added++;
       }
@@ -1884,11 +1899,12 @@ function renderQuiz(){
   }
   var c=o.w;
   card.className="qcard";
+  var frontIpa=(quiz.front==="term"&&c.ipa)?'<div class="qipa">'+esc(ipaText(c))+'</div>':'';
   var front=quiz.front==="term"?c.term:((hasSenses(c)?splitSense(c.meaning).join(" / "):c.meaning)||c.term);
-  var backMain=(quiz.front==="term"?(hasSenses(c)?c.term:(c.meaning||"(뜻 없음)")):c.term)+(posLabel(c)?" · "+posLabel(c):"");
+  var backMain=(quiz.front==="term"?(hasSenses(c)?c.term:(c.meaning||"(뜻 없음)")):c.term)+(posLabel(c)?" · "+posLabel(c):"")+(c.ipa?" "+ipaText(c):"");
   var hint=c.example?'<div class="qex">'+blankTag(esc(blankOut(c.example,c.term)))+'</div>'
                     :(quiz.flipped?'<div class="qex" style="opacity:.6">예문 없음 — 수정(✎)에서 예문을 넣을 수 있어요</div>':"");
-  card.innerHTML='<div class="qfront">'+esc(front)+'</div>'+hint+
+  card.innerHTML='<div class="qfront">'+esc(front)+'</div>'+frontIpa+hint+
     (quiz.flipped
       ? '<div class="qback"><div class="qmean">'+esc(backMain)+'</div>'+(c.example?'<div class="qex" style="color:#16233F">'+esc(c.example)+'</div>':'')+(c.ko?'<div class="qko">'+esc(c.ko)+'</div>':'')+(hasSenses(c)?senseList(c).map(function(s,i){return '<div class="qsense"><b>'+(i+1)+'</b> '+(perPos(c)&&s.pos?'<i class="qpos">'+esc(s.pos)+'</i> ':'')+esc(s.mean)+(perForms(c)&&s.forms?'<span style="color:var(--ink-soft)"> 파생 '+esc(s.forms)+'</span>':'')+(s.syn?'<span style="color:var(--done)"> 유의 '+esc(s.syn)+'</span>':'')+(s.ant?'<span style="color:var(--miss)"> 반의 '+esc(s.ant)+'</span>':'')+'</div>'}).join(''):((c.syn?'<div class="qko" style="color:var(--done);font-weight:600">유의 '+esc(c.syn)+'</div>':'')+(c.ant?'<div class="qko" style="color:var(--miss);font-weight:600">반의 '+esc(c.ant)+'</div>':'')))+'</div>'
       : '<div class="qtap">탭해서 뒤집기<span class="kbd">Space</span></div>');
@@ -2037,6 +2053,7 @@ function openEdit(id){
   document.getElementById("eAddSense").textContent="＋ 뜻 추가";
   renderSenses("eSenses",senseList(found.w));
   document.getElementById("ePos").value=found.w.pos||"";
+  document.getElementById("eIpa").value=found.w.ipa||"";
   document.getElementById("eEx").value=found.w.example||"";
   document.getElementById("eKo").value=found.w.ko||"";
   ["Forms","Idiom","Conf"].forEach(function(k){
@@ -2060,6 +2077,7 @@ document.getElementById("eSave").addEventListener("click",function(){
   var es=joinSenses(readSenses("eSenses"));
   w.meaning=es.meaning;
   w.pos=document.getElementById("ePos").value.trim();
+  w.ipa=document.getElementById("eIpa").value.trim().replace(/^[\[\/]|[\]\/]$/g,"");
   w.example=document.getElementById("eEx").value.trim();
   w.ko=document.getElementById("eKo").value.trim();
   ["Forms","Idiom","Conf"].forEach(function(k){
@@ -2258,7 +2276,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v96 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v97 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2508,7 +2526,7 @@ setTimeout(function(){ try{ imgGC(); }catch(e){} },4000);
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v96";
+var APP_VER="v97";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
