@@ -1121,7 +1121,8 @@ function applyBackup(obj){
       words.push({id:w.id||uid(),term:String(w.term),ipa:w.ipa||"",meaning:w.meaning||"",pos:w.pos||"",
         example:w.example||"",ko:w.ko||"",syn:w.syn||"",ant:w.ant||"",forms:w.forms||"",
         formsx:Array.isArray(w.formsx)?w.formsx:[],idiom:w.idiom||"",conf:w.conf||"",known:!!w.known,
-        stage:w.stage||0,due:w.due||0,lapses:w.lapses||0,reps:w.reps||0,last:w.last||0});
+        stage:w.stage||0,due:w.due||0,lapses:w.lapses||0,reps:w.reps||0,last:w.last||0,
+        artPara:(typeof w.artPara==="number")?w.artPara:undefined});
       n++;
     }
     if(words.length) days.push({id:d.id||uid(),name:String(d.name),section:normSec(d.section),words:words});
@@ -2282,7 +2283,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v98 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v100 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2523,7 +2524,7 @@ setTimeout(function(){ try{ imgGC(); }catch(e){} },4000);
 
 // ================= 기기 간 동기화 (내 GitHub 비공개 저장소) =================
 var SYNCKEY="toeic-vocab-sync";
-var sync={repo:"",token:"",path:"vocab-sync.json",auto:true,sha:"",lastAt:0,lastRun:0,dev:""};
+var sync={repo:"",token:"",path:"vocab-sync.json",auto:true,sha:"",lastAt:0,lastRun:0,pendingAt:0,dev:""};
 var syncBusy=false, syncTimer=null, syncDirty=false;
 function loadSync(){
   try{
@@ -2602,16 +2603,24 @@ function syncPull(silent,cb){
       if(!obj||!obj.days){ syncBusy=false; cb&&cb(false,"서버 자료를 읽지 못했어요"); return; }
       if(silent&&!(obj.savedAt>sync.lastAt)){ syncBusy=false; cb&&cb(true,"이미 최신이에요",{same:true}); return; }
       syncApply(obj,function(ok,msg){
-        if(ok){ sync.lastAt=obj.savedAt||Date.now(); sync.lastRun=Date.now(); syncDirty=false; saveSyncCfg(); }
+        if(ok){ sync.lastAt=obj.savedAt||Date.now(); sync.lastRun=Date.now(); sync.pendingAt=0; syncDirty=false; saveSyncCfg(); }
         syncBusy=false; cb&&cb(ok,msg);
       });
     })
     .catch(function(){ syncBusy=false; cb&&cb(false,"인터넷에 연결되지 않았어요"); });
 }
 // 올리기
-function syncPush(silent,cb){
+function syncPush(silent,cb,force){
   if(!syncOn()){ cb&&cb(false,"동기화를 먼저 설정해주세요"); return; }
   if(syncBusy){ cb&&cb(false,"동기화 중이에요"); return; }
+  if(force){
+    // 서버에 있는 최신 sha 를 받아 그 위에 덮어쓴다
+    fetch(ghUrl()+"?_="+Date.now(),{headers:ghHead(),cache:"no-store"})
+      .then(function(r){ return r.status===404?null:(r.ok?r.json():null); })
+      .then(function(j){ sync.sha=j?j.sha:""; saveSyncCfg(); syncPush(silent,cb); })
+      .catch(function(){ cb&&cb(false,"인터넷에 연결되지 않았어요"); });
+    return;
+  }
   syncBusy=true;
   syncPayload(function(p){
     var body={message:"vocab "+new Date().toISOString(),content:b64enc(JSON.stringify(p))};
@@ -2622,7 +2631,8 @@ function syncPush(silent,cb){
         syncBusy=false;
         if(res.ok){
           sync.sha=res.j.content?res.j.content.sha:sync.sha;
-          sync.lastAt=p.savedAt; sync.lastRun=Date.now(); syncDirty=false; saveSyncCfg();
+          sync.lastAt=p.savedAt; sync.lastRun=Date.now(); sync.pendingAt=0; syncDirty=false; saveSyncCfg();
+          clearTimeout(syncTimer); syncTimer=null;
           cb&&cb(true,"올렸어요"+(p.imgSkipped?" (그림은 용량이 커서 제외)":""));
           return;
         }
@@ -2636,25 +2646,61 @@ function syncPush(silent,cb){
       .catch(function(){ syncBusy=false; cb&&cb(false,"인터넷에 연결되지 않았어요"); });
   });
 }
+function syncAutoPush(){
+  clearTimeout(syncTimer); syncTimer=null;
+  syncPush(true,function(ok,msg){
+    if(!ok&&/먼저 저장/.test(msg||"")) toast("다른 기기가 먼저 저장했어요 · 더보기 → 동기화에서 맞춰주세요",true);
+  });
+}
 function syncSoon(){
-  if(!syncOn()||!sync.auto||syncBusy) return;
+  if(!syncOn()||syncBusy) return;
   syncDirty=true;
+  sync.pendingAt=Date.now(); saveSyncCfg();      // 못 올린 변경이 있다는 표시
+  if(!sync.auto) return;
   clearTimeout(syncTimer);
-  syncTimer=setTimeout(function(){ syncPush(true,function(){}); },12000);
+  syncTimer=setTimeout(syncAutoPush,8000);
 }
 function syncFlush(){
   if(!syncOn()||!sync.auto||!syncDirty) return;
   clearTimeout(syncTimer);
-  syncPush(true,function(){});
+  syncAutoPush();
 }
 // 앱을 열 때 한 번 맞추기
+function syncBusyScreen(){      // 학습 중이거나 기사를 보고 있으면 건드리지 않는다
+  var q=document.getElementById("quiz"), r=document.getElementById("reader");
+  if(q&&q.className.indexOf("hide")<0) return true;
+  if(r&&r.className.indexOf("hide")<0) return true;
+  if(document.querySelectorAll(".scrim:not(.hide)").length) return true;
+  return false;
+}
 function syncBoot(){
   if(!syncOn()||!sync.auto||syncBusy) return;
   if(Date.now()-sync.lastRun<60000) return;     // 1분 안에 이미 맞췄으면 건너뜀
-  syncPull(true,function(ok,msg,info){
-    if(ok&&info&&(info.same||info.empty)) return;
-    if(ok) toast("다른 기기 내용으로 맞췄어요");
-  });
+  if(syncBusyScreen()) return;
+  var mine=sync.pendingAt>sync.lastAt;          // 이 기기에 아직 못 올린 변경
+  fetch(ghUrl()+"?_="+Date.now(),{headers:ghHead(),cache:"no-store"})
+    .then(function(r){ if(r.status===404) return null; if(!r.ok) throw 0; return r.json(); })
+    .then(function(j){
+      var theirs=0, obj=null;
+      if(j){
+        sync.sha=j.sha; saveSyncCfg();
+        try{ obj=JSON.parse(b64dec(j.content)); }catch(e){}
+        if(obj&&obj.savedAt>sync.lastAt) theirs=obj.savedAt;
+      }
+      if(theirs&&mine){
+        toast("이 기기와 다른 기기 내용이 달라요 · 더보기 → 동기화에서 어느 쪽을 남길지 골라주세요",true);
+        return;
+      }
+      if(theirs&&obj){
+        if(syncBusyScreen()) return;
+        syncApply(obj,function(ok2){
+          if(ok2){ sync.lastAt=obj.savedAt; sync.lastRun=Date.now(); sync.pendingAt=0; saveSyncCfg(); toast("다른 기기 내용으로 맞췄어요"); }
+        });
+        return;
+      }
+      if(mine) syncAutoPush();
+    })
+    .catch(function(){});
 }
 function openSync(){
   var sc=document.createElement("div"); sc.className="scrim";
@@ -2672,6 +2718,7 @@ function openSync(){
     '<label class="tgline"><input type="checkbox" id="syncAuto"'+(sync.auto?' checked':'')+'> 자동으로 올리고 내려받기</label>'+
     '<button class="mode" id="syncUp"><b>지금 올리기</b><span>이 기기 내용을 서버에 저장</span></button>'+
     '<button class="mode" id="syncDown"><b>지금 내려받기</b><span>서버 내용으로 이 기기를 맞춤 · 현재 내용은 교체됨</span></button>'+
+    '<button class="mode" id="syncForce"><b>이 기기 내용으로 덮어쓰기</b><span>서버가 먼저 바뀌었을 때 · 서버 내용은 사라짐</span></button>'+
     '<button class="link" id="syncOff" style="margin-top:10px">연결 해제</button>'+
     '<p class="hint" style="margin-top:12px">처음 설정하는 법<br>'+
       '① GitHub에서 <b>비공개(Private)</b> 저장소를 하나 만들어요 (이름 예: vocab-sync).<br>'+
@@ -2704,6 +2751,12 @@ function openSync(){
     say("내려받는 중…",true);
     syncPull(false,function(ok,msg){ say(msg,ok); if(ok) toast("동기화했어요"); });
   };
+  sc.querySelector("#syncForce").onclick=function(){
+    grab(); if(!syncOn()){ say("저장소와 토큰을 먼저 넣어주세요"); return; }
+    if(!window.confirm("서버 내용을 이 기기 내용으로 덮어씁니다.\n다른 기기에서만 공부한 내용이 있으면 사라집니다. 계속할까요?")) return;
+    say("덮어쓰는 중…",true);
+    syncPush(false,function(ok,msg){ say(ok?"덮어썼어요":msg,ok); if(ok) toast("동기화했어요"); },true);
+  };
   sc.querySelector("#syncOff").onclick=function(){
     sync.repo=""; sync.token=""; sync.sha=""; sync.lastAt=0; sync.lastRun=0; saveSyncCfg();
     sc.querySelector("#syncRepo").value=""; sc.querySelector("#syncTok").value="";
@@ -2725,7 +2778,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v98";
+var APP_VER="v100";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
