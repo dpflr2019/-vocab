@@ -305,6 +305,11 @@ h1 span{color:var(--ink-soft);}
 .sposrow .inp{margin-top:0;}
 .sposrow .spos-in{flex:0 0 30%;min-width:0;}
 .sposrow .smean{flex:1 1 auto;min-width:0;}
+.syncstat{font-size:13px;line-height:1.6;background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:9px 11px;margin-bottom:10px;color:var(--ink-soft);}
+.syncstat.on{border-color:var(--done);color:var(--done);}
+.syncstat.bad{border-color:var(--miss);color:var(--miss);}
+.tgline{display:flex;align-items:center;gap:8px;font-size:14px;margin:12px 0 4px;color:var(--ink);}
+.tgline input{width:20px;height:20px;}
 .ipa{display:inline-block;font-size:12px;font-weight:500;color:var(--ink-soft);margin-left:6px;letter-spacing:0;}
 .qipa{font-size:15px;color:var(--ink-soft);margin-top:6px;}
 .spos{display:inline-block;font-size:11px;font-weight:700;color:var(--ink-soft);border:1px solid var(--rule);border-radius:4px;padding:0 5px;margin-right:5px;vertical-align:1px;}
@@ -723,12 +728,13 @@ function storageWorks(){
 var saveTimer=null;
 function saveSoon(){ clearTimeout(saveTimer); saveTimer=setTimeout(function(){ saveTimer=null; save(); },400); }
 function flushSave(){ if(saveTimer){ clearTimeout(saveTimer); saveTimer=null; save(); } }
-document.addEventListener("visibilitychange",function(){ if(document.visibilityState==="hidden") flushSave(); });
-window.addEventListener("pagehide",flushSave);
+document.addEventListener("visibilitychange",function(){ if(document.visibilityState==="hidden"){ flushSave(); syncFlush(); } });
+window.addEventListener("pagehide",function(){ flushSave(); syncFlush(); });
 function save(){
   try{
     localStorage.setItem(KEY,JSON.stringify({days:state.days,log:state.log,articles:state.articles,ui:{section:state.section,day:state.day,pick:pickDays,range:pickRange,vmark:state.vmark!==false}}));
     if(saveBroken){saveBroken=false;showWarn();}
+    syncSoon();
   }catch(e){
     if(!saveBroken){saveBroken=true;showWarn();}
   }
@@ -2276,7 +2282,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v97 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v98 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2491,6 +2497,7 @@ document.getElementById("tgMore").addEventListener("click",function(){
     '<button class="mode" data-go="stats"><b>학습 기록</b><span>날짜별 · DAY별</span></button>'+
     '<button class="mode" data-go="end"><b>오늘 기록 마감</b><span>단어 상태는 그대로 · 기록만 확정</span></button>'+
     '<button class="mode" data-go="export"><b>백업</b><span>저장 · 복원 · 복사</span></button>'+
+    '<button class="mode" data-go="sync"><b>기기 간 동기화</b><span>'+(syncOn()?('연결됨 · '+syncTime(sync.lastRun)):'아이패드 ↔ 휴대폰')+'</span></button>'+
     '<button class="mode" data-go="upd"><b>업데이트 확인</b><span>현재 '+APP_VER+'</span></button>'+
     '<div class="acts"><button class="btn ghost" id="moreClose">닫기</button></div></div>';
   document.body.appendChild(sc);
@@ -2504,6 +2511,7 @@ document.getElementById("tgMore").addEventListener("click",function(){
       if(go==="stats") openStats();
       else if(go==="end") openCloseDay();
       else if(go==="export") openBackup();
+      else if(go==="sync") openSync();
       else if(go==="upd") checkUpdate(false);
     },60);
   };
@@ -2511,6 +2519,197 @@ document.getElementById("tgMore").addEventListener("click",function(){
 
 // 안 쓰는 그림 정리 (시작할 때 한 번)
 setTimeout(function(){ try{ imgGC(); }catch(e){} },4000);
+
+
+// ================= 기기 간 동기화 (내 GitHub 비공개 저장소) =================
+var SYNCKEY="toeic-vocab-sync";
+var sync={repo:"",token:"",path:"vocab-sync.json",auto:true,sha:"",lastAt:0,lastRun:0,dev:""};
+var syncBusy=false, syncTimer=null, syncDirty=false;
+function loadSync(){
+  try{
+    var o=JSON.parse(localStorage.getItem(SYNCKEY)||"{}");
+    for(var k in o) if(Object.prototype.hasOwnProperty.call(o,k)) sync[k]=o[k];
+  }catch(e){}
+  if(!sync.dev){ sync.dev=uid(); saveSyncCfg(); }
+}
+function saveSyncCfg(){ try{ localStorage.setItem(SYNCKEY,JSON.stringify(sync)); }catch(e){} }
+function syncOn(){ return !!(sync.repo&&sync.token); }
+function ghUrl(){ return "https://api.github.com/repos/"+sync.repo.replace(/^\/+|\/+$/g,"")+"/contents/"+sync.path; }
+function ghHead(){ return {Authorization:"Bearer "+sync.token,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"}; }
+function b64enc(str){ return btoa(unescape(encodeURIComponent(str))); }
+function b64dec(b){ return decodeURIComponent(escape(atob(String(b).replace(/\s/g,"")))); }
+function syncTime(t){
+  if(!t) return "아직 없음";
+  var d=new Date(t), n=Date.now()-t;
+  if(n<60000) return "방금";
+  if(n<3600000) return Math.round(n/60000)+"분 전";
+  return (d.getMonth()+1)+"/"+d.getDate()+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);
+}
+var SYNC_IMG_MAX=3500000;    // 그림은 3.5MB 까지만 함께 올림
+function syncPayload(cb){
+  var base={app:"toeic-vocab",version:3,savedAt:Date.now(),device:sync.dev,
+    days:state.days,log:state.log,articles:state.articles};
+  var ids=Object.keys(allImgIds());
+  if(!ids.length||!IMG_OK){ cb(base); return; }
+  var imgs={}, left=ids.length, bytes=0, done=function(){
+    if(bytes>SYNC_IMG_MAX){ base.imgSkipped=ids.length; }
+    else base.images=imgs;
+    cb(base);
+  };
+  ids.forEach(function(id){
+    imgBlob(id,function(bl){
+      if(!bl){ left--; if(!left) done(); return; }
+      bytes+=bl.size||0;
+      var fr=new FileReader();
+      fr.onload=function(){ imgs[id]=String(fr.result); left--; if(!left) done(); };
+      fr.onerror=function(){ left--; if(!left) done(); };
+      fr.readAsDataURL(bl);
+    });
+  });
+}
+function syncApply(obj,cb){
+  var res=applyBackup(obj);
+  if(!res.ok){ cb(false,res.msg); return; }
+  state.days=res.days; state.day="all";
+  if(res.log) state.log=res.log;
+  if(res.articles) state.articles=res.articles;
+  save(); render();
+  if(res.images) restoreImages(res.images);
+  cb(true,"단어 "+res.count+"개를 내려받았어요");
+}
+function syncErr(st){
+  if(st===401) return "토큰이 맞지 않아요";
+  if(st===403) return "토큰 권한이 모자라요 (Contents 쓰기 권한)";
+  if(st===404) return "저장소나 경로를 찾지 못했어요";
+  return "서버 오류 ("+st+")";
+}
+// 내려받기
+function syncPull(silent,cb){
+  if(!syncOn()){ cb&&cb(false,"동기화를 먼저 설정해주세요"); return; }
+  if(syncBusy){ cb&&cb(false,"동기화 중이에요"); return; }
+  syncBusy=true;
+  fetch(ghUrl()+"?_="+Date.now(),{headers:ghHead(),cache:"no-store"})
+    .then(function(r){
+      if(r.status===404){ syncBusy=false; cb&&cb(true,"서버에 아직 자료가 없어요",{empty:true}); return null; }
+      if(!r.ok){ syncBusy=false; cb&&cb(false,syncErr(r.status)); return null; }
+      return r.json();
+    })
+    .then(function(j){
+      if(!j) return;
+      var obj=null;
+      try{ obj=JSON.parse(b64dec(j.content)); }catch(e){}
+      sync.sha=j.sha; saveSyncCfg();
+      if(!obj||!obj.days){ syncBusy=false; cb&&cb(false,"서버 자료를 읽지 못했어요"); return; }
+      if(silent&&!(obj.savedAt>sync.lastAt)){ syncBusy=false; cb&&cb(true,"이미 최신이에요",{same:true}); return; }
+      syncApply(obj,function(ok,msg){
+        if(ok){ sync.lastAt=obj.savedAt||Date.now(); sync.lastRun=Date.now(); syncDirty=false; saveSyncCfg(); }
+        syncBusy=false; cb&&cb(ok,msg);
+      });
+    })
+    .catch(function(){ syncBusy=false; cb&&cb(false,"인터넷에 연결되지 않았어요"); });
+}
+// 올리기
+function syncPush(silent,cb){
+  if(!syncOn()){ cb&&cb(false,"동기화를 먼저 설정해주세요"); return; }
+  if(syncBusy){ cb&&cb(false,"동기화 중이에요"); return; }
+  syncBusy=true;
+  syncPayload(function(p){
+    var body={message:"vocab "+new Date().toISOString(),content:b64enc(JSON.stringify(p))};
+    if(sync.sha) body.sha=sync.sha;
+    fetch(ghUrl(),{method:"PUT",headers:ghHead(),body:JSON.stringify(body)})
+      .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,st:r.status,j:j}; }); })
+      .then(function(res){
+        syncBusy=false;
+        if(res.ok){
+          sync.sha=res.j.content?res.j.content.sha:sync.sha;
+          sync.lastAt=p.savedAt; sync.lastRun=Date.now(); syncDirty=false; saveSyncCfg();
+          cb&&cb(true,"올렸어요"+(p.imgSkipped?" (그림은 용량이 커서 제외)":""));
+          return;
+        }
+        if(res.st===409||res.st===422){
+          sync.sha=""; saveSyncCfg();
+          cb&&cb(false,"다른 기기가 먼저 저장했어요. 내려받기를 먼저 해주세요");
+          return;
+        }
+        cb&&cb(false,syncErr(res.st));
+      })
+      .catch(function(){ syncBusy=false; cb&&cb(false,"인터넷에 연결되지 않았어요"); });
+  });
+}
+function syncSoon(){
+  if(!syncOn()||!sync.auto||syncBusy) return;
+  syncDirty=true;
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(function(){ syncPush(true,function(){}); },12000);
+}
+function syncFlush(){
+  if(!syncOn()||!sync.auto||!syncDirty) return;
+  clearTimeout(syncTimer);
+  syncPush(true,function(){});
+}
+// 앱을 열 때 한 번 맞추기
+function syncBoot(){
+  if(!syncOn()||!sync.auto||syncBusy) return;
+  if(Date.now()-sync.lastRun<60000) return;     // 1분 안에 이미 맞췄으면 건너뜀
+  syncPull(true,function(ok,msg,info){
+    if(ok&&info&&(info.same||info.empty)) return;
+    if(ok) toast("다른 기기 내용으로 맞췄어요");
+  });
+}
+function openSync(){
+  var sc=document.createElement("div"); sc.className="scrim";
+  var on=syncOn();
+  sc.innerHTML='<div class="sheet"><h2>기기 간 동기화</h2>'+
+    '<p class="hint">아이패드와 휴대폰이 내 GitHub 비공개 저장소를 통해 같은 내용을 봅니다. '+
+      '앱을 열 때 내려받고, 공부한 뒤 자동으로 올립니다.</p>'+
+    '<div class="syncstat'+(on?' on':'')+'" id="syncStat">'+(on
+      ? '연결됨 · '+esc(sync.repo)+'<br>마지막 동기화 '+syncTime(sync.lastRun)
+      : '아직 연결되지 않았어요')+'</div>'+
+    '<label class="lb">저장소 (사용자이름/저장소이름)</label>'+
+    '<input class="inp" id="syncRepo" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="dpflr2019/vocab-sync" value="'+esc(sync.repo)+'">'+
+    '<label class="lb">토큰 (GitHub 개인 액세스 토큰)</label>'+
+    '<input class="inp" id="syncTok" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="github_pat_…" value="'+esc(sync.token)+'">'+
+    '<label class="tgline"><input type="checkbox" id="syncAuto"'+(sync.auto?' checked':'')+'> 자동으로 올리고 내려받기</label>'+
+    '<button class="mode" id="syncUp"><b>지금 올리기</b><span>이 기기 내용을 서버에 저장</span></button>'+
+    '<button class="mode" id="syncDown"><b>지금 내려받기</b><span>서버 내용으로 이 기기를 맞춤 · 현재 내용은 교체됨</span></button>'+
+    '<button class="link" id="syncOff" style="margin-top:10px">연결 해제</button>'+
+    '<p class="hint" style="margin-top:12px">처음 설정하는 법<br>'+
+      '① GitHub에서 <b>비공개(Private)</b> 저장소를 하나 만들어요 (이름 예: vocab-sync).<br>'+
+      '② Settings → Developer settings → Personal access tokens → <b>Fine-grained tokens</b> → Generate new token.<br>'+
+      '③ 그 저장소만 고르고, Repository permissions의 <b>Contents</b>를 <b>Read and write</b>로 둬요.<br>'+
+      '④ 만들어진 토큰을 위 칸에 붙여넣고 <b>지금 올리기</b>를 눌러요.<br>'+
+      '⑤ 휴대폰에서도 같은 저장소와 토큰을 넣고 <b>지금 내려받기</b>를 누르면 끝이에요.</p>'+
+    '<div class="acts"><button class="btn ghost" id="syncClose">닫기<span class="kbd">Esc</span></button></div></div>';
+  document.body.appendChild(sc);
+  var close=function(){ if(sc.parentNode) document.body.removeChild(sc); };
+  var stat=sc.querySelector("#syncStat");
+  var say=function(msg,good){ stat.className="syncstat"+(good?" on":" bad"); stat.innerHTML=esc(msg); };
+  var grab=function(){
+    sync.repo=sc.querySelector("#syncRepo").value.trim().replace(/^https?:\/\/github\.com\//,"");
+    sync.token=sc.querySelector("#syncTok").value.trim();
+    sync.auto=sc.querySelector("#syncAuto").checked;
+    saveSyncCfg();
+  };
+  sc.querySelector("#syncClose").onclick=function(){ grab(); close(); };
+  sc.onclick=function(e){ if(e.target===sc){ grab(); close(); } };
+  sc.querySelector("#syncAuto").onchange=grab;
+  sc.querySelector("#syncUp").onclick=function(){
+    grab(); if(!syncOn()){ say("저장소와 토큰을 먼저 넣어주세요"); return; }
+    say("올리는 중…",true);
+    syncPush(false,function(ok,msg){ say(msg,ok); if(ok) toast("동기화했어요"); });
+  };
+  sc.querySelector("#syncDown").onclick=function(){
+    grab(); if(!syncOn()){ say("저장소와 토큰을 먼저 넣어주세요"); return; }
+    if(!window.confirm("서버 내용으로 이 기기를 맞춥니다.\n이 기기에만 있는 내용은 사라집니다. 계속할까요?")) return;
+    say("내려받는 중…",true);
+    syncPull(false,function(ok,msg){ say(msg,ok); if(ok) toast("동기화했어요"); });
+  };
+  sc.querySelector("#syncOff").onclick=function(){
+    sync.repo=""; sync.token=""; sync.sha=""; sync.lastAt=0; sync.lastRun=0; saveSyncCfg();
+    sc.querySelector("#syncRepo").value=""; sc.querySelector("#syncTok").value="";
+    say("연결을 해제했어요");
+  };
+}
 
 // ---- 시작 자가 점검 (업데이트 후 버튼이 안 눌리는 문제 조기 발견) ----
 (function(){
@@ -2526,7 +2725,7 @@ setTimeout(function(){ try{ imgGC(); }catch(e){} },4000);
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v97";
+var APP_VER="v98";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
@@ -2561,9 +2760,12 @@ function showUpdate(ver){
   if(x) x.onclick=function(){ var bx=document.getElementById("updBox"); if(bx) bx.innerHTML=""; };
 }
 document.addEventListener("visibilitychange",function(){
-  if(document.visibilityState==="visible") checkUpdate(true);
+  if(document.visibilityState==="visible"){ checkUpdate(true); syncBoot(); }
 });
 setTimeout(function(){checkUpdate(true)},1500);
+// 동기화 설정을 읽고, 앱을 열면 한 번 맞춘다
+loadSync();
+setTimeout(function(){ try{ syncBoot(); }catch(e){} },2200);
 
 document.addEventListener("keydown",function(e){
   if(document.getElementById("quiz").className.indexOf("hide")<0){
@@ -2594,7 +2796,7 @@ document.addEventListener("keydown",function(e){
     var scrims=document.querySelectorAll(".scrim:not(.hide)");
     if(scrims.length){
       var last=scrims[scrims.length-1];
-      var btn=last.querySelector("#startClose,#stClose,#endClose,#expClose,#moreClose,#cpClose,#imgClose,#artDelCancel,#cancelAdd,#doneAdd");
+      var btn=last.querySelector("#startClose,#stClose,#endClose,#expClose,#moreClose,#cpClose,#imgClose,#syncClose,#artDelCancel,#cancelAdd,#doneAdd");
       if(btn){ btn.click(); return; }
       if(last.id==="editScrim"){ closeEdit(); return; }
       if(last.parentNode) last.className="scrim hide";
