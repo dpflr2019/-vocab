@@ -2283,7 +2283,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v100 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v101 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2778,7 +2778,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v100";
+var APP_VER="v101";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
@@ -2792,10 +2792,28 @@ function checkUpdate(silent){
         try{ seen=localStorage.getItem("toeic-vocab-updseen")||""; }catch(e){}
         if(silent&&seen===m[1]) return;          // 이미 알린 버전이면 다시 띄우지 않음
         try{ localStorage.setItem("toeic-vocab-updseen",m[1]); }catch(e){}
+        warmCache();
         showUpdate(m[1]);
       })
       .catch(function(){});
   }catch(e){}
+}
+// 홈 화면 앱이 들고 있던 옛 파일까지 새것으로 갈아끼운다
+var refreshing=false;
+function warmCache(cb){
+  var url=location.pathname;
+  try{ if(window.caches&&caches.keys) caches.keys().then(function(ks){ks.forEach(function(k){caches["delete"](k)})}); }catch(e){}
+  var done=false, fin=function(){ if(done) return; done=true; cb&&cb(); };
+  try{
+    fetch(url,{cache:"reload"}).then(fin,fin);
+    setTimeout(fin,3000);
+  }catch(e){ fin(); }
+}
+function hardRefresh(){
+  if(refreshing) return;
+  refreshing=true;
+  var url=location.pathname;
+  warmCache(function(){ location.replace(url); });
 }
 function showUpdate(ver){
   var box=document.getElementById("updBox");
@@ -2805,10 +2823,7 @@ function showUpdate(ver){
     '<button id="updNow">지금 업데이트</button>'+
     '<button id="updHide" style="background:transparent;color:rgba(255,255,255,.7);margin-left:6px">나중에</button></div>';
   var b=document.getElementById("updNow");
-  if(b) b.onclick=function(){
-    try{ if(window.caches&&caches.keys) caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k)})}); }catch(e){}
-    location.replace(location.pathname+"?v="+ver+"&_="+Date.now());
-  };
+  if(b) b.onclick=function(){ hardRefresh(); };
   var x=document.getElementById("updHide");
   if(x) x.onclick=function(){ var bx=document.getElementById("updBox"); if(bx) bx.innerHTML=""; };
 }
