@@ -1,0 +1,2323 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="日本語">
+<meta name="theme-color" content="#FBFAF7">
+<title>일본어 읽기</title>
+<style>
+:root{
+  --paper:#FBFAF7; --sheet:#FFFFFF; --ink:#15181F; --dim:#656D7C; --faint:#8D95A4; --line:#E6E3DC;
+  --accent:#C2410C; --accent-soft:#FFF1E7;
+  --new:#D97706; --learn:#B45309; --fam:#0E7490; --known:#15803D;
+  --new-bg:#FEF3C7; --learn-bg:#FFEDD5; --fam-bg:#E0F2FE; --ok:#15803D; --bad:#B91C1C;
+  --shadow:0 10px 30px rgba(20,22,30,.10);
+  --fs:1;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{-webkit-text-size-adjust:100%;}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP","Apple SD Gothic Neo","Segoe UI",sans-serif;
+  padding:0 0 calc(68px + env(safe-area-inset-bottom));}
+button,input,textarea,select{font-family:inherit;}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px;}
+.pagehead{padding:calc(18px + env(safe-area-inset-top)) 0 10px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;}
+.pagehead h1{font-size:22px;margin:0;letter-spacing:-.02em;font-weight:800;}
+.pagehead .sub{font-size:12.5px;color:var(--faint);margin-top:4px;}
+h2{font-size:17px;margin:0 0 12px;font-weight:700;letter-spacing:-.01em;}
+.sgrp{font-size:11.5px;font-weight:800;color:var(--faint);letter-spacing:.06em;text-transform:uppercase;margin:26px 0 10px;}
+.hint{font-size:13px;line-height:1.75;color:var(--dim);margin:8px 0 0;}
+.code{background:var(--sheet);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12px;}
+.btn{border:0;border-radius:12px;background:var(--ink);color:#fff;font:600 15px inherit;padding:13px 17px;min-height:50px;
+  cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;}
+.btn.ghost{background:var(--sheet);color:var(--ink);border:1px solid var(--line);}
+.btn.accent{background:var(--accent);}
+.btn.mini{min-height:38px;padding:8px 13px;font-size:13.5px;border-radius:10px;}
+.btn:disabled{opacity:.4;}
+.kbd{font-size:10px;font-weight:700;border:1px solid currentColor;border-radius:4px;padding:1px 4px;opacity:.65;}
+.link{border:0;background:transparent;color:var(--accent);font:600 13.5px inherit;cursor:pointer;padding:6px 2px;text-decoration:underline;}
+.inp,.area,select.inp{width:100%;border:1px solid var(--line);border-radius:12px;background:var(--sheet);color:var(--ink);
+  font:15px inherit;padding:13px 14px;margin-top:8px;}
+.area{min-height:120px;resize:vertical;line-height:1.75;}
+.inp:focus,.area:focus{outline:none;border-color:var(--accent);}
+.lb{display:block;font-size:12px;font-weight:700;color:var(--dim);margin-top:16px;}
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:16px;}
+/* 탭바 */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(251,250,247,.94);
+  backdrop-filter:saturate(1.2) blur(12px);border-top:1px solid var(--line);
+  padding:6px 0 calc(6px + env(safe-area-inset-bottom));}
+.tabbar .row{max-width:860px;margin:0 auto;display:flex;}
+.tabbar button{flex:1;border:0;background:transparent;color:var(--faint);font:600 11px inherit;cursor:pointer;
+  padding:6px 2px 4px;display:flex;flex-direction:column;align-items:center;gap:3px;min-height:52px;}
+.tabbar button .ic{font-size:19px;line-height:1;}
+.tabbar button.on{color:var(--ink);}
+.tabbar button{position:relative;}
+.tabbar .badge{position:absolute;top:2px;left:50%;margin-left:4px;background:var(--accent);color:#fff;border-radius:9px;
+  font-size:10px;font-weight:800;padding:1px 5px;min-width:17px;text-align:center;line-height:1.5;}
+/* 홈 */
+.hero{margin-top:6px;padding:18px;border-radius:18px;background:var(--sheet);border:1px solid var(--line);}
+.hero .big{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1;}
+.hero .big small{font-size:15px;font-weight:600;color:var(--faint);margin-left:7px;letter-spacing:0;}
+.hero .row{display:flex;gap:10px;margin-top:14px;}
+.hero .row .btn{flex:1;}
+.statrow{display:flex;gap:8px;margin-top:14px;}
+.stat{flex:1;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:9px 10px;text-align:center;}
+.stat b{display:block;font-size:17px;font-weight:800;}
+.stat span{font-size:11px;color:var(--faint);}
+.ring{width:38px;height:38px;flex:0 0 auto;}
+/* 기사 카드 */
+.alist{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px;}
+@media (min-width:700px){.alist{grid-template-columns:1fr 1fr;}}
+.acard{position:relative;display:flex;gap:13px;align-items:center;width:100%;text-align:left;background:var(--sheet);
+  border:1px solid var(--line);border-radius:16px;padding:15px 15px;cursor:pointer;color:var(--ink);}
+.acard .bd{flex:1;min-width:0;}
+.acard b{display:block;font-size:15.5px;font-weight:700;line-height:1.45;margin-bottom:5px;}
+.acard .meta{font-size:12px;color:var(--faint);display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.chip{display:inline-block;background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:2px 7px;font-size:11px;font-weight:700;}
+.chip.gray{background:var(--paper);color:var(--dim);border:1px solid var(--line);}
+.acard .bar{height:4px;background:var(--line);border-radius:3px;margin-top:9px;overflow:hidden;}
+.acard .bar i{display:block;height:100%;background:var(--known);border-radius:3px;}
+.amenu{position:absolute;top:10px;right:10px;border:0;background:transparent;color:var(--faint);font-size:18px;
+  min-width:38px;min-height:38px;cursor:pointer;border-radius:10px;}
+/* 읽기 화면 */
+.reader{position:fixed;inset:0;z-index:70;background:var(--paper);display:flex;flex-direction:column;}
+.reader.hide{display:none;}
+.rbar{display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top)) 14px 8px;
+  background:rgba(251,250,247,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+.rbar .ttl{flex:1;min-width:0;font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rbody{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;}
+.rinner{max-width:720px;margin:0 auto;padding:18px 18px 40px;}
+.rprog{height:3px;background:var(--line);}
+.rprog i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s;}
+.artitle{font-size:clamp(21px,3.4vw,26px);font-weight:800;line-height:1.55;letter-spacing:-.01em;
+  word-break:normal;overflow-wrap:break-word;line-break:strict;}
+.artitleko{font-size:14px;color:var(--dim);margin-top:7px;line-height:1.6;}
+.armeta{font-size:12.5px;color:var(--faint);margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.armeta a{color:var(--accent);}
+.jpara{margin:30px 0;}
+.jsent{display:block;font-size:calc(18px * var(--fs));line-height:2.2;margin:0 -6px 2px;padding:2px 6px;
+  border-radius:8px;word-break:normal;overflow-wrap:break-word;line-break:strict;cursor:pointer;}
+.jsent.cur{background:var(--accent-soft);}
+.koS{display:block;font-size:calc(14px * var(--fs));line-height:1.75;color:var(--dim);margin:4px 0 12px;padding:8px 11px;
+  background:var(--sheet);border:1px solid var(--line);border-radius:10px;}
+.koS.hide{display:none;}
+ruby{ruby-align:center;}
+.jsent rt{font-size:.44em;color:var(--faint);font-weight:600;letter-spacing:-.06em;line-height:1.1;}
+.artitle rt{font-size:.4em;color:var(--faint);font-weight:600;letter-spacing:-.06em;}
+.suggest{background:var(--fam-bg);border:1px solid var(--fam);border-radius:12px;padding:11px 13px;margin-top:10px;
+  font-size:13.5px;line-height:1.7;display:flex;flex-direction:column;gap:8px;align-items:flex-start;}
+.suggest b{font-weight:800;}
+.jacover{display:block;color:var(--dim);font-size:calc(15px * var(--fs));line-height:1.8;}
+.jacover b{color:var(--accent);font-size:12.5px;font-weight:700;}
+.jacover.hide,.jareal.hide{display:none;}
+.kobtn.sp{background:var(--fam-bg);color:var(--fam);}
+.kobtn{border:0;background:var(--accent-soft);color:var(--accent);border-radius:6px;opacity:.75;
+  font:700 10px/1 inherit;padding:4px 5px;margin:0 4px;vertical-align:3px;cursor:pointer;min-width:22px;}
+.kobtn:active{background:var(--accent-soft);color:var(--accent);}
+.jsent.cur .kobtn{border-color:var(--accent);color:var(--accent);}
+.w{cursor:pointer;border-radius:3px;padding:0 1px;}
+.w.s0{box-shadow:inset 0 -2.5px 0 var(--new);background:linear-gradient(transparent 82%,var(--new-bg) 82%);}
+.w.s1{box-shadow:inset 0 -2.5px 0 var(--learn);}
+.w.s2{box-shadow:inset 0 -1.5px 0 var(--fam);}
+.w.s3{box-shadow:none;}
+.w.s3:active,.w.s2:active{background:var(--accent-soft);}
+.w.sel{outline:2px solid var(--accent);outline-offset:1px;}
+.tok{cursor:pointer;border-radius:3px;}
+.tok:active{background:var(--new-bg);}
+.finish{margin:26px 0 6px;padding:18px;border-radius:16px;background:var(--sheet);border:1px solid var(--line);text-align:center;}
+.finish .fh{font-size:19px;font-weight:800;letter-spacing:-.01em;}
+.finish .fs{font-size:13px;color:var(--dim);margin-top:6px;line-height:1.7;}
+.finish .frow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px;}
+.gnote{margin:10px 0 0;background:var(--accent-soft);border-radius:12px;padding:11px 13px;font-size:13.5px;line-height:1.75;}
+.gnote b{font-weight:800;}
+.gnote .ex{display:block;color:var(--dim);margin-top:4px;font-size:13px;}
+.pdone{display:flex;align-items:center;gap:7px;margin-top:12px;opacity:.85;}
+.pdone button{border:1px solid var(--line);background:transparent;color:var(--faint);border-radius:999px;
+  font:600 11.5px inherit;padding:6px 11px;min-height:32px;cursor:pointer;}
+.pdone button.on{background:var(--known);border-color:var(--known);color:#fff;}
+.gtoggle{border:1px solid var(--line);background:transparent;color:var(--accent);border-radius:999px;
+  font:700 11.5px inherit;padding:6px 11px;min-height:32px;cursor:pointer;}
+.gwrap.hide{display:none;}
+.myko{margin-top:6px;}
+/* 단어 패널 */
+.panel{position:fixed;left:0;right:0;bottom:0;z-index:80;background:var(--sheet);border-top:1px solid var(--line);
+  border-radius:20px 20px 0 0;box-shadow:var(--shadow);padding:16px 18px calc(16px + env(safe-area-inset-bottom));
+  max-height:70vh;overflow:auto;transform:translateY(0);transition:transform .18s ease;}
+.panel.hide{transform:translateY(110%);}
+.panel .inner{max-width:720px;margin:0 auto;}
+.pw{display:flex;align-items:flex-start;gap:12px;}
+.pw .lead{flex:1;min-width:0;}
+.pw .term{font-size:27px;font-weight:800;line-height:1.25;}
+.pw .read{font-size:14.5px;color:var(--dim);margin-top:4px;}
+.pw .mean{font-size:17px;margin-top:9px;line-height:1.55;}
+.pw .hanja{display:inline-block;margin-top:9px;background:var(--fam-bg);color:var(--fam);border-radius:7px;
+  padding:3px 9px;font-size:13px;font-weight:800;}
+.pw .note{font-size:13px;color:var(--dim);margin-top:9px;line-height:1.7;}
+.px{border:0;background:transparent;color:var(--faint);font-size:24px;min-width:42px;min-height:42px;cursor:pointer;}
+.statusrow{display:flex;gap:6px;margin-top:14px;}
+.statusrow button{flex:1;border:1px solid var(--line);background:var(--sheet);border-radius:11px;font:700 12.5px inherit;
+  padding:10px 4px;min-height:44px;cursor:pointer;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:3px;}
+.statusrow button .k{font-size:9.5px;font-weight:700;opacity:.6;}
+.statusrow button.on[data-st="0"]{background:var(--new-bg);border-color:var(--new);color:var(--new);}
+.statusrow button.on[data-st="1"]{background:var(--learn-bg);border-color:var(--learn);color:var(--learn);}
+.statusrow button.on[data-st="2"]{background:var(--fam-bg);border-color:var(--fam);color:var(--fam);}
+.statusrow button.on[data-st="3"]{background:#DCFCE7;border-color:var(--known);color:var(--known);}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;margin-top:14px;}
+@media (max-width:520px){
+  .kgrid{grid-template-columns:1fr 1fr;gap:7px;}
+  .kcard{padding:9px 10px;}
+  .kcard .ch{font-size:23px;}
+  .kcard .mn,.kcard .kr{font-size:11.5px;}
+  .kcard .rd{font-size:11px;}
+  .panel{max-height:76vh;}
+}
+.kcard{border:1px solid var(--line);border-radius:13px;padding:11px 12px;background:var(--paper);}
+.kcard .ch{font-size:28px;font-weight:700;line-height:1.05;}
+.kcard .kr{font-size:12.5px;color:var(--fam);font-weight:800;margin-top:3px;}
+.kcard .mn{font-size:12.5px;margin-top:5px;line-height:1.5;}
+.kcard .rd{font-size:11.5px;color:var(--dim);margin-top:5px;line-height:1.6;}
+.kcard .rd b{color:var(--ink);font-weight:700;margin-right:3px;}
+.panel .wlist{grid-template-columns:1fr;}
+.occ{margin-top:14px;}
+.occ .item{font-size:13.5px;line-height:1.9;padding:9px 11px;background:var(--paper);border:1px solid var(--line);
+  border-radius:11px;margin-top:7px;}
+.occ .item em{font-style:normal;background:var(--new-bg);border-radius:3px;padding:0 2px;}
+.occ .item span{display:block;font-size:12.5px;color:var(--faint);margin-top:3px;}
+/* 복습 */
+.revwrap{position:fixed;inset:0;z-index:75;background:var(--paper);display:flex;flex-direction:column;}
+.revwrap.hide{display:none;}
+.revbar{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;}
+.revbar .prog{flex:1;height:5px;background:var(--line);border-radius:3px;overflow:hidden;}
+.revbar .prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s;}
+.revbody{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 18px;}
+.qcard{width:100%;max-width:560px;background:var(--sheet);border:1px solid var(--line);border-radius:22px;
+  padding:34px 24px;text-align:center;box-shadow:var(--shadow);min-height:260px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;}
+.qtype{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--faint);text-transform:uppercase;}
+.qmain{font-size:36px;font-weight:800;line-height:1.35;word-break:normal;overflow-wrap:break-word;}
+.qmain.small{font-size:23px;font-weight:700;line-height:1.85;}
+.qsub{font-size:15px;color:var(--dim);line-height:1.7;}
+.qans{font-size:21px;font-weight:700;}
+.qmeta{font-size:13px;color:var(--dim);line-height:1.8;}
+.qex{margin-top:12px;padding:10px 12px;background:var(--paper);border:1px solid var(--line);border-radius:11px;
+  font-size:14px;line-height:1.9;text-align:left;}
+.qex span{display:block;color:var(--faint);font-size:12.5px;margin-top:3px;}
+.qcloze{display:inline-block;min-width:68px;border-bottom:2.5px solid var(--accent);margin:0 3px;}
+.qcloze.on{border-bottom-color:transparent;background:var(--accent-soft);border-radius:5px;padding:0 5px;color:var(--accent);}
+.revacts{width:100%;max-width:560px;display:flex;gap:9px;margin-top:20px;}
+.revacts button{flex:1;border:0;border-radius:14px;padding:16px 8px;font:700 14.5px inherit;cursor:pointer;min-height:58px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;}
+.revacts button small{font-size:10.5px;font-weight:600;opacity:.75;}
+.b-again{background:#FEE2E2;color:var(--bad);}
+.b-hard{background:#FEF3C7;color:#92400E;}
+.b-good{background:#DCFCE7;color:var(--ok);}
+.b-easy{background:#E0F2FE;color:var(--fam);}
+.b-show{background:var(--ink);color:#fff;}
+.revdone{text-align:center;}
+.revdone .big{font-size:44px;font-weight:800;letter-spacing:-.02em;}
+/* 단어 탭 */
+.filters{display:flex;gap:7px;overflow-x:auto;padding:4px 0 2px;margin:0 -2px;}
+.filters button{flex:0 0 auto;border:1px solid var(--line);background:var(--sheet);color:var(--dim);border-radius:999px;
+  font:600 12.5px inherit;padding:8px 13px;min-height:38px;cursor:pointer;}
+.filters button.on{background:var(--ink);border-color:var(--ink);color:#fff;}
+.wlist{margin-top:12px;display:grid;grid-template-columns:1fr;gap:8px;}
+@media (min-width:700px){.wlist{grid-template-columns:1fr 1fr;}}
+.wrow{display:flex;align-items:center;gap:12px;background:var(--sheet);border:1px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;}
+.wrow .dot{flex:0 0 auto;width:9px;height:9px;border-radius:50%;}
+.wrow .bd{flex:1;min-width:0;}
+.wrow .t{font-size:17px;font-weight:700;}
+.wrow .r{font-size:12.5px;color:var(--faint);margin-top:2px;}
+.wrow .m{font-size:13.5px;color:var(--dim);margin-top:3px;}
+.wrow .due{font-size:11px;color:var(--faint);text-align:right;flex:0 0 auto;}
+.dot.s0{background:var(--new);} .dot.s1{background:var(--learn);} .dot.s2{background:var(--fam);} .dot.s3{background:var(--known);}
+/* 기록 */
+.heat{display:flex;gap:3px;flex-wrap:wrap;margin-top:12px;}
+.heat i{width:13px;height:13px;border-radius:3px;background:var(--line);}
+.heat i.l1{background:#FDE68A;} .heat i.l2{background:#FCD34D;} .heat i.l3{background:#F59E0B;} .heat i.l4{background:#B45309;}
+.barchart{display:flex;align-items:flex-end;gap:5px;height:110px;margin-top:14px;}
+.barchart .b{flex:1;background:var(--accent-soft);border-radius:5px 5px 0 0;position:relative;min-height:3px;}
+.barchart .b i{position:absolute;left:0;right:0;bottom:0;background:var(--accent);border-radius:5px 5px 0 0;display:block;}
+.barlabels{display:flex;gap:5px;margin-top:5px;}
+.barlabels span{flex:1;text-align:center;font-size:9.5px;color:var(--faint);}
+.prog2{display:flex;height:12px;border-radius:7px;overflow:hidden;margin-top:12px;border:1px solid var(--line);}
+.prog2 i{display:block;height:100%;}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--dim);}
+.legend span{display:flex;align-items:center;gap:5px;}
+.legend em{width:9px;height:9px;border-radius:50%;font-style:normal;}
+/* 시트 */
+.scrim{position:fixed;inset:0;z-index:90;background:rgba(15,18,25,.45);display:flex;align-items:flex-end;justify-content:center;}
+.scrim.hide{display:none;}
+.sheet{width:100%;max-width:860px;background:var(--paper);border-radius:22px 22px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));
+  max-height:92vh;overflow:auto;}
+.sheet h2{margin-bottom:6px;}
+.acts{display:flex;gap:10px;margin-top:20px;position:sticky;bottom:calc(-20px - env(safe-area-inset-bottom));
+  background:var(--paper);padding-top:12px;}
+.acts .btn{flex:1;}
+.mode{width:100%;text-align:left;background:var(--sheet);border:1px solid var(--line);border-radius:14px;padding:15px;
+  margin-top:10px;display:flex;flex-direction:column;gap:3px;cursor:pointer;color:var(--ink);}
+.mode b{font-size:15px;font-weight:700;}
+.mode span{font-size:12.5px;color:var(--dim);line-height:1.5;}
+.seg{display:flex;gap:6px;margin-top:10px;}
+.seg button{flex:1;border:1px solid var(--line);background:var(--sheet);color:var(--dim);border-radius:11px;
+  font:600 13px inherit;padding:11px 6px;min-height:44px;cursor:pointer;}
+.seg button.on{background:var(--ink);border-color:var(--ink);color:#fff;}
+.toast{position:fixed;left:50%;transform:translateX(-50%);top:calc(60px + env(safe-area-inset-top));z-index:95;
+  background:var(--ink);color:#fff;border-radius:12px;padding:11px 17px;font-size:13.5px;display:none;max-width:88vw;
+  text-align:center;pointer-events:none;box-shadow:var(--shadow);}
+.empty{text-align:center;padding:48px 18px;color:var(--faint);}
+.empty b{display:block;font-size:16px;color:var(--ink);margin-bottom:7px;}
+.empty small{font-size:13px;line-height:1.8;display:block;}
+.errbox{background:#FEE2E2;border:1px solid var(--bad);color:#7F1D1D;border-radius:12px;padding:12px 14px;
+  font-size:12.5px;margin:12px 0;line-height:1.65;}
+.upd{background:var(--ink);color:#fff;border-radius:14px;padding:13px 15px;font-size:13.5px;margin:12px 0;line-height:1.6;}
+.upd b{display:block;margin-bottom:4px;}
+.upd button{border:0;border-radius:9px;background:#fff;color:var(--ink);font:700 13px inherit;padding:9px 13px;margin-top:9px;cursor:pointer;}
+.syncstat{font-size:13px;line-height:1.6;background:var(--sheet);border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:10px;color:var(--dim);}
+.syncstat.on{border-color:var(--known);color:var(--known);}
+.syncstat.bad{border-color:var(--bad);color:var(--bad);}
+.tgline{display:flex;align-items:center;gap:9px;font-size:14px;margin:14px 0 4px;}
+.tgline input{width:20px;height:20px;}
+.hide{display:none!important;}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1216; --sheet:#171B21; --ink:#E9EBEF; --dim:#A3ABB9; --faint:#79818F; --line:#2A3039;
+    --accent:#FB923C; --accent-soft:#2A1C12;
+    --new:#FBBF24; --learn:#FB923C; --fam:#38BDF8; --known:#4ADE80;
+    --new-bg:#2E2615; --learn-bg:#2E2015; --fam-bg:#132A38; --ok:#4ADE80; --bad:#F87171;
+    --shadow:0 12px 34px rgba(0,0,0,.45);
+  }
+  :root:not([data-theme="light"]) .tabbar{background:rgba(15,18,22,.94);}
+  :root:not([data-theme="light"]) .rbar{background:rgba(15,18,22,.94);}
+  :root:not([data-theme="light"]) .b-again{background:#3B1B1B;}
+  :root:not([data-theme="light"]) .b-hard{background:#3A2C12;}
+  :root:not([data-theme="light"]) .b-good{background:#13331F;}
+  :root:not([data-theme="light"]) .b-easy{background:#12293A;}
+  :root:not([data-theme="light"]) .statusrow button.on[data-st="3"]{background:#13331F;}
+  :root:not([data-theme="light"]) .errbox{background:#331717;color:#FCA5A5;}
+  :root:not([data-theme="light"]) .heat i.l1{background:#3F3214;} 
+  :root:not([data-theme="light"]) .heat i.l2{background:#6B5114;}
+  :root:not([data-theme="light"]) .heat i.l3{background:#A16207;}
+  :root:not([data-theme="light"]) .heat i.l4{background:#FBBF24;}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<div class="tabbar"><div class="row">
+  <button data-tab="home" class="on"><span class="ic">📖</span>읽기</button>
+  <button data-tab="review"><span class="ic">🔁</span><span id="revBadge"></span>복습</button>
+  <button data-tab="words"><span class="ic">🗂</span>단어</button>
+  <button data-tab="stats"><span class="ic">📊</span>기록</button>
+</div></div>
+
+<div class="reader hide" id="reader">
+  <div class="rbar">
+    <button class="btn ghost mini" id="rBack">← <span class="kbd">Esc</span></button>
+    <div class="ttl" id="rTitle"></div>
+    <button class="btn ghost mini" id="rWords">단어</button>
+    <button class="btn ghost mini" id="rSet">표시</button>
+  </div>
+  <div class="rprog"><i id="rProg"></i></div>
+  <div class="rbody" id="rBody"></div>
+</div>
+
+<div class="panel hide" id="panel"></div>
+
+<div class="revwrap hide" id="revWrap">
+  <div class="revbar">
+    <button class="btn ghost mini" id="revClose">닫기 <span class="kbd">Esc</span></button>
+    <div class="prog"><i id="revProg"></i></div>
+    <button class="btn ghost mini hide" id="revUndo">되돌리기</button>
+    <div style="font-size:12.5px;color:var(--faint)" id="revCount"></div>
+  </div>
+  <div class="revbody" id="revBody"></div>
+</div>
+
+<div class="scrim hide" id="scrim"><div class="sheet" id="sheet"></div></div>
+<input type="file" id="fileIn" accept=".json,application/json" style="display:none">
+<script>
+var APP_VER="j3";
+var KEY="jp2";
+var state={v:2,arts:[],bank:{},log:{},gram:{},ui:{furi:"new",ko:"hide",fs:1,tab:"home",tts:true,rate:0.95,jaHide:false},streak:{last:"",n:0}};
+var toastEl=null,toastTimer=null,saveTimer=null;
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function uid(){return Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-4);}
+function todayKey(t){var d=new Date(t||Date.now());return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
+function dayAdd(k,n){var p=k.split("-");var d=new Date(+p[0],+p[1]-1,+p[2]);d.setDate(d.getDate()+n);return todayKey(d.getTime());}
+var DAY=86400000;
+function toast(msg,sticky){
+  if(!toastEl){toastEl=document.createElement("div");toastEl.className="toast";document.body.appendChild(toastEl);}
+  toastEl.textContent=msg;toastEl.style.display="block";
+  clearTimeout(toastTimer);
+  if(!sticky)toastTimer=setTimeout(function(){toastEl.style.display="none";},2400);
+}
+function showErr(msg){
+  var a=$("app");if(!a)return;
+  var d=document.createElement("div");d.className="errbox";
+  d.innerHTML="<b>문제가 생겼어요</b><br>"+esc(msg)+"<br>화면을 닫았다 열어보세요. 저장된 내용은 그대로입니다.";
+  a.insertBefore(d,a.firstChild);
+}
+window.addEventListener("error",function(e){showErr((e&&e.message)||"알 수 없는 오류");});
+
+/* ---------- 저장 ---------- */
+function load(){
+  try{
+    var raw=localStorage.getItem(KEY);if(!raw)return;
+    var o=JSON.parse(raw);if(!o)return;
+    if(Array.isArray(o.arts))state.arts=o.arts;
+    if(o.bank&&typeof o.bank==="object")state.bank=o.bank;
+    if(o.log&&typeof o.log==="object")state.log=o.log;
+    if(o.gram&&typeof o.gram==="object")state.gram=o.gram;
+    if(o.streak)state.streak=o.streak;
+    if(o.ui){for(var k in o.ui)if(o.ui.hasOwnProperty(k))state.ui[k]=o.ui[k];}
+  }catch(e){}
+}
+function save(){
+  try{
+    localStorage.setItem(KEY,JSON.stringify({v:2,arts:state.arts,bank:state.bank,log:state.log,gram:state.gram,ui:state.ui,streak:state.streak}));
+    syncSoon();
+  }catch(e){showErr("저장 공간이 가득 찼을 수 있어요. 더보기 → 백업으로 내보낸 뒤 오래된 기사를 지워주세요.");}
+}
+function saveSoon(){clearTimeout(saveTimer);saveTimer=setTimeout(save,400);}
+function flushSave(){if(saveTimer){clearTimeout(saveTimer);saveTimer=null;save();}}
+
+/* ---------- 기록 ---------- */
+function bump(kind,n){
+  var k=todayKey();
+  var r=state.log[k]||(state.log[k]={nw:0,rev:0,sent:0,min:0});
+  r[kind]=(r[kind]||0)+(n||1);
+  if(state.streak.last!==k){
+    var y=dayAdd(k,-1);
+    state.streak.n=(state.streak.last===y)?(state.streak.n||0)+1:1;
+    state.streak.last=k;
+  }
+  saveSoon();
+}
+
+/* ---------- 소리내어 읽기 ---------- */
+var TTS=(function(){try{return !!window.speechSynthesis&&!!window.SpeechSynthesisUtterance;}catch(e){return false;}})();
+var jaVoice=null;
+function pickVoice(){
+  if(!TTS)return null;
+  try{
+    var vs=speechSynthesis.getVoices()||[];
+    for(var i=0;i<vs.length;i++)if((vs[i].lang||"").toLowerCase().indexOf("ja")===0)return vs[i];
+  }catch(e){}
+  return null;
+}
+if(TTS){
+  try{speechSynthesis.onvoiceschanged=function(){jaVoice=pickVoice();};}catch(e){}
+  setTimeout(function(){jaVoice=pickVoice();},300);
+}
+function speakPara(a,pi){
+  if(!TTS||state.ui.tts===false)return;
+  var sents=a.paras[pi]||[];
+  try{
+    speechSynthesis.cancel();
+    sents.forEach(function(s){
+      var u=new SpeechSynthesisUtterance(s.ja);
+      u.lang="ja-JP";
+      if(!jaVoice)jaVoice=pickVoice();
+      if(jaVoice)u.voice=jaVoice;
+      u.rate=state.ui.rate||0.95;
+      speechSynthesis.speak(u);
+    });
+    toast("문단을 읽어줍니다 · 멈추려면 다시 탭");
+  }catch(e){}
+}
+function speak(text){
+  if(!TTS||state.ui.tts===false)return;
+  try{
+    speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(String(text));
+    u.lang="ja-JP";
+    if(!jaVoice)jaVoice=pickVoice();
+    if(jaVoice)u.voice=jaVoice;
+    u.rate=state.ui.rate||0.95;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+/* ---------- 글자 ---------- */
+var RE_KANJI=/[一-鿿々〇]/;
+function cls(ch){
+  if(RE_KANJI.test(ch))return "k";
+  if(/[぀-ゟ]/.test(ch))return "h";
+  if(/[゠-ヿー]/.test(ch))return "c";
+  if(/[A-Za-z0-9０-９Ａ-Ｚａ-ｚ%％]/.test(ch))return "a";
+  return "x";
+}
+function hasKanji(s){return RE_KANJI.test(String(s));}
+
+/* ---------- 단어장 ---------- */
+function wkey(w,r){return String(w)+"|"+String(r||"");}
+function bankList(){
+  var out=[];for(var k in state.bank)if(state.bank.hasOwnProperty(k))out.push(state.bank[k]);
+  return out;
+}
+function bankGet(k){return state.bank[k]||null;}
+function statusName(st){return ["새 단어","학습 중","익숙","외움","안 봄"][st]||"새 단어";}
+function addWord(o){
+  var k=wkey(o.w,o.r);
+  var b=state.bank[k];
+  if(!b){
+    b=state.bank[k]={key:k,w:o.w,r:o.r||"",ko:o.ko||"",hanja:o.hanja||"",pos:o.pos||"",jlpt:o.jlpt||"",
+      note:o.note||"",kanji:o.kanji||[],forms:o.forms||[],st:0,stage:0,due:0,reps:0,lapses:0,last:0,
+      added:Date.now(),occ:[]};
+  }else{
+    if(o.ko&&!b.ko)b.ko=o.ko;
+    if(o.r&&!b.r)b.r=o.r;
+    if(o.hanja&&!b.hanja)b.hanja=o.hanja;
+    if(o.pos&&!b.pos)b.pos=o.pos;
+    if(o.jlpt&&!b.jlpt)b.jlpt=o.jlpt;
+    if(o.note&&!b.note)b.note=o.note;
+    if(o.kanji&&o.kanji.length&&!(b.kanji||[]).length)b.kanji=o.kanji;
+    if(o.forms&&o.forms.length){
+      b.forms=b.forms||[];
+      o.forms.forEach(function(f){if(b.forms.indexOf(f)<0)b.forms.push(f);});
+    }
+  }
+  return b;
+}
+function addOcc(b,artId,pi,si){
+  b.occ=b.occ||[];
+  for(var i=0;i<b.occ.length;i++){var o=b.occ[i];if(o.a===artId&&o.p===pi&&o.s===si)return;}
+  b.occ.push({a:artId,p:pi,s:si});
+  if(b.occ.length>40)b.occ.shift();
+}
+/* 본문에서 찾을 표면형 (기본형 + 활용형) */
+function surfaces(b){
+  var out=[b.w];
+  (b.forms||[]).forEach(function(f){if(f&&out.indexOf(f)<0)out.push(f);});
+  return out;
+}
+var matchIdx=null;
+function buildIndex(){
+  matchIdx={};
+  bankList().forEach(function(b){
+    if(b.st===4)return;
+    surfaces(b).forEach(function(s){
+      if(!s)return;
+      var c=s.charAt(0);
+      (matchIdx[c]=matchIdx[c]||[]).push({s:s,b:b});
+    });
+  });
+  for(var c in matchIdx)if(matchIdx.hasOwnProperty(c))
+    matchIdx[c].sort(function(x,y){return y.s.length-x.s.length;});
+}
+function matchAt(text,i){
+  if(!matchIdx)buildIndex();
+  var cand=matchIdx[text.charAt(i)];
+  if(!cand)return null;
+  for(var j=0;j<cand.length;j++){
+    if(text.substr(i,cand[j].s.length)===cand[j].s)return cand[j];
+  }
+  return null;
+}
+
+/* ---------- 복습 일정 ---------- */
+var STEPS=[1,3,7,16,35,80,180];
+function stFromStage(g){return g<=1?1:(g===2?2:3);}   // 0~1 학습 중 · 2 익숙 · 3 이상(16일 간격~) 외움
+function schedule(b,grade){
+  /* grade: 0 다시, 1 어려움, 2 좋음, 3 쉬움 */
+  var now=Date.now();
+  b.reps=(b.reps||0)+1;b.last=now;
+  if(grade===0){
+    b.lapses=(b.lapses||0)+1;
+    b.stage=Math.max(0,(b.stage||0)-1);
+    b.due=now+10*60000;
+    b.st=1;
+    return;
+  }
+  var g=b.stage||0;
+  if(grade===1)g=Math.max(0,g);
+  else if(grade===2)g=g+1;
+  else g=g+2;
+  b.stage=Math.min(g,STEPS.length-1);
+  var days=STEPS[b.stage];
+  if(grade===1)days=Math.max(1,Math.round(days*0.6));
+  b.due=now+days*DAY;
+  b.st=stFromStage(b.stage);
+}
+function dueList(){
+  var now=Date.now();
+  return bankList().filter(function(b){
+    if(b.st===4||b.st===3&&b.stage>=STEPS.length-1&&b.due>now)return false;
+    return b.due&&b.due<=now;
+  });
+}
+function newList(){
+  return bankList().filter(function(b){return b.st===0;});
+}
+function dueCount(){return dueList().length+dueGram().length;}
+function dueGram(){
+  var now=Date.now(),out=[];
+  for(var k in state.gram)if(state.gram.hasOwnProperty(k)){
+    var g=state.gram[k];
+    if(g.due&&g.due<=now)out.push(g);
+  }
+  return out;
+}
+
+/* ================= 기사 넣기 ================= */
+function splitParasRaw(t){
+  return String(t).replace(/\r/g,"").split(/\n\s*\n/).map(function(s){return s.trim();}).filter(Boolean);
+}
+/* 일본어 문장 나누기 (。！？ 뒤, 괄호 안은 유지) */
+function splitSents(t){
+  var out=[],cur="",depth=0;
+  for(var i=0;i<t.length;i++){
+    var ch=t.charAt(i);cur+=ch;
+    if("「『（(".indexOf(ch)>-1)depth++;
+    else if("」』）)".indexOf(ch)>-1)depth=Math.max(0,depth-1);
+    else if("。！？!?".indexOf(ch)>-1&&depth===0){
+      var nx=t.charAt(i+1);
+      if(nx&&"」』）)".indexOf(nx)>-1){cur+=nx;i++;}
+      out.push(cur.trim());cur="";
+    }
+  }
+  if(cur.trim())out.push(cur.trim());
+  return out.length?out:[t];
+}
+function newArticle(o){
+  return {id:uid(),title:o.title||"",titleKo:o.titleKo||"",source:o.source||"",date:o.date||"",url:o.url||"",
+    topic:o.topic||"",level:o.level||"",paras:o.paras||[],gram:o.gram||[],myko:{},note:"",done:{},at:Date.now(),open:0};
+}
+/* 분석 파일(JSON) */
+function importJson(text,quiet){
+  var o=null;
+  try{o=JSON.parse(text);}catch(e){if(!quiet)toast("파일 형식이 아니에요. 내용을 전부 복사했는지 확인해주세요");return null;}
+  if(!o||!Array.isArray(o.paras)||!o.paras.length){if(!quiet)toast("본문이 없는 파일이에요");return null;}
+  var paras=o.paras.map(function(p){
+    if(typeof p==="string")return splitSents(p).map(function(s){return {ja:s,ko:""};});
+    if(Array.isArray(p))return p.map(function(s){return typeof s==="string"?{ja:s,ko:""}:{ja:String(s.ja||""),ko:String(s.ko||""),n:String(s.n||"")};}).filter(function(s){return s.ja;});
+    if(p&&Array.isArray(p.s))return p.s.map(function(s){return typeof s==="string"?{ja:s,ko:""}:{ja:String(s.ja||""),ko:String(s.ko||""),n:String(s.n||"")};}).filter(function(s){return s.ja;});
+    if(p&&p.ja){
+      var ss=splitSents(String(p.ja));
+      if(ss.length===1)return [{ja:ss[0],ko:String(p.ko||"")}];
+      return ss.map(function(s,i){return {ja:s,ko:i===0?String(p.ko||""):""};});
+    }
+    return null;
+  }).filter(function(x){return x&&x.length;});
+  if(!paras.length){if(!quiet)toast("본문이 없는 파일이에요");return null;}
+  var gram=(Array.isArray(o.grammar)?o.grammar:[]).map(function(g){
+    return {p:String(g.p||g.pattern||""),ko:String(g.ko||""),ex:String(g.ex||""),exKo:String(g.exKo||""),
+      para:(typeof g.para==="number")?g.para:-1};
+  }).filter(function(g){return g.p;});
+  var a=newArticle({title:String(o.title||"").trim()||"제목 없음",titleKo:String(o.titleKo||""),
+    source:String(o.source||""),date:String(o.date||""),url:String(o.url||""),topic:String(o.topic||""),
+    level:String(o.level||""),paras:paras,gram:gram});
+  var same=null;
+  for(var i=0;i<state.arts.length;i++)if(state.arts[i].title&&state.arts[i].title===a.title)same=state.arts[i];
+  if(same){
+    if(!window.confirm("같은 제목의 기사가 이미 있어요.\n새 내용으로 바꿀까요? (단어장은 그대로 유지됩니다)"))return null;
+    state.arts=state.arts.filter(function(x){return x!==same;});
+  }
+  state.arts.push(a);
+  /* 단어를 단어장에 합치고, 이 기사 문장과 연결한다 */
+  var added=0,merged=0;
+  (Array.isArray(o.words)?o.words:[]).forEach(function(w){
+    if(!w||!w.w)return;
+    var before=!!state.bank[wkey(w.w,w.r||"")];
+    var b=addWord({w:String(w.w),r:String(w.r||""),ko:String(w.ko||""),hanja:String(w.hanja||""),
+      pos:String(w.pos||""),jlpt:String(w.jlpt||""),note:String(w.note||""),
+      forms:(Array.isArray(w.forms)?w.forms:[]).map(String),
+      kanji:(Array.isArray(w.kanji)?w.kanji:[]).map(function(k){
+        return {c:String(k.c||""),kr:String(k.kr||""),mean:String(k.mean||""),
+          on:[].concat(k.on||[]).map(String),kun:[].concat(k.kun||[]).map(String)};})});
+    if(before)merged++;else added++;
+  });
+  (gram||[]).forEach(function(g){
+    if(!state.gram[g.p])state.gram[g.p]={p:g.p,ko:g.ko,ex:g.ex,exKo:g.exKo,st:0,stage:0,due:0,reps:0,lapses:0,arts:[]};
+    var gg=state.gram[g.p];
+    if(gg.arts.indexOf(a.id)<0)gg.arts.push(a.id);
+    if(!gg.ko&&g.ko)gg.ko=g.ko;
+    if(!gg.ex&&g.ex)gg.ex=g.ex;
+  });
+  buildIndex();
+  linkArticle(a);
+  save();
+  if(!quiet)toast("문단 "+paras.length+"개 · 새 단어 "+added+"개"+(merged?(" · 이미 있던 단어 "+merged+"개"):""));
+  return a;
+}
+/* 본문에서 단어가 나온 문장을 기록해 둔다 (예문·빈칸 문제에 쓰임) */
+function linkArticle(a){
+  if(!a||!a.paras)return;
+  if(!matchIdx)buildIndex();
+  a.paras.forEach(function(sents,pi){
+    sents.forEach(function(s,si){
+      var t=s.ja,i=0;
+      while(i<t.length){
+        var m=matchAt(t,i);
+        if(m){addOcc(m.b,a.id,pi,si);i+=m.s.length;}
+        else i++;
+      }
+    });
+  });
+}
+/* 한 편이든 여러 편이든 받아들인다 */
+function importAny(text){
+  var o=null;
+  try{o=JSON.parse(text);}catch(e){toast("파일 형식이 아니에요");return null;}
+  var list=null;
+  if(Array.isArray(o))list=o;
+  else if(Array.isArray(o.articles))list=o.articles;
+  if(list){
+    var made=0,first=null;
+    for(var i=0;i<list.length;i++){
+      var a=importJson(JSON.stringify(list[i]),true);
+      if(a){made++;if(!first)first=a;}
+    }
+    if(!made){toast("넣을 기사를 찾지 못했어요");return null;}
+    toast("기사 "+made+"편을 넣었어요");
+    closeSheet();
+    if(first)openArticle(first.id);
+    return first;
+  }
+  var one=importJson(text);
+  if(one){closeSheet();openArticle(one.id);}
+  return one;
+}
+/* 원문만 붙여넣기 */
+function importRaw(text,meta){
+  var ps=splitParasRaw(text);
+  if(!ps.length){toast("본문을 찾지 못했어요");return null;}
+  var a=newArticle({title:(meta.title||"").trim()||ps[0].slice(0,24),source:(meta.source||"").trim(),
+    date:(meta.date||"").trim(),topic:(meta.topic||"").trim(),
+    paras:ps.map(function(p){return splitSents(p).map(function(s){return {ja:s,ko:""};});})});
+  state.arts.push(a);buildIndex();linkArticle(a);save();
+  toast("문단 "+a.paras.length+"개를 넣었어요");
+  return a;
+}
+function artSentCount(a){var n=0;a.paras.forEach(function(p){n+=p.length;});return n;}
+function artWordRefs(a){
+  var out=[],seen={};
+  bankList().forEach(function(b){
+    for(var i=0;i<(b.occ||[]).length;i++)if(b.occ[i].a===a.id){if(!seen[b.key]){seen[b.key]=1;out.push(b);}break;}
+  });
+  return out;
+}
+function artProgress(a){
+  var total=a.paras.length,done=0;
+  for(var k in a.done)if(a.done.hasOwnProperty(k)&&a.done[k])done++;
+  return {done:done,total:total,pct:total?Math.round(done/total*100):0};
+}
+
+var SAMPLE="{\"app\":\"jp-reader\",\"v\":2,\"title\":\"関税収入が過去最高に　通商摩擦で企業に負担\",\"titleKo\":\"관세 수입이 사상 최고로 — 통상 마찰로 기업에 부담\",\"source\":\"日本経済新聞\",\"date\":\"2026-10-05\",\"url\":\"https://www.nikkei.com/\",\"topic\":\"통상 · 관세\",\"level\":\"N1 수준\",\"paras\":[[{\"ja\":\"財務省が５日発表した統計によると、昨年度の関税収入が過去最高を記録した。\",\"ko\":\"재무성이 5일 발표한 통계에 따르면, 지난해 관세 수입이 사상 최고를 기록했다.\"},{\"ja\":\"主要国が相次いで輸入品への課税を強化したことが背景にある。\",\"ko\":\"주요국이 잇따라 수입품에 대한 과세를 강화한 것이 배경에 있다.\"},{\"ja\":\"伸び率は前年度比で２割を超えた。\",\"ko\":\"증가율은 전년도 대비 20%를 넘었다.\",\"n\":\"２割 = 2할, 즉 20%. 割는 10%를 세는 단위예요.\"}],[{\"ja\":\"企業にとって負担は重い。\",\"ko\":\"기업에게 부담은 무겁다.\"},{\"ja\":\"ある電機メーカーの担当者は「原材料の調達費用が膨らみ、価格転嫁も難しい」と話す。\",\"ko\":\"한 전기기기 업체 담당자는 \\\"원자재 조달 비용이 불어나고, 가격 전가도 어렵다\\\"고 말한다.\"},{\"ja\":\"利益率はこの一年で１ポイント近く下がったという。\",\"ko\":\"이익률은 지난 1년 사이 1%포인트 가까이 떨어졌다고 한다.\"}],[{\"ja\":\"政府は中小企業向けの支援策を検討している。\",\"ko\":\"정부는 중소기업을 위한 지원책을 검토하고 있다.\"},{\"ja\":\"ただ、財源には限りがあり、効果を疑問視する声も根強い。\",\"ko\":\"다만 재원에는 한계가 있어, 효과를 의문시하는 목소리도 뿌리 깊다.\"}],[{\"ja\":\"専門家は、今後も摩擦が続けば供給網の見直しが避けられないと指摘する。\",\"ko\":\"전문가는 앞으로도 마찰이 계속되면 공급망 재검토가 불가피하다고 지적한다.\"},{\"ja\":\"生産拠点を近隣国に移す動きはすでに始まっている。\",\"ko\":\"생산 거점을 인접국으로 옮기는 움직임은 이미 시작되고 있다.\"}]],\"words\":[{\"w\":\"財務省\",\"r\":\"ざいむしょう\",\"ko\":\"재무성 (한국의 기획재정부에 해당)\",\"hanja\":\"재무성\",\"pos\":\"명사\",\"jlpt\":\"N2\",\"kanji\":[{\"c\":\"財\",\"kr\":\"재\",\"mean\":\"재물\",\"on\":[\"ザイ\",\"サイ\"],\"kun\":[]},{\"c\":\"務\",\"kr\":\"무\",\"mean\":\"힘쓰다, 임무\",\"on\":[\"ム\"],\"kun\":[\"つと-める\"]},{\"c\":\"省\",\"kr\":\"성\",\"mean\":\"살피다; 중앙 부처\",\"on\":[\"ショウ\",\"セイ\"],\"kun\":[\"かえり-みる\",\"はぶ-く\"]}]},{\"w\":\"統計\",\"r\":\"とうけい\",\"ko\":\"통계\",\"hanja\":\"통계\",\"pos\":\"명사\",\"jlpt\":\"N2\",\"kanji\":[{\"c\":\"統\",\"kr\":\"통\",\"mean\":\"거느리다, 합치다\",\"on\":[\"トウ\"],\"kun\":[\"す-べる\"]},{\"c\":\"計\",\"kr\":\"계\",\"mean\":\"세다, 꾀하다\",\"on\":[\"ケイ\"],\"kun\":[\"はか-る\"]}]},{\"w\":\"昨年度\",\"r\":\"さくねんど\",\"ko\":\"지난 회계연도\",\"hanja\":\"작년도\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"昨\",\"kr\":\"작\",\"mean\":\"어제, 지난\",\"on\":[\"サク\"],\"kun\":[]},{\"c\":\"年\",\"kr\":\"년\",\"mean\":\"해\",\"on\":[\"ネン\"],\"kun\":[\"とし\"]},{\"c\":\"度\",\"kr\":\"도\",\"mean\":\"번, 정도; 회계연도\",\"on\":[\"ド\"],\"kun\":[\"たび\"]}]},{\"w\":\"関税\",\"r\":\"かんぜい\",\"ko\":\"관세\",\"hanja\":\"관세\",\"pos\":\"명사\",\"jlpt\":\"N1\",\"kanji\":[{\"c\":\"関\",\"kr\":\"관\",\"mean\":\"빗장; 관계하다\",\"on\":[\"カン\"],\"kun\":[\"せき\",\"かか-わる\"]},{\"c\":\"税\",\"kr\":\"세\",\"mean\":\"세금\",\"on\":[\"ゼイ\"],\"kun\":[]}]},{\"w\":\"収入\",\"r\":\"しゅうにゅう\",\"ko\":\"수입 (벌어들인 돈)\",\"hanja\":\"수입\",\"pos\":\"명사\",\"jlpt\":\"N3\",\"note\":\"물건을 사들이는 輸入(ゆにゅう)과 한국어로는 같은 '수입'이라 특히 헷갈려요.\",\"kanji\":[{\"c\":\"収\",\"kr\":\"수\",\"mean\":\"거두다\",\"on\":[\"シュウ\"],\"kun\":[\"おさ-める\"]},{\"c\":\"入\",\"kr\":\"입\",\"mean\":\"들다\",\"on\":[\"ニュウ\"],\"kun\":[\"はい-る\",\"い-れる\"]}]},{\"w\":\"記録\",\"r\":\"きろく\",\"ko\":\"기록; 기록하다\",\"hanja\":\"기록\",\"pos\":\"명사·する동사\",\"jlpt\":\"N3\",\"forms\":[\"記録した\",\"記録する\"],\"kanji\":[{\"c\":\"記\",\"kr\":\"기\",\"mean\":\"적다\",\"on\":[\"キ\"],\"kun\":[\"しる-す\"]},{\"c\":\"録\",\"kr\":\"록\",\"mean\":\"기록하다\",\"on\":[\"ロク\"],\"kun\":[]}]},{\"w\":\"相次いで\",\"r\":\"あいついで\",\"ko\":\"잇따라\",\"hanja\":\"상차—\",\"pos\":\"부사적 표현\",\"forms\":[\"相次ぐ\",\"相次ぎ\"],\"kanji\":[{\"c\":\"相\",\"kr\":\"상\",\"mean\":\"서로\",\"on\":[\"ソウ\",\"ショウ\"],\"kun\":[\"あい\"]},{\"c\":\"次\",\"kr\":\"차\",\"mean\":\"다음; 잇다\",\"on\":[\"ジ\",\"シ\"],\"kun\":[\"つ-ぐ\",\"つぎ\"]}]},{\"w\":\"輸入品\",\"r\":\"ゆにゅうひん\",\"ko\":\"수입품\",\"hanja\":\"수입품\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"輸\",\"kr\":\"수\",\"mean\":\"나르다\",\"on\":[\"ユ\"],\"kun\":[]},{\"c\":\"入\",\"kr\":\"입\",\"mean\":\"들다\",\"on\":[\"ニュウ\"],\"kun\":[\"はい-る\"]},{\"c\":\"品\",\"kr\":\"품\",\"mean\":\"물건\",\"on\":[\"ヒン\"],\"kun\":[\"しな\"]}]},{\"w\":\"課税\",\"r\":\"かぜい\",\"ko\":\"과세\",\"hanja\":\"과세\",\"pos\":\"명사\",\"jlpt\":\"N1\",\"kanji\":[{\"c\":\"課\",\"kr\":\"과\",\"mean\":\"부과하다; 과(부서)\",\"on\":[\"カ\"],\"kun\":[]},{\"c\":\"税\",\"kr\":\"세\",\"mean\":\"세금\",\"on\":[\"ゼイ\"],\"kun\":[]}]},{\"w\":\"強化\",\"r\":\"きょうか\",\"ko\":\"강화\",\"hanja\":\"강화\",\"pos\":\"명사·する동사\",\"jlpt\":\"N2\",\"forms\":[\"強化した\",\"強化する\"],\"kanji\":[{\"c\":\"強\",\"kr\":\"강\",\"mean\":\"강하다\",\"on\":[\"キョウ\"],\"kun\":[\"つよ-い\"]},{\"c\":\"化\",\"kr\":\"화\",\"mean\":\"되다, 바뀌다\",\"on\":[\"カ\"],\"kun\":[\"ば-ける\"]}]},{\"w\":\"伸び率\",\"r\":\"のびりつ\",\"ko\":\"증가율\",\"hanja\":\"신—율\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"伸\",\"kr\":\"신\",\"mean\":\"늘다, 뻗다\",\"on\":[\"シン\"],\"kun\":[\"の-びる\"]},{\"c\":\"率\",\"kr\":\"율\",\"mean\":\"비율\",\"on\":[\"リツ\",\"ソツ\"],\"kun\":[\"ひき-いる\"]}]},{\"w\":\"負担\",\"r\":\"ふたん\",\"ko\":\"부담\",\"hanja\":\"부담\",\"pos\":\"명사\",\"jlpt\":\"N2\",\"kanji\":[{\"c\":\"負\",\"kr\":\"부\",\"mean\":\"지다, 떠맡다\",\"on\":[\"フ\"],\"kun\":[\"ま-ける\",\"お-う\"]},{\"c\":\"担\",\"kr\":\"담\",\"mean\":\"메다, 맡다\",\"on\":[\"タン\"],\"kun\":[\"かつ-ぐ\",\"にな-う\"]}]},{\"w\":\"電機メーカー\",\"r\":\"でんきメーカー\",\"ko\":\"전기기기 제조업체\",\"hanja\":\"전기—\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"電\",\"kr\":\"전\",\"mean\":\"전기\",\"on\":[\"デン\"],\"kun\":[]},{\"c\":\"機\",\"kr\":\"기\",\"mean\":\"기계\",\"on\":[\"キ\"],\"kun\":[\"はた\"]}]},{\"w\":\"担当者\",\"r\":\"たんとうしゃ\",\"ko\":\"담당자\",\"hanja\":\"담당자\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"担\",\"kr\":\"담\",\"mean\":\"맡다\",\"on\":[\"タン\"],\"kun\":[\"にな-う\"]},{\"c\":\"当\",\"kr\":\"당\",\"mean\":\"맞다, 해당하다\",\"on\":[\"トウ\"],\"kun\":[\"あ-たる\"]},{\"c\":\"者\",\"kr\":\"자\",\"mean\":\"사람\",\"on\":[\"シャ\"],\"kun\":[\"もの\"]}]},{\"w\":\"原材料\",\"r\":\"げんざいりょう\",\"ko\":\"원자재\",\"hanja\":\"원재료\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"原\",\"kr\":\"원\",\"mean\":\"근원, 들판\",\"on\":[\"ゲン\"],\"kun\":[\"はら\"]},{\"c\":\"材\",\"kr\":\"재\",\"mean\":\"재료\",\"on\":[\"ザイ\"],\"kun\":[]},{\"c\":\"料\",\"kr\":\"료\",\"mean\":\"재료, 요금\",\"on\":[\"リョウ\"],\"kun\":[]}]},{\"w\":\"調達\",\"r\":\"ちょうたつ\",\"ko\":\"조달\",\"hanja\":\"조달\",\"pos\":\"명사·する동사\",\"jlpt\":\"N1\",\"kanji\":[{\"c\":\"調\",\"kr\":\"조\",\"mean\":\"고르다, 조사하다\",\"on\":[\"チョウ\"],\"kun\":[\"しら-べる\",\"ととの-える\"]},{\"c\":\"達\",\"kr\":\"달\",\"mean\":\"이르다, 통달하다\",\"on\":[\"タツ\"],\"kun\":[]}]},{\"w\":\"膨らみ\",\"r\":\"ふくらみ\",\"ko\":\"부풀어, 불어나\",\"hanja\":\"팽—\",\"pos\":\"동사 膨らむ의 연용형\",\"forms\":[\"膨らむ\",\"膨らんで\",\"膨らんだ\"],\"kanji\":[{\"c\":\"膨\",\"kr\":\"팽\",\"mean\":\"부풀다\",\"on\":[\"ボウ\"],\"kun\":[\"ふく-らむ\",\"ふく-れる\"]}]},{\"w\":\"価格転嫁\",\"r\":\"かかくてんか\",\"ko\":\"가격 전가 (오른 비용을 판매가에 반영하는 것)\",\"hanja\":\"가격전가\",\"pos\":\"명사\",\"note\":\"経済 기사에 자주 나오는 표현이에요.\",\"kanji\":[{\"c\":\"価\",\"kr\":\"가\",\"mean\":\"값\",\"on\":[\"カ\"],\"kun\":[\"あたい\"]},{\"c\":\"格\",\"kr\":\"격\",\"mean\":\"격식, 자리\",\"on\":[\"カク\"],\"kun\":[]},{\"c\":\"転\",\"kr\":\"전\",\"mean\":\"구르다, 옮기다\",\"on\":[\"テン\"],\"kun\":[\"ころ-がる\"]},{\"c\":\"嫁\",\"kr\":\"가\",\"mean\":\"시집가다; 떠넘기다\",\"on\":[\"カ\"],\"kun\":[\"よめ\",\"とつ-ぐ\"]}]},{\"w\":\"利益率\",\"r\":\"りえきりつ\",\"ko\":\"이익률\",\"hanja\":\"이익률\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"利\",\"kr\":\"리\",\"mean\":\"이롭다\",\"on\":[\"リ\"],\"kun\":[\"き-く\"]},{\"c\":\"益\",\"kr\":\"익\",\"mean\":\"더하다, 이익\",\"on\":[\"エキ\"],\"kun\":[]},{\"c\":\"率\",\"kr\":\"율\",\"mean\":\"비율\",\"on\":[\"リツ\"],\"kun\":[]}]},{\"w\":\"中小企業\",\"r\":\"ちゅうしょうきぎょう\",\"ko\":\"중소기업\",\"hanja\":\"중소기업\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"中\",\"kr\":\"중\",\"mean\":\"가운데\",\"on\":[\"チュウ\"],\"kun\":[\"なか\"]},{\"c\":\"小\",\"kr\":\"소\",\"mean\":\"작다\",\"on\":[\"ショウ\"],\"kun\":[\"ちい-さい\"]},{\"c\":\"企\",\"kr\":\"기\",\"mean\":\"꾀하다\",\"on\":[\"キ\"],\"kun\":[\"くわだ-てる\"]},{\"c\":\"業\",\"kr\":\"업\",\"mean\":\"일, 업\",\"on\":[\"ギョウ\"],\"kun\":[\"わざ\"]}]},{\"w\":\"支援策\",\"r\":\"しえんさく\",\"ko\":\"지원책\",\"hanja\":\"지원책\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"支\",\"kr\":\"지\",\"mean\":\"지탱하다\",\"on\":[\"シ\"],\"kun\":[\"ささ-える\"]},{\"c\":\"援\",\"kr\":\"원\",\"mean\":\"돕다\",\"on\":[\"エン\"],\"kun\":[]},{\"c\":\"策\",\"kr\":\"책\",\"mean\":\"꾀, 방책\",\"on\":[\"サク\"],\"kun\":[]}]},{\"w\":\"検討\",\"r\":\"けんとう\",\"ko\":\"검토\",\"hanja\":\"검토\",\"pos\":\"명사·する동사\",\"jlpt\":\"N2\",\"forms\":[\"検討している\",\"検討する\"],\"kanji\":[{\"c\":\"検\",\"kr\":\"검\",\"mean\":\"검사하다\",\"on\":[\"ケン\"],\"kun\":[]},{\"c\":\"討\",\"kr\":\"토\",\"mean\":\"치다, 따지다\",\"on\":[\"トウ\"],\"kun\":[\"う-つ\"]}]},{\"w\":\"財源\",\"r\":\"ざいげん\",\"ko\":\"재원 (돈이 나오는 곳)\",\"hanja\":\"재원\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"財\",\"kr\":\"재\",\"mean\":\"재물\",\"on\":[\"ザイ\"],\"kun\":[]},{\"c\":\"源\",\"kr\":\"원\",\"mean\":\"근원\",\"on\":[\"ゲン\"],\"kun\":[\"みなもと\"]}]},{\"w\":\"疑問視\",\"r\":\"ぎもんし\",\"ko\":\"의문시 (의심스럽게 봄)\",\"hanja\":\"의문시\",\"pos\":\"명사·する동사\",\"forms\":[\"疑問視する\"],\"kanji\":[{\"c\":\"疑\",\"kr\":\"의\",\"mean\":\"의심하다\",\"on\":[\"ギ\"],\"kun\":[\"うたが-う\"]},{\"c\":\"問\",\"kr\":\"문\",\"mean\":\"묻다\",\"on\":[\"モン\"],\"kun\":[\"と-う\"]},{\"c\":\"視\",\"kr\":\"시\",\"mean\":\"보다\",\"on\":[\"シ\"],\"kun\":[]}]},{\"w\":\"根強い\",\"r\":\"ねづよい\",\"ko\":\"뿌리 깊다, 쉽게 사라지지 않다\",\"hanja\":\"근강—\",\"pos\":\"い형용사\",\"forms\":[\"根強く\",\"根強かった\"],\"kanji\":[{\"c\":\"根\",\"kr\":\"근\",\"mean\":\"뿌리\",\"on\":[\"コン\"],\"kun\":[\"ね\"]},{\"c\":\"強\",\"kr\":\"강\",\"mean\":\"강하다\",\"on\":[\"キョウ\"],\"kun\":[\"つよ-い\"]}]},{\"w\":\"摩擦\",\"r\":\"まさつ\",\"ko\":\"마찰\",\"hanja\":\"마찰\",\"pos\":\"명사\",\"jlpt\":\"N1\",\"kanji\":[{\"c\":\"摩\",\"kr\":\"마\",\"mean\":\"문지르다\",\"on\":[\"マ\"],\"kun\":[]},{\"c\":\"擦\",\"kr\":\"찰\",\"mean\":\"비비다\",\"on\":[\"サツ\"],\"kun\":[\"す-る\",\"こす-る\"]}]},{\"w\":\"供給網\",\"r\":\"きょうきゅうもう\",\"ko\":\"공급망\",\"hanja\":\"공급망\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"供\",\"kr\":\"공\",\"mean\":\"바치다, 제공하다\",\"on\":[\"キョウ\"],\"kun\":[\"そな-える\"]},{\"c\":\"給\",\"kr\":\"급\",\"mean\":\"주다\",\"on\":[\"キュウ\"],\"kun\":[]},{\"c\":\"網\",\"kr\":\"망\",\"mean\":\"그물\",\"on\":[\"モウ\"],\"kun\":[\"あみ\"]}]},{\"w\":\"見直し\",\"r\":\"みなおし\",\"ko\":\"재검토\",\"hanja\":\"견직—\",\"pos\":\"명사\",\"forms\":[\"見直す\",\"見直した\"],\"kanji\":[{\"c\":\"見\",\"kr\":\"견\",\"mean\":\"보다\",\"on\":[\"ケン\"],\"kun\":[\"み-る\"]},{\"c\":\"直\",\"kr\":\"직\",\"mean\":\"곧다; 고치다\",\"on\":[\"チョク\",\"ジキ\"],\"kun\":[\"なお-す\",\"ただ-ちに\"]}]},{\"w\":\"避けられない\",\"r\":\"さけられない\",\"ko\":\"피할 수 없다, 불가피하다\",\"hanja\":\"피—\",\"pos\":\"동사 避ける의 가능형 부정\",\"forms\":[\"避ける\",\"避けられる\"],\"kanji\":[{\"c\":\"避\",\"kr\":\"피\",\"mean\":\"피하다\",\"on\":[\"ヒ\"],\"kun\":[\"さ-ける\"]}]},{\"w\":\"指摘\",\"r\":\"してき\",\"ko\":\"지적\",\"hanja\":\"지적\",\"pos\":\"명사·する동사\",\"jlpt\":\"N1\",\"forms\":[\"指摘する\",\"指摘した\"],\"kanji\":[{\"c\":\"指\",\"kr\":\"지\",\"mean\":\"손가락; 가리키다\",\"on\":[\"シ\"],\"kun\":[\"ゆび\",\"さ-す\"]},{\"c\":\"摘\",\"kr\":\"적\",\"mean\":\"따다, 집어내다\",\"on\":[\"テキ\"],\"kun\":[\"つ-む\"]}]},{\"w\":\"生産拠点\",\"r\":\"せいさんきょてん\",\"ko\":\"생산 거점\",\"hanja\":\"생산거점\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"生\",\"kr\":\"생\",\"mean\":\"나다, 살다\",\"on\":[\"セイ\"],\"kun\":[\"い-きる\",\"う-まれる\"]},{\"c\":\"産\",\"kr\":\"산\",\"mean\":\"낳다\",\"on\":[\"サン\"],\"kun\":[\"う-む\"]},{\"c\":\"拠\",\"kr\":\"거\",\"mean\":\"의지하다, 근거\",\"on\":[\"キョ\"],\"kun\":[]},{\"c\":\"点\",\"kr\":\"점\",\"mean\":\"점\",\"on\":[\"テン\"],\"kun\":[]}]},{\"w\":\"近隣国\",\"r\":\"きんりんこく\",\"ko\":\"인접국\",\"hanja\":\"근린국\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"近\",\"kr\":\"근\",\"mean\":\"가깝다\",\"on\":[\"キン\"],\"kun\":[\"ちか-い\"]},{\"c\":\"隣\",\"kr\":\"린\",\"mean\":\"이웃\",\"on\":[\"リン\"],\"kun\":[\"となり\"]},{\"c\":\"国\",\"kr\":\"국\",\"mean\":\"나라\",\"on\":[\"コク\"],\"kun\":[\"くに\"]}]}],\"grammar\":[{\"p\":\"〜によると\",\"ko\":\"~에 따르면 (출처를 밝힐 때)\",\"ex\":\"統計によると、関税収入が増えた。\",\"exKo\":\"통계에 따르면 관세 수입이 늘었다.\",\"para\":0},{\"p\":\"〜にとって\",\"ko\":\"~에게 있어서 (입장에서 보면)\",\"ex\":\"企業にとって負担は重い。\",\"exKo\":\"기업에게 부담은 무겁다.\",\"para\":1},{\"p\":\"〜という\",\"ko\":\"~라고 한다 (전해 들은 내용)\",\"ex\":\"１ポイント近く下がったという。\",\"exKo\":\"1포인트 가까이 떨어졌다고 한다.\",\"para\":1},{\"p\":\"〜ば〜ほど / 〜続けば\",\"ko\":\"~하면 (가정·조건)\",\"ex\":\"摩擦が続けば見直しが避けられない。\",\"exKo\":\"마찰이 계속되면 재검토가 불가피하다.\",\"para\":3},{\"p\":\"〜ざるを得ない\",\"ko\":\"~하지 않을 수 없다\",\"ex\":\"供給網を見直さざるを得ない。\",\"exKo\":\"공급망을 재검토하지 않을 수 없다.\",\"para\":-1}]}";
+/* ================= 화면 전환 ================= */
+function render(){
+  var t=state.ui.tab;
+  if(t==="home")renderHome();
+  else if(t==="review")renderReviewTab();
+  else if(t==="words")renderWords();
+  else renderStats();
+  var n=dueCount();
+  $("revBadge").innerHTML=n?'<span class="badge">'+(n>99?"99+":n)+'</span>':"";
+  [].forEach.call(document.querySelectorAll(".tabbar button"),function(b){
+    b.className=b.dataset.tab===t?"on":"";
+  });
+}
+function goTab(t){state.ui.tab=t;saveSoon();render();window.scrollTo(0,0);}
+document.querySelector(".tabbar").addEventListener("click",function(e){
+  var b=e.target.closest("[data-tab]");if(!b)return;goTab(b.dataset.tab);
+});
+
+/* ================= 읽기 탭(홈) ================= */
+function renderHome(){
+  var due=dueCount(),nw=newList().length;
+  var arts=state.arts.slice().sort(function(x,y){return (y.open||y.at||0)-(x.open||x.at||0);});
+  var shown=arts.filter(function(a){
+    var p=artProgress(a);
+    if(artFilter==="doing"&&!(p.done>0&&p.done<p.total))return false;
+    if(artFilter==="done"&&p.done<p.total)return false;
+    if(artFilter==="new"&&p.done>0)return false;
+    if(artQuery){
+      var q=artQuery.toLowerCase();
+      if((a.title+" "+(a.titleKo||"")+" "+(a.source||"")+" "+(a.topic||"")).toLowerCase().indexOf(q)<0)return false;
+    }
+    return true;
+  });
+  var last=arts[0];
+  var k=todayKey(),today=state.log[k]||{nw:0,rev:0,sent:0};
+  var html='<div class="pagehead"><div><h1>일본어 읽기</h1>'+
+    '<div class="sub">'+(state.streak.n>1?("연속 "+state.streak.n+"일 · "):"")+"단어장 "+bankList().length+"개 · 기사 "+state.arts.length+"편</div></div>"+
+    '<button class="btn ghost mini" data-act="more">⋯ 더보기</button></div>';
+  html+='<div class="hero">'+
+    '<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">'+
+      '<div><div class="big">'+due+'<small>개 복습할 차례</small></div>'+
+      '<div style="font-size:12.5px;color:var(--faint);margin-top:6px">'+
+        (nw?("아직 안 본 새 단어 "+nw+"개 · "):"")+'오늘 새 단어 '+(today.nw||0)+'개 · 복습 '+(today.rev||0)+'개 · 문장 '+(today.sent||0)+'개</div></div>'+
+      dueRing(due)+
+    '</div>'+
+    '<div class="row">'+
+      '<button class="btn'+(due?" accent":" ghost")+'" data-act="review"'+(due?"":" disabled")+'>복습 시작<span class="kbd">R</span></button>'+
+      (last?'<button class="btn ghost" data-act="open" data-id="'+last.id+'">이어 읽기</button>':'<button class="btn ghost" data-act="add">기사 넣기</button>')+
+    '</div></div>';
+  html+='<div class="sgrp">기사</div>';
+  if(arts.length>5){
+    html+='<input class="inp" id="aq" placeholder="기사 제목·출처로 찾기" value="'+esc(artQuery)+'" style="margin-top:0">'+
+      '<div class="filters" style="margin-top:10px">'+
+      [["all","전체 "+arts.length],["doing","읽는 중"],["done","다 읽음"],["new","안 읽음"]].map(function(f){
+        return '<button data-act="afilter" data-f="'+f[0]+'" class="'+(artFilter===f[0]?"on":"")+'">'+f[1]+'</button>';
+      }).join("")+'</div>';
+  }
+  if(!arts.length){
+    html+='<div class="empty"><b>아직 기사가 없습니다</b>'+
+      '<small>클로드에게 기사를 주면 후리가나·뜻·한자 풀이·문장별 해석이 들어간 분석 파일을 만들어 줍니다.<br>그 내용을 붙여넣으면 바로 읽을 수 있어요.</small>'+
+      '<div style="margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">'+
+      '<button class="btn accent" data-act="add">＋ 기사 넣기</button>'+
+      '<button class="btn ghost" data-act="sample">샘플 기사로 둘러보기</button></div></div>';
+  }else if(!shown.length){
+    html+='<div class="empty"><b>찾는 기사가 없어요</b><small>검색어나 필터를 바꿔보세요.</small></div>';
+  }else{
+    html+='<div class="alist">'+shown.map(function(a){
+      var p=artProgress(a),ws=artWordRefs(a);
+      var unknown=ws.filter(function(b){return b.st<2;}).length;
+      return '<button class="acard" data-act="open" data-id="'+a.id+'">'+
+        '<div class="bd"><b>'+esc(a.title)+'</b>'+
+        '<div class="meta">'+(a.topic?'<span class="chip">'+esc(a.topic)+'</span>':'')+
+          (a.level?'<span class="chip gray">'+esc(a.level)+'</span>':'')+
+          '<span>'+esc(a.source||"출처 없음")+(a.date?" · "+esc(a.date):"")+'</span>'+
+          '<span>· 단어 '+ws.length+'개'+(unknown?(" (덜 외운 것 "+unknown+")"):"")+'</span></div>'+
+        '<div class="bar"><i style="width:'+p.pct+'%"></i></div></div>'+
+        '<div style="flex:0 0 auto;text-align:right"><div style="font-size:12.5px;font-weight:700">'+p.pct+'%</div>'+
+        '<div style="font-size:11px;color:var(--faint)">'+p.done+"/"+p.total+' 문단</div></div>'+
+        '</button>';
+    }).join("")+'</div>'+
+    '<div style="margin-top:14px"><button class="btn ghost" data-act="add" style="width:100%">＋ 기사 넣기<span class="kbd">A</span></button></div>';
+  }
+  $("app").innerHTML=html;
+  var aq=$("aq");
+  if(aq)aq.oninput=function(){
+    artQuery=aq.value;var pos=aq.selectionStart;renderHome();
+    var n2=$("aq");if(n2){n2.focus();try{n2.setSelectionRange(pos,pos);}catch(e){}}
+  };
+}
+function dueRing(n){
+  var total=Math.max(n,1),pct=n?1:0;
+  var r=16,c=2*Math.PI*r;
+  return '<svg class="ring" viewBox="0 0 40 40" aria-hidden="true">'+
+    '<circle cx="20" cy="20" r="'+r+'" fill="none" stroke="var(--line)" stroke-width="5"></circle>'+
+    (n?'<circle cx="20" cy="20" r="'+r+'" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round" stroke-dasharray="'+c+'" stroke-dashoffset="'+(c*(1-Math.min(1,n/20)))+'" transform="rotate(-90 20 20)"></circle>':'')+
+    '</svg>';
+}
+$("app").addEventListener("click",function(e){
+  var b=e.target.closest("[data-act]");if(!b)return;
+  var act=b.dataset.act;
+  if(act==="more")openMore();
+  else if(act==="add")openAdd();
+  else if(act==="open")openArticle(b.dataset.id);
+  else if(act==="review")startReview();
+  else if(act==="word")openPanel(bankGet(b.dataset.key));
+  else if(act==="filter"){wordFilter=b.dataset.f;renderWords();}
+  else if(act==="afilter"){artFilter=b.dataset.f;renderHome();}
+  else if(act==="gram")openGramSheet();
+  else if(act==="sample"){
+    var a=importJson(SAMPLE);
+    if(a){openArticle(a.id);toast("샘플 기사예요 · 単語를 탭해보세요");}
+  }
+});
+
+/* ================= 읽기 화면 ================= */
+var curArt=null,curSent=null,gramOpen={};
+var artFilter="all",artQuery="";
+function openArticle(id){
+  var a=null;for(var i=0;i<state.arts.length;i++)if(state.arts[i].id===id)a=state.arts[i];
+  if(!a)return;
+  curArt=a;a.open=Date.now();saveSoon();
+  $("reader").className="reader";
+  buildIndex();
+  renderReader();
+  var top=a.scroll||0;
+  $("rBody").scrollTop=top;
+  if(top>40)toast("읽던 곳에서 이어서 봅니다");
+  updateProg();
+}
+function closeReader(){
+  flushSave();closePanel();
+  curArt=null;$("reader").className="reader hide";
+  render();
+}
+$("rBack").addEventListener("click",closeReader);
+$("rSet").addEventListener("click",openDisplay);
+$("rWords").addEventListener("click",function(){
+  var el=$("wsec");
+  if(!el){toast("이 기사에 담긴 단어가 없어요");return;}
+  var box=$("rBody");
+  box.scrollTop=box.scrollTop+el.getBoundingClientRect().top-box.getBoundingClientRect().top-70;
+});
+
+function furiWrap(word,b){
+  if(state.ui.furi==="off")return esc(word);
+  if(!b||!b.r||!hasKanji(word))return esc(word);
+  if(state.ui.furi==="new"&&b.st>=2)return esc(word);
+  var r=b.r;
+  if(word!==b.w&&b.r){
+    /* 활용형이면 공통 어미를 빼고 읽기를 맞춘다 */
+    var tail=0;
+    while(tail<word.length&&tail<b.w.length&&word.charAt(word.length-1-tail)===b.w.charAt(b.w.length-1-tail))tail++;
+    if(tail>0&&r.length>tail)r=r.slice(0,r.length-tail);
+    var head=word.slice(0,word.length-tail),rest=word.slice(word.length-tail);
+    if(!hasKanji(head))return esc(word);
+    return "<ruby>"+esc(head)+"<rt>"+esc(r)+"</rt></ruby>"+esc(rest);
+  }
+  return "<ruby>"+esc(word)+"<rt>"+esc(r)+"</rt></ruby>";
+}
+function sentHtml(t){
+  var out="",i=0;
+  while(i<t.length){
+    var m=matchAt(t,i);
+    if(m){
+      out+='<span class="w s'+(m.b.st===4?3:m.b.st)+'" data-k="'+esc(m.b.key)+'">'+furiWrap(m.s,m.b)+"</span>";
+      i+=m.s.length;continue;
+    }
+    var c=cls(t.charAt(i)),run=t.charAt(i),j=i+1;
+    while(j<t.length&&cls(t.charAt(j))===c&&!matchAt(t,j)){run+=t.charAt(j);j++;}
+    if(c==="k"||c==="c"||c==="a")out+='<span class="tok" data-t="'+esc(run)+'">'+esc(run)+"</span>";
+    else out+=esc(run);
+    i=j;
+  }
+  return out;
+}
+function renderReader(){
+  var a=curArt;if(!a)return;
+  $("rTitle").textContent=a.title;
+  var showKo=state.ui.ko==="show";
+  var html='<div class="rinner"><div class="artitle">'+sentHtml(a.title)+'</div>'+
+    (a.titleKo?'<div class="artitleko">'+esc(a.titleKo)+'</div>':'')+
+    '<div class="armeta">'+(a.topic?'<span class="chip">'+esc(a.topic)+'</span>':'')+
+      (a.level?'<span class="chip gray">'+esc(a.level)+'</span>':'')+
+      '<span>'+esc(a.source||"출처 없음")+(a.date?" · "+esc(a.date):"")+'</span>'+
+      (a.url?'<a href="'+esc(a.url)+'" target="_blank" rel="noopener">원문</a>':'')+'</div>';
+  a.paras.forEach(function(sents,pi){
+    html+='<div class="jpara" data-p="'+pi+'">';
+    sents.forEach(function(s,si){
+      html+='<span class="jsent'+(state.ui.jaHide?" jahide":"")+'" data-p="'+pi+'" data-s="'+si+'">'+
+        (state.ui.jaHide?'<span class="jacover" data-ja="'+pi+"."+si+'">'+esc(s.ko||"(해석 없음)")+' <b>▸ 일본어 보기</b></span><span class="jareal hide">'+sentHtml(s.ja)+'</span>':sentHtml(s.ja))+
+        (s.ko?'<button class="kobtn" data-kob="'+pi+"."+si+'" aria-label="이 문장 해석">訳</button>':'')+
+        (TTS&&state.ui.tts!==false?'<button class="kobtn sp" data-sp="'+pi+"."+si+'" aria-label="소리내어 읽기">▶</button>':'')+'</span>';
+      if(s.ko)html+='<span class="koS'+(showKo?"":" hide")+'" data-ko="'+pi+"."+si+'">'+esc(s.ko)+
+        (s.n?'<br><span style="color:var(--faint);font-size:12.5px">'+esc(s.n)+'</span>':'')+'</span>';
+    });
+    var gs=(a.gram||[]).filter(function(g){return g.para===pi;});
+    html+='<div class="pdone">'+
+      '<button data-done="'+pi+'" class="'+(a.done[pi]?"on":"")+'">'+(a.done[pi]?"읽음 ✓":"읽음")+'</button>'+
+      '<button data-mine="'+pi+'">내 해석</button>'+
+      (TTS&&state.ui.tts!==false?'<button data-play="'+pi+'">▶ 문단 듣기</button>':'')+
+      (gs.length?'<button class="gtoggle" data-gt="'+pi+'">문법 '+gs.length+(gramOpen[pi]?" ▴":" ▾")+'</button>':'')+
+      '</div>';
+    if(gs.length)html+='<div class="gwrap'+(gramOpen[pi]?"":" hide")+'" data-gw="'+pi+'">'+gs.map(function(g){
+      return '<div class="gnote"><b>'+esc(g.p)+'</b> '+esc(g.ko)+
+        (g.ex?'<span class="ex">'+esc(g.ex)+(g.exKo?" — "+esc(g.exKo):"")+'</span>':'')+'</div>';
+    }).join("")+'</div>';
+    if(a.myko&&a.myko[pi]!=null)
+      html+='<textarea class="area myko" data-myko="'+pi+'" rows="2" placeholder="이 문단을 내 말로 옮겨보세요">'+esc(a.myko[pi])+'</textarea>';
+    html+='</div>';
+  });
+  var gall=(a.gram||[]).filter(function(g){return g.para<0;});
+  if(gall.length){
+    html+='<div class="sgrp">문법 메모</div>'+gall.map(function(g){
+      return '<div class="gnote"><b>'+esc(g.p)+'</b> '+esc(g.ko)+(g.ex?'<span class="ex">'+esc(g.ex)+(g.exKo?" — "+esc(g.exKo):"")+'</span>':'')+'</div>';
+    }).join("");
+  }
+  var ws=artWordRefs(a);
+  if(ws.length){
+    var byst=[0,0,0,0];ws.forEach(function(b){byst[Math.min(b.st,3)]++;});
+    html+='<div class="sgrp" id="wsec">이 기사의 단어 '+ws.length+'개</div>'+
+      '<div class="prog2">'+
+        bar(byst[0],ws.length,"var(--new)")+bar(byst[1],ws.length,"var(--learn)")+
+        bar(byst[2],ws.length,"var(--fam)")+bar(byst[3],ws.length,"var(--known)")+'</div>'+
+      '<div class="legend"><span><em style="background:var(--new)"></em>새 단어 '+byst[0]+'</span>'+
+      '<span><em style="background:var(--learn)"></em>학습 중 '+byst[1]+'</span>'+
+      '<span><em style="background:var(--fam)"></em>익숙 '+byst[2]+'</span>'+
+      '<span><em style="background:var(--known)"></em>외움 '+byst[3]+'</span></div>'+
+      '<div class="wlist">'+ws.map(wrowHtml).join("")+'</div>'+
+      (byst[0]?'<button class="btn ghost mini" data-bulk="known" style="width:100%;margin-top:10px">'+
+        '새 단어 '+byst[0]+'개를 모두 “외움”으로</button>':'')+
+      (byst[3]?'<button class="btn ghost mini" data-bulk="reset" style="width:100%;margin-top:8px;color:var(--faint)">'+
+        '외운 단어 '+byst[3]+'개를 다시 새 단어로</button>':'');
+  }
+  html+='<div class="sgrp">기사 메모</div><textarea class="area" id="aNote" rows="3" placeholder="요약, 배운 표현, 내 생각…">'+esc(a.note||"")+'</textarea>';
+  var pr=artProgress(a),learned=ws.filter(function(b){return b.st>=2;}).length;
+  var nextArt=null,sorted=state.arts.slice().sort(function(x,y){return (y.open||y.at||0)-(x.open||x.at||0);});
+  for(var ni=0;ni<sorted.length;ni++)if(sorted[ni].id!==a.id&&artProgress(sorted[ni]).pct<100){nextArt=sorted[ni];break;}
+  html+='<div class="finish">'+
+    '<div class="fh">'+(pr.pct===100?"다 읽었어요":"여기까지 "+pr.pct+"%")+'</div>'+
+    '<div class="fs">문단 '+pr.done+'/'+pr.total+' · 이 기사 단어 '+ws.length+'개 중 '+learned+'개가 익숙해졌어요</div>'+
+    '<div class="frow">'+
+      (pr.pct<100?'<button class="btn ghost mini" data-r="allread">전부 읽음으로</button>':'')+
+      '<button class="btn mini" data-r="study">이 기사 단어 복습</button>'+
+      (nextArt?'<button class="btn ghost mini" data-r="next" data-id="'+nextArt.id+'">다음 기사 →</button>':'')+
+    '</div></div>'+
+    '<div style="display:flex;gap:10px;margin:18px 0 10px">'+
+    '<button class="btn ghost mini" data-r="del" style="color:var(--faint)">기사 삭제</button></div></div>';
+  $("rBody").innerHTML=html;
+  var nt=$("aNote");
+  if(nt)nt.oninput=function(){a.note=nt.value;saveSoon();};
+  [].forEach.call($("rBody").querySelectorAll("[data-myko]"),function(t){
+    var grow=function(){t.style.height="auto";t.style.height=(t.scrollHeight+2)+"px";};
+    t.oninput=function(){a.myko[t.dataset.myko]=t.value;saveSoon();grow();};grow();
+  });
+}
+function bar(n,total,color){
+  var pct=total?(n/total*100):0;
+  return '<i style="width:'+pct+'%;background:'+color+'"></i>';
+}
+function wrowHtml(b){
+  var due=b.due?(b.due<=Date.now()?"복습 차례":relDay(b.due)):"";
+  return '<div class="wrow" data-act="word" data-key="'+esc(b.key)+'">'+
+    '<span class="dot s'+Math.min(b.st,3)+'"></span>'+
+    '<div class="bd"><div class="t">'+esc(b.w)+'</div>'+
+    (b.r?'<div class="r">'+esc(b.r)+(b.hanja?" · "+esc(b.hanja):"")+'</div>':'')+
+    (b.ko?'<div class="m">'+esc(b.ko)+'</div>':'')+'</div>'+
+    '<div class="due">'+esc(due)+'</div></div>';
+}
+function relDay(t){
+  var d=Math.round((t-Date.now())/DAY);
+  if(d<=0)return "오늘";
+  if(d===1)return "내일";
+  if(d<30)return d+"일 뒤";
+  return Math.round(d/30)+"달 뒤";
+}
+var scrollSave=null;
+function updateProg(){
+  var b=$("rBody"),p=$("rProg");
+  if(!b||!p)return;
+  var max=b.scrollHeight-b.clientHeight;
+  p.style.width=(max>0?Math.min(100,b.scrollTop/max*100):0)+"%";
+  if(curArt){
+    clearTimeout(scrollSave);
+    scrollSave=setTimeout(function(){ if(curArt){curArt.scroll=b.scrollTop;saveSoon();} },400);
+  }
+}
+$("rBody").addEventListener("scroll",updateProg);
+$("rBody").addEventListener("click",function(e){
+  var a=curArt;if(!a)return;
+  var jc=e.target.closest("[data-ja]");
+  if(jc){
+    var box=jc.closest(".jsent");
+    if(box){box.className="jsent";jc.className="jacover hide";
+      var real=box.querySelector(".jareal");if(real)real.className="jareal";}
+    return;
+  }
+  var sp=e.target.closest("[data-sp]");
+  if(sp){
+    var ids=sp.dataset.sp.split("."),ss=a.paras[ids[0]]&&a.paras[ids[0]][ids[1]];
+    if(ss)speak(ss.ja);
+    return;
+  }
+  var kb=e.target.closest("[data-kob]");
+  if(kb){
+    var id=kb.dataset.kob,ko=$("rBody").querySelector('[data-ko="'+id+'"]');
+    var sent=kb.closest(".jsent");
+    [].forEach.call($("rBody").querySelectorAll(".jsent.cur"),function(x){x.className="jsent";});
+    if(sent)sent.className="jsent cur";
+    if(ko)ko.className=ko.className.indexOf("hide")>-1?"koS":"koS hide";
+    return;
+  }
+  var w=e.target.closest("[data-k]");
+  if(w){selectWord(w);return;}
+  var tk=e.target.closest("[data-t]");
+  if(tk){openNewWord(tk.dataset.t);return;}
+  var pl=e.target.closest("[data-play]");
+  if(pl){ speakPara(a,parseInt(pl.dataset.play,10)); return; }
+  var gt=e.target.closest("[data-gt]");
+  if(gt){gramOpen[gt.dataset.gt]=!gramOpen[gt.dataset.gt];renderReader();return;}
+  var dn=e.target.closest("[data-done]");
+  if(dn){
+    var pi=dn.dataset.done;
+    a.done[pi]=!a.done[pi];
+    if(a.done[pi])bump("sent",a.paras[pi].length);
+    save();renderReader();return;
+  }
+  var mn=e.target.closest("[data-mine]");
+  if(mn){
+    var i=mn.dataset.mine;
+    a.myko=a.myko||{};
+    if(a.myko[i]==null)a.myko[i]="";else if(!a.myko[i])delete a.myko[i];
+    saveSoon();renderReader();
+    var el=$("rBody").querySelector('[data-myko="'+i+'"]');if(el)el.focus();
+    return;
+  }
+  var bk=e.target.closest("[data-bulk]");
+  if(bk){
+    var mode=bk.dataset.bulk,list=artWordRefs(a);
+    var tgt=list.filter(function(x){return mode==="known"?x.st===0:x.st===3;});
+    if(!tgt.length)return;
+    if(!window.confirm(tgt.length+"개를 "+(mode==="known"?"모두 외운 것으로 표시할까요?":"다시 새 단어로 되돌릴까요?")))return;
+    tgt.forEach(function(x){ setStatus(x,mode==="known"?3:0); });
+    if(mode==="known")bump("nw",tgt.length);
+    save();buildIndex();renderReader();
+    toast(tgt.length+"개를 "+(mode==="known"?"외움으로 바꿨어요":"새 단어로 되돌렸어요"));
+    return;
+  }
+  var rb=e.target.closest("[data-r]");
+  if(rb){
+    if(rb.dataset.r==="allread"){
+      for(var pi2=0;pi2<a.paras.length;pi2++)if(!a.done[pi2]){a.done[pi2]=1;bump("sent",a.paras[pi2].length);}
+      save();renderReader();toast("다 읽음으로 표시했어요");return;
+    }
+    if(rb.dataset.r==="next"){ openArticle(rb.dataset.id); $("rBody").scrollTop=0; return; }
+    if(rb.dataset.r==="study"){
+      var ws=artWordRefs(a).filter(function(b){return b.st<3;});
+      if(!ws.length){toast("이 기사에서 더 외울 단어가 없어요");return;}
+      startReview(ws);
+    }else{
+      if(window.confirm('"'+a.title+'"을(를) 삭제할까요?\n단어장에 담긴 단어는 그대로 남습니다.')){
+        var id=a.id;state.arts=state.arts.filter(function(x){return x.id!==id;});
+        bankList().forEach(function(b){b.occ=(b.occ||[]).filter(function(o){return o.a!==id;});});
+        save();closeReader();toast("삭제했어요");
+      }
+    }
+    return;
+  }
+  var se=e.target.closest(".jsent");
+  if(se){toggleSent(se);return;}
+});
+function toggleSent(el){
+  var p=el.dataset.p,s=el.dataset.s;
+  var ko=$("rBody").querySelector('[data-ko="'+p+"."+s+'"]');
+  [].forEach.call($("rBody").querySelectorAll(".jsent.cur"),function(x){x.className="jsent";});
+  el.className="jsent cur";
+  if(ko)ko.className=ko.className.indexOf("hide")>-1?"koS":"koS hide";
+}
+function moveSent(dir){
+  var list=[].slice.call($("rBody").querySelectorAll(".jsent"));
+  if(!list.length)return;
+  var cur=$("rBody").querySelector(".jsent.cur"),i=cur?list.indexOf(cur):-1;
+  var n=Math.max(0,Math.min(list.length-1,i+dir));
+  if(i<0)n=0;
+  list.forEach(function(x){x.className=x.className.replace(" cur","");});
+  list[n].className+=" cur";
+  var box=$("rBody");
+  var top=box.scrollTop+list[n].getBoundingClientRect().top-box.getBoundingClientRect().top;
+  box.scrollTop=top-box.clientHeight*0.38;
+}
+function toggleCurKo(){
+  var cur=$("rBody").querySelector(".jsent.cur");
+  if(!cur)return moveSent(1);
+  var ko=$("rBody").querySelector('[data-ko="'+cur.dataset.p+"."+cur.dataset.s+'"]');
+  if(ko)ko.className=ko.className.indexOf("hide")>-1?"koS":"koS hide";
+}
+function selectWord(el){
+  [].forEach.call($("rBody").querySelectorAll(".w.sel"),function(x){x.className=x.className.replace(" sel","");});
+  el.className+=" sel";
+  openPanel(bankGet(el.dataset.k));
+  setTimeout(function(){ keepVisible(el); },60);
+}
+/* 패널이 가리는 자리에 있으면 본문을 조금 올린다 */
+function keepVisible(el){
+  var panel=$("panel"); if(!panel||panel.className.indexOf("hide")>-1)return;
+  var box=$("rBody"),top=panel.getBoundingClientRect().top;
+  var r=el.getBoundingClientRect();
+  if(r.bottom>top-14){
+    box.scrollTop+=(r.bottom-(top-14))+40;
+  }else if(r.top<box.getBoundingClientRect().top+10){
+    box.scrollTop-=((box.getBoundingClientRect().top+10)-r.top)+20;
+  }
+}
+
+/* ================= 단어 패널 ================= */
+var panelWord=null;
+function openPanel(b){
+  if(!b)return;
+  panelWord=b;
+  var p=$("panel");
+  var occ=(b.occ||[]).slice(-3).reverse().map(function(o){
+    var a=null;for(var i=0;i<state.arts.length;i++)if(state.arts[i].id===o.a)a=state.arts[i];
+    if(!a||!a.paras[o.p]||!a.paras[o.p][o.s])return "";
+    var s=a.paras[o.p][o.s];
+    var ja=esc(s.ja).split(esc(b.w)).join("<em>"+esc(b.w)+"</em>");
+    return '<div class="item" data-go="'+a.id+"."+o.p+"."+o.s+'">'+ja+(s.ko?'<span>'+esc(s.ko)+'</span>':'')+
+      '<span>'+esc(a.title)+' <b style="color:var(--accent)">· 이 문장으로 가기</b></span></div>';
+  }).join("");
+  p.innerHTML='<div class="inner">'+
+    '<div class="pw"><div class="lead">'+
+      '<div class="term">'+esc(b.w)+
+        (TTS&&state.ui.tts!==false?' <button class="kobtn sp" data-p="say" aria-label="소리내어 읽기">▶</button>':'')+
+        (b.pos?' <span class="chip gray">'+esc(b.pos)+'</span>':'')+
+        (b.jlpt?' <span class="chip">'+esc(b.jlpt)+'</span>':'')+'</div>'+
+      (b.r?'<div class="read">'+esc(b.r)+'</div>':'')+
+      (b.ko?'<div class="mean">'+esc(b.ko)+'</div>':'<div class="mean" style="color:var(--faint)">뜻이 아직 없어요 · 고치기에서 적어주세요</div>')+
+      (b.hanja?'<div class="hanja">한자음 '+esc(b.hanja)+'</div>':'')+
+      (b.note?'<div class="note">'+esc(b.note)+'</div>':'')+
+    '</div><button class="px" data-p="close">×</button></div>'+
+    '<div class="statusrow">'+[0,1,2,3].map(function(st){
+      return '<button data-st="'+st+'" class="'+(b.st===st?"on":"")+'">'+statusName(st)+
+        '<span class="k">'+(st+1)+'</span></button>';
+    }).join("")+'</div>'+
+    (b.due?'<div style="font-size:12px;color:var(--faint);margin-top:9px">다음 복습 '+relDay(b.due)+
+      ' · 본 횟수 '+(b.reps||0)+(b.lapses?(" · 틀림 "+b.lapses):"")+'</div>':'')+
+    kanjiHtml(b)+
+    (occ?'<div class="occ"><div class="sgrp" style="margin:16px 0 2px">이 단어가 나온 문장</div>'+occ+'</div>':'')+
+    '<div style="display:flex;gap:9px;margin-top:16px">'+
+      '<button class="btn ghost mini" data-p="edit">고치기</button>'+
+      '<button class="btn ghost mini" data-p="ignore">'+(b.st===4?"다시 표시":"표시 안 함")+'</button>'+
+      '<button class="btn mini" data-p="close" style="flex:1">닫기 <span class="kbd">Esc</span></button>'+
+    '</div></div>';
+  p.className="panel";
+}
+function kanjiHtml(b){
+  if(!b.kanji||!b.kanji.length)return "";
+  return '<div class="kgrid">'+b.kanji.map(function(k){
+    return '<div class="kcard"><div class="ch">'+esc(k.c)+'</div>'+
+      (k.kr?'<div class="kr">'+esc(k.kr)+'</div>':'')+
+      (k.mean?'<div class="mn">'+esc(k.mean)+'</div>':'')+
+      ((k.on&&k.on.length)?'<div class="rd"><b>음</b>'+esc(k.on.join(" · "))+'</div>':'')+
+      ((k.kun&&k.kun.length)?'<div class="rd"><b>훈</b>'+esc(k.kun.join(" · "))+'</div>':'')+
+      '</div>';
+  }).join("")+'</div>';
+}
+function jumpTo(artId,pi,si){
+  var open=!curArt||curArt.id!==artId;
+  if(open)openArticle(artId);
+  setTimeout(function(){
+    var el=$("rBody").querySelector('.jsent[data-p="'+pi+'"][data-s="'+si+'"]');
+    if(!el)return;
+    [].forEach.call($("rBody").querySelectorAll(".jsent.cur"),function(x){x.className=x.className.replace(" cur","");});
+    el.className+=" cur";
+    var box=$("rBody");
+    box.scrollTop=box.scrollTop+el.getBoundingClientRect().top-box.getBoundingClientRect().top-120;
+  },open?220:30);
+}
+function closePanel(){
+  panelWord=null;
+  var p=$("panel");if(p)p.className="panel hide";
+  [].forEach.call(document.querySelectorAll(".w.sel"),function(x){x.className=x.className.replace(" sel","");});
+}
+function applyStatus(b,st){
+  var was=b.st;
+  setStatus(b,st);
+  if(b.st>=1&&!b.reps)bump("nw",1);
+  closePanel();
+  if(curArt)renderReader();else render();
+  if(was!==st)toast(esc(b.w)+" · "+statusName(st),false);
+}
+function setStatus(b,st){
+  b.st=st;
+  if(st===0){b.due=0;b.stage=0;}
+  else if(st===3){b.stage=Math.max(b.stage,3);b.due=Date.now()+STEPS[Math.min(b.stage,STEPS.length-1)]*DAY;}
+  else if(st===1){b.stage=Math.min(b.stage,1);b.due=Date.now()+DAY;}
+  else if(st===2){b.stage=2;b.due=Date.now()+STEPS[2]*DAY;}
+  save();buildIndex();
+}
+$("panel").addEventListener("click",function(e){
+  var b=panelWord;if(!b)return;
+  var st=e.target.closest("[data-st]");
+  if(st){
+    applyStatus(b,parseInt(st.dataset.st,10));
+    return;
+  }
+  var go=e.target.closest("[data-go]");
+  if(go){
+    var q=go.dataset.go.split(".");
+    closePanel();jumpTo(q[0],q[1],q[2]);
+    return;
+  }
+  var p=e.target.closest("[data-p]");
+  if(!p)return;
+  var act=p.dataset.p;
+  if(act==="say"){speak(b.w);return;}
+  if(act==="close")closePanel();
+  else if(act==="edit")openNewWord(b.w,b);
+  else if(act==="ignore"){
+    b.st=(b.st===4)?0:4;save();buildIndex();closePanel();
+    if(curArt)renderReader();else render();
+    toast(b.st===4?"이 단어는 본문에서 표시하지 않아요":"다시 표시해요");
+  }
+});
+
+/* 단어 직접 담기 / 고치기 */
+/* 탭한 덩어리가 이미 담은 단어의 활용형인지 찾아본다 (記録される → 記録) */
+function formOwner(token){
+  if(!token||token.length<2)return null;
+  var best=null;
+  bankList().forEach(function(b){
+    if(b.st===4)return;
+    if(b.w===token)return;
+    if(b.w.length>=2&&token.indexOf(b.w)===0&&token.length-b.w.length<=4){
+      if(!best||b.w.length>best.w.length)best=b;
+    }
+  });
+  return best;
+}
+/* 다른 단어에 이미 적어둔 한자 풀이를 가져온다 */
+function knownKanji(ch){
+  var all=bankList();
+  for(var i=0;i<all.length;i++){
+    var ks=all[i].kanji||[];
+    for(var j=0;j<ks.length;j++)if(ks[j].c===ch&&(ks[j].mean||ks[j].kr))return ks[j];
+  }
+  return null;
+}
+function autoKanjiRows(term){
+  var out=[],seen={};
+  for(var i=0;i<term.length;i++){
+    var ch=term.charAt(i);
+    if(!RE_KANJI.test(ch)||seen[ch])continue;
+    seen[ch]=1;
+    var k=knownKanji(ch);
+    if(k)out.push(k.c+" | "+(k.kr||"")+" | "+(k.mean||"")+" | "+((k.on||[]).join(","))+" | "+((k.kun||[]).join(",")));
+    else out.push(ch+" |  |  |  | ");
+  }
+  return out.join("\n");
+}
+function openNewWord(token,edit){
+  var b=edit||null;
+  var owner=edit?null:formOwner(token);
+  var kan=((b&&b.kanji)||[]).map(function(k){
+    return k.c+" | "+(k.kr||"")+" | "+(k.mean||"")+" | "+((k.on||[]).join(","))+" | "+((k.kun||[]).join(","));
+  }).join("\n");
+  openSheet('<h2>'+(edit?"단어 고치기":"단어 담기")+'</h2>'+
+    (owner?'<div class="suggest"><b>'+esc(owner.w)+'</b> ('+esc(owner.r||"")+" "+esc(owner.ko||"")+')의 활용형 같아요.'+
+      '<button class="btn mini" data-s="form">이 형태를 '+esc(owner.w)+'에 붙이기</button></div>':'')+
+    '<label class="lb">단어</label><input class="inp" id="nwW" value="'+esc(b?b.w:token)+'">'+
+    '<label class="lb">읽기</label><input class="inp" id="nwR" placeholder="かんぜい" value="'+esc(b?b.r:"")+'">'+
+    '<label class="lb">뜻</label><input class="inp" id="nwKo" placeholder="관세" value="'+esc(b?b.ko:"")+'">'+
+    '<div style="display:flex;gap:9px"><div style="flex:1"><label class="lb">한국 한자음</label>'+
+      '<input class="inp" id="nwH" placeholder="관세" value="'+esc(b?b.hanja:"")+'"></div>'+
+      '<div style="flex:1"><label class="lb">품사</label><input class="inp" id="nwP" placeholder="명사" value="'+esc(b?b.pos:"")+'"></div></div>'+
+    '<label class="lb">메모</label><input class="inp" id="nwN" placeholder="輸入(ゆにゅう)과 헷갈리지 말 것" value="'+esc(b?b.note:"")+'">'+
+    '<label class="lb">활용형 <span style="font-weight:500;color:var(--faint)">· 쉼표로 구분, 본문에서 같이 찾아줍니다</span></label>'+
+    '<input class="inp" id="nwF" placeholder="膨らみ, 膨らんで" value="'+esc(((b&&b.forms)||[]).join(", "))+'">'+
+    '<label class="lb">한자 풀이 <span style="font-weight:500;color:var(--faint)">· 한 줄에 하나: 한자 | 한국음 | 뜻 | 음독 | 훈독</span></label>'+
+    '<textarea class="area" id="nwK" rows="3" placeholder="関 | 관 | 빗장, 관계하다 | カン | せき">'+esc(kan||(edit?"":autoKanjiRows(token)))+'</textarea>'+
+    (edit?'':'<p class="hint" style="margin-top:6px">한자 줄은 이미 담은 단어에 적어둔 풀이를 자동으로 채웁니다. 비어 있으면 직접 적어주세요.</p>')+
+    '<div class="acts"><button class="btn ghost" data-s="cancel">닫기<span class="kbd">Esc</span></button>'+
+    (edit?'<button class="btn ghost" data-s="del" style="flex:0 0 auto;color:var(--bad)">삭제</button>':'')+
+    '<button class="btn" data-s="save">'+(edit?"저장":"담기")+'</button></div>',function(act,sh){
+      if(act==="cancel"){closeSheet();return;}
+      if(act==="form"){
+        owner.forms=owner.forms||[];
+        if(owner.forms.indexOf(token)<0)owner.forms.push(token);
+        save();buildIndex();
+        if(curArt)linkArticle(curArt);
+        closeSheet();
+        if(curArt)renderReader();else render();
+        toast("'"+token+"' 를 "+owner.w+"의 형태로 등록했어요");
+        return;
+      }
+      if(act==="del"){
+        if(!window.confirm("단어장에서 지울까요?"))return;
+        delete state.bank[b.key];save();buildIndex();closeSheet();closePanel();
+        if(curArt)renderReader();else render();
+        toast("지웠어요");return;
+      }
+      var w=sh.querySelector("#nwW").value.trim();
+      if(!w){toast("단어를 적어주세요");return;}
+      var kanji=sh.querySelector("#nwK").value.split("\n").map(function(line){
+        var p=line.split("|").map(function(s){return s.trim();});
+        if(!p[0])return null;
+        return {c:p[0],kr:p[1]||"",mean:p[2]||"",
+          on:(p[3]||"").split(/[,、・]/).map(function(s){return s.trim();}).filter(Boolean),
+          kun:(p[4]||"").split(/[,、・]/).map(function(s){return s.trim();}).filter(Boolean)};
+      }).filter(Boolean);
+      var forms=sh.querySelector("#nwF").value.split(/[,、]/).map(function(s){return s.trim();}).filter(Boolean);
+      var data={w:w,r:sh.querySelector("#nwR").value.trim(),ko:sh.querySelector("#nwKo").value.trim(),
+        hanja:sh.querySelector("#nwH").value.trim(),pos:sh.querySelector("#nwP").value.trim(),
+        note:sh.querySelector("#nwN").value.trim(),kanji:kanji,forms:forms};
+      if(edit){
+        var oldKey=b.key,newKey=wkey(data.w,data.r);
+        for(var k in data)if(data.hasOwnProperty(k))b[k]=data[k];
+        if(newKey!==oldKey){delete state.bank[oldKey];b.key=newKey;state.bank[newKey]=b;}
+        save();buildIndex();closeSheet();
+        if(curArt){linkArticle(curArt);renderReader();}else render();
+        toast("고쳤어요");
+      }else{
+        var nb=addWord(data);
+        buildIndex();
+        if(curArt)linkArticle(curArt);
+        save();closeSheet();
+        if(curArt)renderReader();else render();
+        toast("단어장에 담았어요");
+      }
+    });
+  setTimeout(function(){var r=$("nwR");if(r)r.focus();},60);
+}
+
+/* ================= 복습 ================= */
+var rev=null;
+function pickType(b){
+  if(!b.ko)return "read";
+  if((b.stage||0)>=2&&(b.occ||[]).length)return "cloze";
+  if((b.stage||0)>=1&&b.r&&hasKanji(b.w))return "read";
+  return "mean";
+}
+function studyable(b){ return !!((b.ko&&b.ko.trim())||(b.r&&b.r.trim())); }
+function emptyWords(){ return bankList().filter(function(b){return b.st!==4&&!studyable(b);}); }
+function revCap(){ var v=state.ui.revMax; return (v==null)?40:v; }
+function buildQueue(words){
+  var items=[];
+  (words||dueList()).filter(studyable).forEach(function(b){items.push({kind:"word",b:b,type:pickType(b)});});
+  if(!words)dueGram().forEach(function(g){items.push({kind:"gram",g:g});});
+  if(!words){
+    var lim=(state.ui.newMax==null)?12:state.ui.newMax;
+    var fresh=lim?newList().filter(studyable).slice(0,lim):[];
+    fresh.forEach(function(b){items.push({kind:"word",b:b,type:"mean",isNew:true});});
+  }
+  for(var i=items.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=items[i];items[i]=items[j];items[j]=t;}
+  var cap=revCap();
+  if(!words&&cap&&items.length>cap)items=items.slice(0,cap);
+  return items;
+}
+function startReview(words){
+  var q=buildQueue(words);
+  if(!q.length){toast("지금 복습할 것이 없어요");return;}
+  rev={q:q,i:0,show:false,done:0,again:0,total:q.length};
+  $("revWrap").className="revwrap";
+  renderRev();
+}
+function closeRev(){
+  rev=null;$("revWrap").className="revwrap hide";
+  buildIndex();
+  if(curArt)renderReader();
+  render();
+}
+$("revClose").addEventListener("click",closeRev);
+$("revUndo").addEventListener("click",undoGrade);
+function occSentence(b){
+  var occ=(b.occ||[]);
+  for(var i=occ.length-1;i>=0;i--){
+    var o=occ[i],a=null;
+    for(var j=0;j<state.arts.length;j++)if(state.arts[j].id===o.a)a=state.arts[j];
+    if(a&&a.paras[o.p]&&a.paras[o.p][o.s])return {s:a.paras[o.p][o.s],a:a};
+  }
+  return null;
+}
+function renderRev(){
+  if(!rev)return;
+  var body=$("revBody");
+  $("revProg").style.width=(rev.i/rev.total*100)+"%";
+  $("revCount").textContent=Math.min(rev.i+1,rev.total)+" / "+rev.total;
+  $("revUndo").className="btn ghost mini"+(rev.last?"":" hide");
+  if(rev.i>=rev.q.length){
+    body.innerHTML='<div class="revdone"><div class="big">'+rev.done+'</div>'+
+      '<p style="color:var(--dim);font-size:14.5px;margin:8px 0 0">끝냈어요'+(rev.again?(" · 다시 볼 것 "+rev.again+"개"):"")+'</p>'+
+      '<div style="margin-top:22px;display:flex;gap:10px;justify-content:center">'+
+      (dueCount()?'<button class="btn accent" data-rv="more">이어서 더 하기</button>':'')+
+      '<button class="btn ghost" data-rv="close">닫기</button></div></div>';
+    $("revProg").style.width="100%";
+    return;
+  }
+  var it=rev.q[rev.i];
+  if(it.kind==="gram")return renderGramCard(it);
+  var b=it.b,front="",sub="",type=it.type;
+  if(type==="mean"){
+    front='<div class="qmain">'+esc(b.w)+'</div>';
+    sub='<div class="qtype">뜻</div>';
+  }else if(type==="read"){
+    front='<div class="qmain">'+esc(b.w)+'</div>';
+    sub='<div class="qtype">읽기</div>';
+  }else{
+    var oc=occSentence(b);
+    if(!oc){it.type="mean";return renderRev();}
+    var masked=oc.s.ja.split(b.w).join('<span class="qcloze"></span>');
+    front='<div class="qmain small">'+masked+'</div>';
+    sub='<div class="qtype">문장 속 빈칸</div>';
+    it.sent=oc.s;
+  }
+  var back="";
+  if(rev.show){
+    var oc2=occSentence(b),exHtml=oc2?('<div class="qex">'+esc(oc2.s.ja)+(oc2.s.ko?'<span>'+esc(oc2.s.ko)+'</span>':'')+'</div>'):"";
+    if(type==="mean")back='<div class="qsub">'+esc(b.r||"")+'</div><div class="qans">'+esc(b.ko||"")+'</div>'+
+      (b.hanja?'<div class="qmeta">한자음 '+esc(b.hanja)+'</div>':'')+kanjiLine(b)+exHtml;
+    else if(type==="read")back='<div class="qans">'+esc(b.r||"")+'</div><div class="qsub">'+esc(b.ko||"")+'</div>'+kanjiLine(b)+exHtml;
+    else back='<div class="qans">'+esc(b.w)+(b.r?" · "+esc(b.r):"")+'</div>'+
+      '<div class="qsub">'+esc(b.ko||"")+'</div>'+
+      (it.sent&&it.sent.ko?'<div class="qmeta">'+esc(it.sent.ko)+'</div>':'');
+  }
+  if(rev.show&&state.ui.tts!==false&&it.kind==="word")speak(it.type==="cloze"&&it.sent?it.sent.ja:b.w);
+  body.innerHTML='<div class="qcard" data-rv="flip">'+sub+front+
+    (rev.show?back:'<div class="qsub" style="color:var(--faint);font-size:13px">탭하면 답이 보여요</div>')+'</div>'+
+    (rev.show
+      ? '<div class="revacts">'+
+        '<button class="b-again" data-g="0">다시<small>10분 뒤</small></button>'+
+        '<button class="b-hard" data-g="1">어려움<small>'+gradeDays(b,1)+'</small></button>'+
+        '<button class="b-good" data-g="2">좋음<small>'+gradeDays(b,2)+'</small></button>'+
+        '<button class="b-easy" data-g="3">쉬움<small>'+gradeDays(b,3)+'</small></button></div>'
+      : '<div class="revacts"><button class="b-show" data-rv="flip">답 보기 <span class="kbd">Space</span></button></div>');
+}
+function kanjiLine(b){
+  if(!b.kanji||!b.kanji.length)return "";
+  return '<div class="qmeta">'+b.kanji.map(function(k){
+    return esc(k.c)+(k.kr?"("+esc(k.kr)+")":"")+" "+esc(k.mean||"")+((k.on&&k.on.length)?(" · "+esc(k.on[0])):"");
+  }).join("<br>")+'</div>';
+}
+function gradeDays(b,grade){
+  var g=b.stage||0;
+  if(grade===1)g=Math.max(0,g);else if(grade===2)g=g+1;else g=g+2;
+  var d=STEPS[Math.min(g,STEPS.length-1)];
+  if(grade===1)d=Math.max(1,Math.round(d*0.6));
+  return d===1?"1일":(d<30?(d+"일"):(Math.round(d/30)+"달"));
+}
+function renderGramCard(it){
+  var g=it.g;
+  $("revBody").innerHTML='<div class="qcard" data-rv="flip"><div class="qtype">문법</div>'+
+    '<div class="qmain small">'+esc(g.p)+'</div>'+
+    (rev.show?'<div class="qans">'+esc(g.ko)+'</div>'+(g.ex?'<div class="qsub">'+esc(g.ex)+(g.exKo?"<br>"+esc(g.exKo):"")+'</div>':'')
+      :'<div class="qsub" style="color:var(--faint);font-size:13px">뜻이 떠오르나요?</div>')+'</div>'+
+    (rev.show
+      ? '<div class="revacts"><button class="b-again" data-g="0">다시</button>'+
+        '<button class="b-good" data-g="2">좋음</button>'+
+        '<button class="b-easy" data-g="3">쉬움</button></div>'
+      : '<div class="revacts"><button class="b-show" data-rv="flip">답 보기 <span class="kbd">Space</span></button></div>');
+}
+$("revBody").addEventListener("click",function(e){
+  if(!rev)return;
+  var rv=e.target.closest("[data-rv]");
+  if(rv){
+    if(rv.dataset.rv==="flip"){rev.show=!rev.show;renderRev();}
+    else if(rv.dataset.rv==="close")closeRev();
+    else if(rv.dataset.rv==="more"){var q=buildQueue();if(!q.length){closeRev();return;}rev={q:q,i:0,show:false,done:0,again:0,total:q.length};renderRev();}
+    return;
+  }
+  var g=e.target.closest("[data-g]");
+  if(g)grade(parseInt(g.dataset.g,10));
+});
+function snapshot(o){
+  return {st:o.st,stage:o.stage,due:o.due,reps:o.reps,lapses:o.lapses,last:o.last};
+}
+function restore(o,s2){ for(var k in s2)if(s2.hasOwnProperty(k))o[k]=s2[k]; }
+function undoGrade(){
+  if(!rev||!rev.last)return;
+  var L=rev.last;
+  restore(L.obj,L.snap);
+  rev.i=L.i;rev.show=true;rev.done=L.done;rev.again=L.again;rev.q.length=L.qlen;rev.total=L.qlen;
+  rev.last=null;save();renderRev();
+  toast("되돌렸어요");
+}
+function grade(gr){
+  if(!rev)return;
+  var it=rev.q[rev.i];
+  rev.last={obj:(it.kind==="gram"?it.g:it.b),snap:snapshot(it.kind==="gram"?it.g:it.b),
+    i:rev.i,done:rev.done,again:rev.again,qlen:rev.q.length};
+  if(it.kind==="gram"){
+    var g=it.g;
+    if(gr===0){g.stage=Math.max(0,(g.stage||0)-1);g.due=Date.now()+10*60000;rev.again++;}
+    else{g.stage=Math.min((g.stage||0)+(gr===3?2:1),STEPS.length-1);g.due=Date.now()+STEPS[g.stage]*DAY;rev.done++;}
+    g.reps=(g.reps||0)+1;
+  }else{
+    var b=it.b,fresh=(b.reps||0)===0;
+    schedule(b,gr);
+    if(gr===0){rev.again++;rev.q.push({kind:"word",b:b,type:it.type});rev.total=rev.q.length;}
+    else rev.done++;
+    bump(fresh?"nw":"rev",1);
+  }
+  save();
+  rev.i++;rev.show=false;renderRev();
+}
+
+/* 복습 탭 */
+function renderReviewTab(){
+  var due=dueList(),gram=dueGram(),nw=newList();
+  var soon=bankList().filter(function(b){return b.due&&b.due>Date.now()&&b.due<Date.now()+DAY;}).length;
+  var empties=emptyWords();
+  var html='<div class="pagehead"><div><h1>복습</h1><div class="sub">단어 '+due.length+'개 · 문법 '+gram.length+'개가 차례예요</div></div></div>';
+  html+='<div class="hero"><div class="big">'+(due.length+gram.length)+'<small>개 지금 복습</small></div>'+
+    '<div class="statrow">'+
+      '<div class="stat"><b>'+nw.length+'</b><span>새 단어</span></div>'+
+      '<div class="stat"><b>'+soon+'</b><span>24시간 안</span></div>'+
+      '<div class="stat"><b>'+bankList().filter(function(b){return b.st===3;}).length+'</b><span>외운 단어</span></div>'+
+    '</div>'+
+    '<div class="row"><button class="btn accent" data-act="review" style="flex:1"'+((due.length+gram.length+nw.length)?"":" disabled")+'>'+
+      '시작하기<span class="kbd">R</span></button></div></div>';
+  if(empties.length){
+    html+='<div class="sgrp">뜻이 비어 있어 복습에서 빠진 단어 '+empties.length+'개</div>'+
+      '<p class="hint" style="margin-top:0">탭해서 읽기나 뜻을 채우면 복습에 들어옵니다.</p>'+
+      '<div class="wlist">'+empties.slice(0,20).map(wrowHtml).join("")+'</div>';
+  }
+  if(nw.length){
+    html+='<div class="sgrp">아직 안 본 새 단어 '+nw.length+'개</div><div class="wlist">'+
+      nw.slice(0,20).map(wrowHtml).join("")+'</div>';
+  }
+  if(due.length){
+    html+='<div class="sgrp">복습 차례</div><div class="wlist">'+due.slice(0,30).map(wrowHtml).join("")+'</div>';
+  }
+  if(!due.length&&!nw.filter(studyable).length&&!gram.length&&!empties.length){
+    html+='<div class="empty"><b>오늘 몫은 끝났어요</b><small>기사를 더 읽고 모르는 단어를 담아보세요.<br>다음 복습은 '+nextDueText()+'예요.</small></div>';
+  }
+  $("app").innerHTML=html;
+}
+function nextDueText(){
+  var next=0;
+  bankList().forEach(function(b){if(b.due&&b.due>Date.now()&&(!next||b.due<next))next=b.due;});
+  return next?relDay(next):"아직 없어요";
+}
+
+/* ================= 단어 탭 ================= */
+var wordFilter="all",wordQuery="";
+function renderWords(){
+  var all=bankList();
+  var counts={all:all.length,s0:0,s1:0,s2:0,s3:0,due:dueList().length};
+  all.forEach(function(b){if(b.st<4)counts["s"+b.st]++;});
+  var list=all.filter(function(b){
+    if(wordFilter==="due")return b.due&&b.due<=Date.now();
+    if(wordFilter!=="all"&&b.st!==parseInt(wordFilter.slice(1),10))return false;
+    if(wordFilter==="all"&&b.st===4)return false;
+    return true;
+  });
+  if(wordQuery){
+    var q=wordQuery.toLowerCase();
+    list=list.filter(function(b){
+      return (b.w+" "+(b.r||"")+" "+(b.ko||"")+" "+(b.hanja||"")).toLowerCase().indexOf(q)>-1;
+    });
+  }
+  list.sort(function(x,y){
+    if(wordFilter==="due")return (x.due||0)-(y.due||0);
+    return (y.added||0)-(x.added||0);
+  });
+  var html='<div class="pagehead"><div><h1>단어</h1><div class="sub">모두 '+all.length+'개 · 외움 '+counts.s3+'개</div></div></div>'+
+    '<input class="inp" id="wq" placeholder="단어 · 읽기 · 뜻으로 찾기  ( / )" value="'+esc(wordQuery)+'">'+
+    '<div class="filters" style="margin-top:10px">'+
+      fbtn("all","전체 "+counts.all)+fbtn("due","복습 차례 "+counts.due)+
+      fbtn("s0","새 단어 "+counts.s0)+fbtn("s1","학습 중 "+counts.s1)+
+      fbtn("s2","익숙 "+counts.s2)+fbtn("s3","외움 "+counts.s3)+
+    '</div>';
+  if(!list.length){
+    html+='<div class="empty"><b>해당하는 단어가 없어요</b><small>기사를 넣으면 단어가 함께 쌓입니다.</small></div>';
+  }else{
+    html+='<div class="wlist">'+list.slice(0,300).map(wrowHtml).join("")+'</div>';
+    if(list.length>300)html+='<p class="hint" style="text-align:center">앞의 300개만 보여요 · 검색으로 좁혀보세요</p>';
+  }
+  $("app").innerHTML=html;
+  var q=$("wq");
+  q.oninput=function(){
+    wordQuery=q.value;
+    var pos=q.selectionStart;
+    renderWords();
+    var nq=$("wq");if(nq){nq.focus();try{nq.setSelectionRange(pos,pos);}catch(e){}}
+  };
+}
+function fbtn(f,label){
+  return '<button data-act="filter" data-f="'+f+'" class="'+(wordFilter===f?"on":"")+'">'+esc(label)+'</button>';
+}
+
+/* ================= 기록 탭 ================= */
+function renderStats(){
+  var all=bankList().filter(function(b){return b.st!==4;});
+  var by=[0,0,0,0];all.forEach(function(b){by[b.st]++;});
+  var days=[],labels=[],maxv=1;
+  for(var i=13;i>=0;i--){
+    var k=dayAdd(todayKey(),-i),r=state.log[k]||{};
+    var v=(r.nw||0)+(r.rev||0);
+    days.push({k:k,nw:r.nw||0,rev:r.rev||0,sent:r.sent||0,v:v});
+    maxv=Math.max(maxv,v);
+    var p=k.split("-");labels.push(+p[2]);
+  }
+  var totSent=0,totRev=0,totNew=0;
+  for(var dk in state.log)if(state.log.hasOwnProperty(dk)){
+    totSent+=state.log[dk].sent||0;totRev+=state.log[dk].rev||0;totNew+=state.log[dk].nw||0;
+  }
+  var readParas=0,totalParas=0;
+  state.arts.forEach(function(a){var p=artProgress(a);readParas+=p.done;totalParas+=p.total;});
+  var html='<div class="pagehead"><div><h1>기록</h1><div class="sub">연속 '+(state.streak.n||0)+'일 · 읽은 문단 '+readParas+'/'+totalParas+'</div></div></div>';
+  html+='<div class="hero"><div style="font-size:13px;color:var(--faint);font-weight:700">최근 2주</div>'+
+    '<div class="barchart">'+days.map(function(d){
+      var h=Math.round(d.v/maxv*100);
+      var nh=d.v?Math.round(d.nw/d.v*h):0;
+      return '<div class="b" style="height:'+Math.max(3,h)+'%" title="'+d.k+'"><i style="height:'+nh+'%"></i></div>';
+    }).join("")+'</div>'+
+    '<div class="barlabels">'+labels.map(function(l){return "<span>"+l+"</span>";}).join("")+'</div>'+
+    '<div class="legend"><span><em style="background:var(--accent)"></em>새 단어</span>'+
+      '<span><em style="background:var(--new-bg);border:1px solid var(--new)"></em>복습</span></div>'+
+    '<div class="statrow">'+
+      '<div class="stat"><b>'+totNew+'</b><span>익힌 새 단어</span></div>'+
+      '<div class="stat"><b>'+totRev+'</b><span>복습 횟수</span></div>'+
+      '<div class="stat"><b>'+totSent+'</b><span>읽은 문장</span></div>'+
+    '</div></div>';
+  html+='<div class="sgrp">단어장 구성</div>'+
+    '<div class="prog2">'+bar(by[0],all.length||1,"var(--new)")+bar(by[1],all.length||1,"var(--learn)")+
+      bar(by[2],all.length||1,"var(--fam)")+bar(by[3],all.length||1,"var(--known)")+'</div>'+
+    '<div class="legend"><span><em style="background:var(--new)"></em>새 단어 '+by[0]+'</span>'+
+    '<span><em style="background:var(--learn)"></em>학습 중 '+by[1]+'</span>'+
+    '<span><em style="background:var(--fam)"></em>익숙 '+by[2]+'</span>'+
+    '<span><em style="background:var(--known)"></em>외움 '+by[3]+'</span></div>';
+  var gramN=0,gramDone=0;
+  for(var gk in state.gram)if(state.gram.hasOwnProperty(gk)){gramN++;if((state.gram[gk].stage||0)>=3)gramDone++;}
+  if(gramN)html+='<div class="sgrp">문법</div><div class="card" style="padding:14px"><b style="font-size:15px">'+gramN+'개</b>'+
+    '<span style="color:var(--dim);font-size:13px"> 중 '+gramDone+'개가 익숙해졌어요</span>'+
+    '<div style="margin-top:10px"><button class="btn ghost mini" data-act="gram">문법 모아보기</button></div></div>';
+  html+='<div class="sgrp">한자</div>'+kanjiStats();
+  $("app").innerHTML=html;
+}
+function kanjiStats(){
+  var map={};
+  bankList().forEach(function(b){
+    (b.kanji||[]).forEach(function(k){
+      if(!k.c)return;
+      var e=map[k.c]||(map[k.c]={c:k.c,kr:k.kr,mean:k.mean,n:0,known:0});
+      e.n++;if(b.st>=2)e.known++;
+    });
+  });
+  var list=[];for(var c in map)if(map.hasOwnProperty(c))list.push(map[c]);
+  if(!list.length)return '<p class="hint">아직 한자 풀이가 담긴 단어가 없어요.</p>';
+  list.sort(function(x,y){return y.n-x.n;});
+  return '<p class="hint">단어장에 나온 한자 '+list.length+'자 · 자주 나오는 순</p>'+
+    '<div class="kgrid">'+list.slice(0,12).map(function(e){
+      return '<div class="kcard"><div class="ch">'+esc(e.c)+'</div>'+
+        (e.kr?'<div class="kr">'+esc(e.kr)+'</div>':'')+
+        (e.mean?'<div class="mn">'+esc(e.mean)+'</div>':'')+
+        '<div class="rd">'+e.n+'개 단어에 · '+e.known+'개 익숙</div></div>';
+    }).join("")+'</div>';
+}
+function openGramSheet(){
+  var list=[];
+  for(var k in state.gram)if(state.gram.hasOwnProperty(k))list.push(state.gram[k]);
+  list.sort(function(x,y){return (y.stage||0)-(x.stage||0);});
+  openSheet('<h2>문법</h2><p class="hint">기사에서 모인 표현이에요. 복습에 함께 나옵니다.</p>'+
+    list.map(function(g){
+      return '<div class="gnote" style="margin-top:10px"><b>'+esc(g.p)+'</b> '+esc(g.ko)+
+        (g.ex?'<span class="ex">'+esc(g.ex)+(g.exKo?" — "+esc(g.exKo):"")+'</span>':'')+
+        '<span class="ex">'+(g.due?("다음 복습 "+relDay(g.due)):"아직 안 봄")+'</span></div>';
+    }).join("")+
+    '<div class="acts"><button class="btn ghost" data-s="cancel">닫기<span class="kbd">Esc</span></button></div>',
+    function(act){if(act==="cancel")closeSheet();});
+}
+
+/* ================= 시트 ================= */
+var sheetCb=null;
+function openSheet(html,cb){
+  sheetCb=cb||null;
+  $("sheet").innerHTML=html;
+  $("scrim").className="scrim";
+  return $("sheet");
+}
+function closeSheet(){sheetCb=null;$("scrim").className="scrim hide";}
+$("scrim").addEventListener("click",function(e){
+  if(e.target===this){closeSheet();return;}
+  var b=e.target.closest("[data-s]");
+  if(b&&sheetCb)sheetCb(b.dataset.s,$("sheet"));
+});
+
+function openAdd(){
+  var sh=openSheet('<h2>기사 넣기</h2>'+
+    '<p class="hint">클로드가 만들어 준 분석 파일을 그대로 붙여넣으세요. 후리가나·뜻·한자 풀이·문장별 해석이 함께 들어갑니다.<br>'+
+    '일본어 원문만 붙여넣어 읽을 수도 있어요. 그때는 모르는 단어를 직접 담으면 됩니다.</p>'+
+    '<textarea class="area" id="pasteBox" rows="7" placeholder="분석 파일 내용 또는 일본어 원문" autocapitalize="none" autocorrect="off" spellcheck="false"></textarea>'+
+    '<div id="rawF" class="hide">'+
+      '<label class="lb">제목</label><input class="inp" id="rT">'+
+      '<div style="display:flex;gap:9px"><div style="flex:1"><label class="lb">출처</label><input class="inp" id="rS" placeholder="日経"></div>'+
+      '<div style="flex:1"><label class="lb">날짜</label><input class="inp" id="rD" placeholder="2026-10-06"></div></div>'+
+      '<label class="lb">주제</label><input class="inp" id="rC" placeholder="통상 · 관세">'+
+    '</div>'+
+    '<button class="mode" data-s="file"><b>파일에서 불러오기</b><span>클로드가 보낸 분석 파일(.json)을 그대로 선택 · 여러 편이 든 파일도 됩니다</span></button>'+
+    '<div class="acts"><button class="btn ghost" data-s="cancel">닫기<span class="kbd">Esc</span></button>'+
+    '<button class="btn" data-s="go">넣기</button></div>',
+    function(act,sh){
+      if(act==="cancel"){closeSheet();return;}
+      if(act==="file"){fileMode="article";closeSheet();$("fileIn").click();return;}
+      var t=sh.querySelector("#pasteBox").value.trim();
+      if(!t){toast("내용을 붙여넣어 주세요");return;}
+      var a=null;
+      if(t.charAt(0)==="{")a=importJson(t);
+      else a=importRaw(t,{title:sh.querySelector("#rT").value,source:sh.querySelector("#rS").value,
+        date:sh.querySelector("#rD").value,topic:sh.querySelector("#rC").value});
+      if(a){closeSheet();openArticle(a.id);}
+    });
+  var box=sh.querySelector("#pasteBox");
+  box.addEventListener("input",function(){
+    var t=box.value.trim();
+    sh.querySelector("#rawF").className=(t&&t.charAt(0)!=="{")?"":"hide";
+  });
+  setTimeout(function(){box.focus();},60);
+}
+function openDisplay(){
+  openSheet('<h2>표시</h2>'+
+    '<label class="lb">후리가나</label>'+
+    '<div class="seg">'+["new","all","off"].map(function(v,i){
+      return '<button data-s="furi:'+v+'" class="'+(state.ui.furi===v?"on":"")+'">'+["모르는 단어만","전부","끄기"][i]+'</button>';
+    }).join("")+'</div>'+
+    '<label class="lb">해석</label>'+
+    '<div class="seg">'+["hide","show"].map(function(v,i){
+      return '<button data-s="ko:'+v+'" class="'+(state.ui.ko===v?"on":"")+'">'+["문장을 탭하면 보기","처음부터 보기"][i]+'</button>';
+    }).join("")+'</div>'+
+    '<label class="lb">한 번에 볼 복습 양</label>'+
+    '<div class="seg">'+[20,40,80,0].map(function(v){
+      return '<button data-s="rm:'+v+'" class="'+(revCap()===v?"on":"")+'">'+(v?v+"장":"제한 없음")+'</button>';
+    }).join("")+'</div>'+
+    '<label class="lb">복습에 섞을 새 단어 <span style="font-weight:500;color:var(--faint)">· 하루에 처음 보는 단어 수</span></label>'+
+    '<div class="seg">'+[0,8,12,20].map(function(v){
+      return '<button data-s="nm:'+v+'" class="'+(((state.ui.newMax==null?12:state.ui.newMax))===v?"on":"")+'">'+(v?v+"개":"없음")+'</button>';
+    }).join("")+'</div>'+
+    '<label class="lb">글자 크기</label>'+
+    '<div class="seg">'+[0.9,1,1.15,1.3].map(function(v){
+      return '<button data-s="fs:'+v+'" class="'+(state.ui.fs===v?"on":"")+'">'+Math.round(v*100)+'%</button>';
+    }).join("")+'</div>'+
+    '<label class="lb">일본어 가리기 <span style="font-weight:500;color:var(--faint)">· 해석을 보고 일본어를 떠올려보기</span></label>'+
+    '<div class="seg">'+["off","on"].map(function(v,i){
+      return '<button data-s="jah:'+v+'" class="'+((state.ui.jaHide?"on":"off")===v?"on":"")+'">'+["끄기","켜기"][i]+'</button>';
+    }).join("")+'</div>'+
+    (TTS?'<label class="lb">소리내어 읽기</label>'+
+    '<div class="seg">'+["on","off"].map(function(v,i){
+      return '<button data-s="tts:'+v+'" class="'+((state.ui.tts!==false?"on":"off")===v?"on":"")+'">'+["켜기","끄기"][i]+'</button>';
+    }).join("")+'</div>'+
+    '<div class="seg">'+[0.75,0.95,1.2].map(function(v){
+      return '<button data-s="rate:'+v+'" class="'+((state.ui.rate||0.95)===v?"on":"")+'">'+({0.75:"느리게",0.95:"보통",1.2:"빠르게"})[v]+'</button>';
+    }).join("")+'</div>':'')+
+    '<p class="hint">후리가나를 "모르는 단어만"으로 두면 익숙·외움 단어에는 읽기가 붙지 않아, 실제로 읽을 수 있는지 확인하면서 읽게 됩니다.</p>'+
+    '<div class="acts"><button class="btn" data-s="cancel" style="flex:1">닫기<span class="kbd">Esc</span></button></div>',
+    function(act){
+      if(act==="cancel"){closeSheet();return;}
+      var p=act.split(":");
+      if(p[0]==="furi")state.ui.furi=p[1];
+      else if(p[0]==="jah"){state.ui.jaHide=(p[1]==="on");}
+      else if(p[0]==="tts"){state.ui.tts=(p[1]==="on");}
+      else if(p[0]==="rate"){state.ui.rate=parseFloat(p[1]);speak("テスト");}
+      else if(p[0]==="nm")state.ui.newMax=parseInt(p[1],10);
+      else if(p[0]==="rm")state.ui.revMax=parseInt(p[1],10);
+      else if(p[0]==="ko")state.ui.ko=p[1];
+      else if(p[0]==="fs"){state.ui.fs=parseFloat(p[1]);document.documentElement.style.setProperty("--fs",state.ui.fs);}
+      save();openDisplay();
+      if(curArt)renderReader();
+    });
+}
+function openMore(){
+  openSheet('<h2>더보기</h2>'+
+    '<button class="mode" data-s="help"><b>쓰는 법</b><span>분석 파일 만드는 방법 · 단축키</span></button>'+
+    '<button class="mode" data-s="display"><b>표시 설정</b><span>후리가나 · 해석 · 글자 크기</span></button>'+
+    '<button class="mode" data-s="backup"><b>백업</b><span>파일로 저장 · 복원</span></button>'+
+    '<button class="mode" data-s="sync"><b>기기 간 동기화</b><span>'+(syncOn()?("연결됨 · "+syncTime(sync.lastRun)):"아이패드 ↔ 휴대폰")+'</span></button>'+
+    '<button class="mode" data-s="upd"><b>업데이트 확인</b><span>현재 '+APP_VER+'</span></button>'+
+    '<div class="acts"><button class="btn ghost" data-s="cancel" style="flex:1">닫기<span class="kbd">Esc</span></button></div>',
+    function(act){
+      closeSheet();
+      setTimeout(function(){
+        if(act==="help")openHelp();
+        else if(act==="display")openDisplay();
+        else if(act==="backup")openBackup();
+        else if(act==="sync")openSync();
+        else if(act==="upd")checkUpdate(false);
+      },60);
+    });
+}
+function openHelp(){
+  openSheet('<h2>쓰는 법</h2>'+
+    '<p class="hint"><b>1. 기사 받기</b><br>클로드에게 읽고 싶은 기사(영어·한국어·일본어 모두 괜찮아요)를 주면서 "일본어 읽기 분석 파일로 만들어줘"라고 하면, '+
+      '문장별 해석과 단어·한자 풀이가 들어간 파일을 만들어 줍니다.</p>'+
+    '<p class="hint"><b>2. 읽기</b><br>문장을 탭하면 그 문장의 해석만 열려요. 색이 칠해진 단어를 탭하면 읽기·뜻·한국 한자음과 한자 하나하나의 음독·훈독이 나옵니다. '+
+      '색이 없는 한자 덩어리를 탭하면 직접 단어로 담을 수 있어요.</p>'+
+    '<p class="hint"><b>3. 단어 상태</b><br>단어마다 <b>새 단어 → 학습 중 → 익숙 → 외움</b> 네 단계가 있어요. 패널에서 1~4 키로 바꿉니다. '+
+      '이 단계는 기사와 상관없이 단어장에 남아서, 다른 기사에서 같은 단어가 나오면 그 상태로 보여요.</p>'+
+    '<p class="hint"><b>4. 복습</b><br>때가 된 단어만 복습에 나옵니다. 뜻 맞히기, 읽기 맞히기, 그 단어가 나왔던 문장의 빈칸 채우기 세 가지가 섞여 나와요. '+
+      '답을 본 뒤 다시·어려움·좋음·쉬움을 고르면 다음 복습 날짜가 정해집니다.</p>'+
+    '<p class="hint"><b>단축키</b><br>'+
+      '<span class="code">A</span> 기사 넣기 · <span class="code">R</span> 복습 · <span class="code">/</span> 단어 찾기 · '+
+      '<span class="code">F</span> 후리가나 · <span class="code">K</span> 해석 전체 · '+
+      '<span class="code">↓↑</span> 문장 이동 · <span class="code">Space</span> 그 문장 해석 · <span class="code">S</span> 소리 · '+
+      '<span class="code">Space</span> 답 보기 · <span class="code">1~4</span> 단어 상태 / 복습 채점 · '+
+      '<span class="code">Z</span> 채점 되돌리기 · '+
+      '<span class="code">Esc</span> 닫기</p>'+
+    '<div class="acts"><button class="btn" data-s="cancel" style="flex:1">닫기<span class="kbd">Esc</span></button></div>',
+    function(){closeSheet();});
+}
+/* 백업 */
+function backupName(){
+  var d=new Date(),p=function(n){return ("0"+n).slice(-2);};
+  return "일본어읽기-"+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+".json";
+}
+function backupObj(){
+  return {app:"jp-reader",version:2,savedAt:Date.now(),device:sync.dev,
+    arts:state.arts,bank:state.bank,log:state.log,gram:state.gram,ui:state.ui,streak:state.streak};
+}
+function applyBackup(o){
+  if(!o||!Array.isArray(o.arts))return false;
+  state.arts=o.arts;
+  state.bank=(o.bank&&typeof o.bank==="object")?o.bank:{};
+  state.log=(o.log&&typeof o.log==="object")?o.log:{};
+  state.gram=(o.gram&&typeof o.gram==="object")?o.gram:{};
+  if(o.streak)state.streak=o.streak;
+  if(o.ui)for(var k in o.ui)if(o.ui.hasOwnProperty(k)&&k!=="tab")state.ui[k]=o.ui[k];
+  buildIndex();save();render();
+  return true;
+}
+function openBackup(){
+  var used=0;
+  try{ used=(localStorage.getItem(KEY)||"").length; }catch(e){}
+  var mb=used>1048576?((used/1048576).toFixed(1)+"MB"):(Math.round(used/1024)+"KB");
+  openSheet('<h2>백업</h2><p class="hint">기사 '+state.arts.length+'편, 단어 '+bankList().length+'개, 복습 일정과 기록이 함께 저장됩니다.<br>'+
+    '지금 쓰는 저장 공간 '+mb+' (기기당 약 5MB까지 쓸 수 있어요)</p>'+
+    '<button class="mode" data-s="save"><b>파일로 저장</b><span>'+backupName()+'</span></button>'+
+    '<button class="mode" data-s="load"><b>파일에서 복원</b><span>지금 내용은 교체됩니다</span></button>'+
+    '<button class="mode" data-s="tsv"><b>단어 표로 내보내기</b><span>엑셀·Anki에 붙여넣을 수 있는 형식</span></button>'+
+    '<div class="acts"><button class="btn ghost" data-s="cancel" style="flex:1">닫기<span class="kbd">Esc</span></button></div>',
+    function(act){
+      if(act==="cancel"){closeSheet();return;}
+      if(act==="tsv"){
+        var rows=["단어\t읽기\t뜻\t한국한자음\t품사\t상태\t다음복습"];
+        bankList().forEach(function(b){
+          rows.push([b.w,b.r||"",b.ko||"",b.hanja||"",b.pos||"",statusName(b.st),
+            b.due?new Date(b.due).toISOString().slice(0,10):""].join("\t"));
+        });
+        try{
+          var blob2=new Blob([rows.join("\n")],{type:"text/tab-separated-values"});
+          var u2=URL.createObjectURL(blob2),a2=document.createElement("a");
+          a2.href=u2;a2.download="일본어단어.tsv";document.body.appendChild(a2);a2.click();
+          setTimeout(function(){document.body.removeChild(a2);URL.revokeObjectURL(u2);},1000);
+          toast("단어 "+bankList().length+"개를 내보냈어요");
+        }catch(e){toast("내보내기에 실패했어요");}
+        return;
+      }
+      if(act==="save"){
+        try{
+          var blob=new Blob([JSON.stringify(backupObj())],{type:"application/json"});
+          var url=URL.createObjectURL(blob),a=document.createElement("a");
+          a.href=url;a.download=backupName();document.body.appendChild(a);a.click();
+          setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},1000);
+          toast("백업 파일을 저장했어요");
+        }catch(e){toast("저장에 실패했어요");}
+      }else{closeSheet();$("fileIn").click();}
+    });
+}
+var fileMode="backup";
+$("fileIn").addEventListener("change",function(){
+  var f=this.files&&this.files[0];this.value="";
+  if(!f)return;
+  if(fileMode==="article"){
+    fileMode="backup";
+    var r2=new FileReader();
+    r2.onload=function(){ importAny(String(r2.result)); };
+    r2.onerror=function(){ toast("파일을 읽지 못했어요"); };
+    r2.readAsText(f);
+    return;
+  }
+  var r=new FileReader();
+  r.onload=function(){
+    var o=null;
+    try{o=JSON.parse(r.result);}catch(e){toast("백업 파일 형식이 아니에요");return;}
+    if(!o||!Array.isArray(o.arts)){toast("기사가 없는 파일이에요");return;}
+    if(!window.confirm("백업의 기사 "+o.arts.length+"편으로 되돌립니다.\n지금 내용은 사라집니다. 계속할까요?"))return;
+    if(applyBackup(o))toast("복원했어요");
+  };
+  r.readAsText(f);
+});
+/* 업데이트 */
+var refreshing=false;
+function warmCache(cb){
+  var url=location.pathname;
+  try{if(window.caches&&caches.keys)caches.keys().then(function(ks){ks.forEach(function(k){caches["delete"](k);});});}catch(e){}
+  var done=false,fin=function(){if(done)return;done=true;cb&&cb();};
+  try{fetch(url,{cache:"reload"}).then(fin,fin);setTimeout(fin,3000);}catch(e){fin();}
+}
+function hardRefresh(){
+  if(refreshing)return;refreshing=true;
+  var url=location.pathname;warmCache(function(){location.replace(url);});
+}
+function checkUpdate(silent){
+  try{
+    if(location.protocol==="file:"){if(!silent)toast("최신 버전입니다 ("+APP_VER+")");return;}
+    fetch(location.pathname+"?_ts="+Date.now(),{cache:"no-store"})
+      .then(function(r){return r.ok?r.text():null;})
+      .then(function(t){
+        if(!t)return;
+        var m=t.match(/APP_VER="(j\d+)"/);
+        if(!m||m[1]===APP_VER){if(!silent)toast("최신 버전입니다 ("+APP_VER+")");return;}
+        var seen="";try{seen=localStorage.getItem("jp2-updseen")||"";}catch(e){}
+        if(silent&&seen===m[1])return;
+        try{localStorage.setItem("jp2-updseen",m[1]);}catch(e){}
+        warmCache();
+        var d=document.createElement("div");d.className="upd";
+        d.innerHTML="<b>새 버전이 있습니다 ("+esc(m[1])+")</b>지금 받아도 기사와 단어장은 그대로입니다."+
+          '<button id="updNow">지금 업데이트</button>'+
+          '<button id="updHide" style="background:transparent;color:rgba(255,255,255,.75);margin-left:6px">나중에</button>';
+        var app=$("app");app.insertBefore(d,app.firstChild);
+        $("updNow").onclick=hardRefresh;
+        $("updHide").onclick=function(){d.parentNode.removeChild(d);};
+      })
+      .catch(function(){});
+  }catch(e){}
+}
+
+
+/* ================= 두 기기 내용 합치기 ================= */
+var PREMERGE="jp2-premerge";
+function mergeRemote(obj){
+  if(!obj||!Array.isArray(obj.arts))return null;
+  var out={added:0,changed:0,newArts:0};
+  /* 단어: 더 최근에 공부한 쪽 */
+  var rb=(obj.bank&&typeof obj.bank==="object")?obj.bank:{};
+  Object.keys(rb).forEach(function(k){
+    var r=rb[k],l=state.bank[k];
+    if(!l){ state.bank[k]=r; out.added++; return; }
+    if((r.last||0)>(l.last||0)){
+      ["st","stage","due","reps","lapses","last"].forEach(function(f){ if(r[f]!==undefined) l[f]=r[f]; });
+      out.changed++;
+    }
+    l.reps=Math.max(l.reps||0,r.reps||0);
+    l.lapses=Math.max(l.lapses||0,r.lapses||0);
+    ["r","ko","hanja","pos","jlpt","note"].forEach(function(f){ if(!String(l[f]||"").trim()&&String(r[f]||"").trim()) l[f]=r[f]; });
+    if((!l.kanji||!l.kanji.length)&&r.kanji&&r.kanji.length) l.kanji=r.kanji;
+    (r.forms||[]).forEach(function(f){ l.forms=l.forms||[]; if(l.forms.indexOf(f)<0) l.forms.push(f); });
+    (r.occ||[]).forEach(function(o){ addOcc(l,o.a,o.p,o.s); });
+  });
+  /* 기사: 없는 것은 받고, 있는 것은 읽은 문단과 내 해석을 합친다 */
+  var byId={};
+  state.arts.forEach(function(a){ byId[a.id]=a; });
+  obj.arts.forEach(function(ra){
+    if(!ra||!ra.id)return;
+    var la=byId[ra.id];
+    if(!la){ state.arts.push(ra); out.newArts++; return; }
+    Object.keys(ra.done||{}).forEach(function(k){ if(ra.done[k]) la.done[k]=1; });
+    Object.keys(ra.myko||{}).forEach(function(k){
+      if(!String(la.myko[k]||"").trim()||String(ra.myko[k]||"").length>String(la.myko[k]||"").length) la.myko[k]=ra.myko[k];
+    });
+    if(String(ra.note||"").length>String(la.note||"").length) la.note=ra.note;
+    if((ra.open||0)>(la.open||0)) la.open=ra.open;
+  });
+  /* 문법·기록 */
+  var rg=(obj.gram&&typeof obj.gram==="object")?obj.gram:{};
+  Object.keys(rg).forEach(function(k){
+    var r=rg[k],l=state.gram[k];
+    if(!l){ state.gram[k]=r; return; }
+    if((r.stage||0)>(l.stage||0)){ l.stage=r.stage; l.due=r.due; }
+    l.reps=Math.max(l.reps||0,r.reps||0);
+  });
+  var rl=(obj.log&&typeof obj.log==="object")?obj.log:{};
+  Object.keys(rl).forEach(function(k){
+    var r=rl[k]||{},l=state.log[k];
+    if(!l){ state.log[k]=r; return; }
+    ["nw","rev","sent"].forEach(function(f){ l[f]=Math.max(l[f]||0,r[f]||0); });
+  });
+  if(obj.streak&&(obj.streak.n||0)>(state.streak.n||0)) state.streak=obj.streak;
+  buildIndex();
+  return out;
+}
+function snapshotBeforeMerge(){
+  try{ localStorage.setItem(PREMERGE,JSON.stringify({at:Date.now(),arts:state.arts,bank:state.bank,log:state.log,gram:state.gram})); }catch(e){}
+}
+function hasPremerge(){ try{ return !!localStorage.getItem(PREMERGE); }catch(e){ return false; } }
+function undoMerge(){
+  try{
+    var o=JSON.parse(localStorage.getItem(PREMERGE)||"null");
+    if(!o||!o.arts){ toast("되돌릴 기록이 없어요"); return; }
+    state.arts=o.arts; state.bank=o.bank||{}; state.log=o.log||{}; state.gram=o.gram||{};
+    localStorage.removeItem(PREMERGE);
+    buildIndex(); save(); render(); toast("합치기 전으로 되돌렸어요");
+  }catch(e){ toast("되돌리지 못했어요"); }
+}
+function syncMerge(cb){
+  if(!syncOn()){ cb&&cb(false,"동기화를 먼저 설정해주세요"); return; }
+  fetch(ghUrl()+"?_="+Date.now(),{headers:ghHead(),cache:"no-store"})
+    .then(function(r){ if(r.status===404) return null; if(!r.ok) throw r.status; return r.json(); })
+    .then(function(j){
+      if(!j){ syncPush(false,cb,true); return; }
+      sync.sha=j.sha; saveSyncCfg();
+      var obj=null;
+      try{ obj=JSON.parse(b64dec(j.content)); }catch(e){}
+      if(!obj){ cb&&cb(false,"서버 자료를 읽지 못했어요"); return; }
+      snapshotBeforeMerge();
+      var r2=mergeRemote(obj);
+      if(!r2){ cb&&cb(false,"합칠 수 없는 자료예요"); return; }
+      save(); render();
+      syncPush(false,function(ok,msg){
+        if(ok) cb&&cb(true,"합쳤어요 · 새 단어 "+r2.added+"개 · 갱신 "+r2.changed+"개"+(r2.newArts?(" · 새 기사 "+r2.newArts+"편"):""));
+        else cb&&cb(false,msg);
+      },true);
+    })
+    .catch(function(){ cb&&cb(false,"인터넷에 연결되지 않았어요"); });
+}
+
+/* ================= 기기 간 동기화 ================= */
+// ================= 기기 간 동기화 (내 GitHub 비공개 저장소) =================
+var SYNCKEY="jp2-sync";
+var sync={repo:"",token:"",path:"jp2-sync.json",auto:true,sha:"",lastAt:0,lastRun:0,pendingAt:0,dev:""};
+var syncBusy=false, syncTimer=null, syncDirty=false;
+function loadSync(){
+  try{
+    var o=JSON.parse(localStorage.getItem(SYNCKEY)||"{}");
+    for(var k in o) if(Object.prototype.hasOwnProperty.call(o,k)) sync[k]=o[k];
+  }catch(e){}
+  if(!sync.dev){ sync.dev=uid(); saveSyncCfg(); }
+}
+function saveSyncCfg(){ try{ localStorage.setItem(SYNCKEY,JSON.stringify(sync)); }catch(e){} }
+function syncOn(){ return !!(sync.repo&&sync.token); }
+function ghUrl(){ return "https://api.github.com/repos/"+sync.repo.replace(/^\/+|\/+$/g,"")+"/contents/"+sync.path; }
+function ghHead(){ return {Authorization:"Bearer "+sync.token,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"}; }
+function b64enc(str){ return btoa(unescape(encodeURIComponent(str))); }
+function b64dec(b){ return decodeURIComponent(escape(atob(String(b).replace(/\s/g,"")))); }
+function syncTime(t){
+  if(!t) return "아직 없음";
+  var d=new Date(t), n=Date.now()-t;
+  if(n<60000) return "방금";
+  if(n<3600000) return Math.round(n/60000)+"분 전";
+  return (d.getMonth()+1)+"/"+d.getDate()+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);
+}
+function syncPayload(cb){ cb(backupObj()); }
+function syncApply(obj,cb){
+  if(!obj||!Array.isArray(obj.arts)){ cb(false,"서버 자료를 읽지 못했어요"); return; }
+  if(!applyBackup(obj)){ cb(false,"서버 자료를 읽지 못했어요"); return; }
+  var n=0; for(var k in (obj.bank||{})) if(obj.bank.hasOwnProperty(k)) n++;
+  cb(true,"기사 "+obj.arts.length+"편 · 단어 "+n+"개를 내려받았어요");
+}
+function syncErr(st){
+  if(st===401) return "토큰이 맞지 않아요";
+  if(st===403) return "토큰 권한이 모자라요 (Contents 쓰기 권한)";
+  if(st===404) return "저장소나 경로를 찾지 못했어요";
+  return "서버 오류 ("+st+")";
+}
+// 내려받기
+function syncPull(silent,cb){
+  if(!syncOn()){ cb&&cb(false,"동기화를 먼저 설정해주세요"); return; }
+  if(syncBusy){ cb&&cb(false,"동기화 중이에요"); return; }
+  syncBusy=true;
+  fetch(ghUrl()+"?_="+Date.now(),{headers:ghHead(),cache:"no-store"})
+    .then(function(r){
+      if(r.status===404){ syncBusy=false; cb&&cb(true,"서버에 아직 자료가 없어요",{empty:true}); return null; }
+      if(!r.ok){ syncBusy=false; cb&&cb(false,syncErr(r.status)); return null; }
+      return r.json();
+    })
+    .then(function(j){
+      if(!j) return;
+      var obj=null;
+      try{ obj=JSON.parse(b64dec(j.content)); }catch(e){}
+      sync.sha=j.sha; saveSyncCfg();
+      if(!obj||!Array.isArray(obj.arts)){ syncBusy=false; cb&&cb(false,"서버 자료를 읽지 못했어요"); return; }
+      if(silent&&!(obj.savedAt>sync.lastAt)){ syncBusy=false; cb&&cb(true,"이미 최신이에요",{same:true}); return; }
+      syncApply(obj,function(ok,msg){
+        if(ok){ sync.lastAt=obj.savedAt||Date.now(); sync.lastRun=Date.now(); sync.pendingAt=0; syncDirty=false; saveSyncCfg(); }
+        syncBusy=false; cb&&cb(ok,msg);
+      });
+    })
+    .catch(function(){ syncBusy=false; cb&&cb(false,"인터넷에 연결되지 않았어요"); });
+}
+// 올리기
+function syncPush(silent,cb,force){
+  if(!syncOn()){ cb&&cb(false,"동기화를 먼저 설정해주세요"); return; }
+  if(syncBusy){ cb&&cb(false,"동기화 중이에요"); return; }
+  if(force){
+    // 서버에 있는 최신 sha 를 받아 그 위에 덮어쓴다
+    fetch(ghUrl()+"?_="+Date.now(),{headers:ghHead(),cache:"no-store"})
+      .then(function(r){ return r.status===404?null:(r.ok?r.json():null); })
+      .then(function(j){ sync.sha=j?j.sha:""; saveSyncCfg(); syncPush(silent,cb); })
+      .catch(function(){ cb&&cb(false,"인터넷에 연결되지 않았어요"); });
+    return;
+  }
+  syncBusy=true;
+  syncPayload(function(p){
+    var body={message:"vocab "+new Date().toISOString(),content:b64enc(JSON.stringify(p))};
+    if(sync.sha) body.sha=sync.sha;
+    fetch(ghUrl(),{method:"PUT",headers:ghHead(),body:JSON.stringify(body)})
+      .then(function(r){ return r.json().then(function(j){ return {ok:r.ok,st:r.status,j:j}; }); })
+      .then(function(res){
+        syncBusy=false;
+        if(res.ok){
+          sync.sha=res.j.content?res.j.content.sha:sync.sha;
+          sync.lastAt=p.savedAt; sync.lastRun=Date.now(); sync.pendingAt=0; syncDirty=false; saveSyncCfg();
+          clearTimeout(syncTimer); syncTimer=null;
+          cb&&cb(true,"올렸어요"+"");
+          return;
+        }
+        if(res.st===409||res.st===422){
+          sync.sha=""; saveSyncCfg();
+          cb&&cb(false,"다른 기기가 먼저 저장했어요. 내려받기를 먼저 해주세요");
+          return;
+        }
+        cb&&cb(false,syncErr(res.st));
+      })
+      .catch(function(){ syncBusy=false; cb&&cb(false,"인터넷에 연결되지 않았어요"); });
+  });
+}
+function syncAutoPush(){
+  clearTimeout(syncTimer); syncTimer=null;
+  syncPush(true,function(ok,msg){
+    if(!ok&&/먼저 저장/.test(msg||"")) toast("다른 기기가 먼저 저장했어요 · 더보기 → 동기화에서 맞춰주세요",true);
+  });
+}
+function syncSoon(){
+  if(!syncOn()||syncBusy) return;
+  syncDirty=true;
+  sync.pendingAt=Date.now(); saveSyncCfg();      // 못 올린 변경이 있다는 표시
+  if(!sync.auto) return;
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(syncAutoPush,8000);
+}
+function syncFlush(){
+  if(!syncOn()||!sync.auto||!syncDirty) return;
+  clearTimeout(syncTimer);
+  syncAutoPush();
+}
+// 앱을 열 때 한 번 맞추기
+function syncBusyScreen(){
+  if(document.getElementById("revWrap").className.indexOf("hide")<0) return true;
+  if(document.getElementById("reader").className.indexOf("hide")<0) return true;
+  if(document.getElementById("scrim").className.indexOf("hide")<0) return true;
+  return false;
+}
+function syncBoot(){
+  if(!syncOn()||!sync.auto||syncBusy) return;
+  if(Date.now()-sync.lastRun<60000) return;     // 1분 안에 이미 맞췄으면 건너뜀
+  if(syncBusyScreen()) return;
+  var mine=sync.pendingAt>sync.lastAt;          // 이 기기에 아직 못 올린 변경
+  fetch(ghUrl()+"?_="+Date.now(),{headers:ghHead(),cache:"no-store"})
+    .then(function(r){ if(r.status===404) return null; if(!r.ok) throw 0; return r.json(); })
+    .then(function(j){
+      var theirs=0, obj=null;
+      if(j){
+        sync.sha=j.sha; saveSyncCfg();
+        try{ obj=JSON.parse(b64dec(j.content)); }catch(e){}
+        if(obj&&obj.savedAt>sync.lastAt) theirs=obj.savedAt;
+      }
+      if(theirs&&mine){
+        if(syncBusyScreen()) return;
+        toast("두 기기 내용을 합치는 중…");
+        syncMerge(function(ok,msg){ toast(ok?msg:("합치지 못했어요 · "+msg),!ok); });
+        return;
+      }
+      if(theirs&&obj){
+        if(syncBusyScreen()) return;
+        syncApply(obj,function(ok2){
+          if(ok2){ sync.lastAt=obj.savedAt; sync.lastRun=Date.now(); sync.pendingAt=0; saveSyncCfg(); toast("다른 기기 내용으로 맞췄어요"); }
+        });
+        return;
+      }
+      if(mine) syncAutoPush();
+    })
+    .catch(function(){});
+}
+function openSync(){
+  var sc=document.createElement("div"); sc.className="scrim";
+  var on=syncOn();
+  sc.innerHTML='<div class="sheet"><h2>기기 간 동기화</h2>'+
+    '<p class="hint">아이패드와 휴대폰이 내 GitHub 비공개 저장소를 통해 같은 내용을 봅니다. '+
+      '앱을 열 때 내려받고, 공부한 뒤 자동으로 올립니다.</p>'+
+    '<div class="syncstat'+(on?' on':'')+'" id="syncStat">'+(on
+      ? '연결됨 · '+esc(sync.repo)+'<br>마지막 동기화 '+syncTime(sync.lastRun)
+      : '아직 연결되지 않았어요')+'</div>'+
+    '<label class="lb">저장소 (사용자이름/저장소이름)</label>'+
+    '<input class="inp" id="syncRepo" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="dpflr2019/vocab-sync" value="'+esc(sync.repo)+'">'+
+    '<label class="lb">토큰 (GitHub 개인 액세스 토큰)</label>'+
+    '<input class="inp" id="syncTok" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="github_pat_…" value="'+esc(sync.token)+'">'+
+    '<label class="tgline"><input type="checkbox" id="syncAuto"'+(sync.auto?' checked':'')+'> 자동으로 올리고 내려받기</label>'+
+    '<button class="mode" id="syncMerge"><b>두 기기 내용 합치기</b><span>양쪽에서 공부했을 때 · 단어마다 더 최근에 공부한 쪽이 남습니다</span></button>'+
+    '<button class="mode" id="syncUp"><b>지금 올리기</b><span>이 기기 내용을 서버에 저장</span></button>'+
+    '<button class="mode" id="syncDown"><b>지금 내려받기</b><span>서버 내용으로 이 기기를 맞춤 · 현재 내용은 교체됨</span></button>'+
+    '<button class="mode" id="syncForce"><b>이 기기 내용으로 덮어쓰기</b><span>서버가 먼저 바뀌었을 때 · 서버 내용은 사라짐</span></button>'+
+    (hasPremerge()?'<button class="link" id="syncUndo" style="margin-top:10px">합치기 전으로 되돌리기</button>':'')+
+    '<button class="link" id="syncOff" style="margin-top:10px;margin-left:14px">연결 해제</button>'+
+    '<p class="hint" style="margin-top:12px">처음 설정하는 법<br>'+
+      '① GitHub에서 <b>비공개(Private)</b> 저장소를 하나 만들어요 (이름 예: vocab-sync).<br>'+
+      '② Settings → Developer settings → Personal access tokens → <b>Fine-grained tokens</b> → Generate new token.<br>'+
+      '③ 그 저장소만 고르고, Repository permissions의 <b>Contents</b>를 <b>Read and write</b>로 둬요.<br>'+
+      '④ 만들어진 토큰을 위 칸에 붙여넣고 <b>지금 올리기</b>를 눌러요.<br>'+
+      '⑤ 휴대폰에서도 같은 저장소와 토큰을 넣고 <b>지금 내려받기</b>를 누르면 끝이에요.</p>'+
+    '<div class="acts"><button class="btn ghost" id="syncClose">닫기<span class="kbd">Esc</span></button></div></div>';
+  document.body.appendChild(sc);
+  var close=function(){ if(sc.parentNode) document.body.removeChild(sc); };
+  var stat=sc.querySelector("#syncStat");
+  var say=function(msg,good){ stat.className="syncstat"+(good?" on":" bad"); stat.innerHTML=esc(msg); };
+  var grab=function(){
+    sync.repo=sc.querySelector("#syncRepo").value.trim().replace(/^https?:\/\/github\.com\//,"");
+    sync.token=sc.querySelector("#syncTok").value.trim();
+    sync.auto=sc.querySelector("#syncAuto").checked;
+    saveSyncCfg();
+  };
+  sc.querySelector("#syncClose").onclick=function(){ grab(); close(); };
+  sc.onclick=function(e){ if(e.target===sc){ grab(); close(); } };
+  sc.querySelector("#syncAuto").onchange=grab;
+  var mg=sc.querySelector("#syncMerge");
+  if(mg) mg.onclick=function(){
+    grab(); if(!syncOn()){ say("저장소와 토큰을 먼저 넣어주세요"); return; }
+    say("합치는 중…",true);
+    syncMerge(function(ok,msg){ say(msg,ok); if(ok) toast("합쳤어요"); });
+  };
+  var ud=sc.querySelector("#syncUndo");
+  if(ud) ud.onclick=function(){ undoMerge(); close(); };
+  sc.querySelector("#syncUp").onclick=function(){
+    grab(); if(!syncOn()){ say("저장소와 토큰을 먼저 넣어주세요"); return; }
+    say("올리는 중…",true);
+    syncPush(false,function(ok,msg){ say(msg,ok); if(ok) toast("동기화했어요"); });
+  };
+  sc.querySelector("#syncDown").onclick=function(){
+    grab(); if(!syncOn()){ say("저장소와 토큰을 먼저 넣어주세요"); return; }
+    if(!window.confirm("서버 내용으로 이 기기를 맞춥니다.\n이 기기에만 있는 내용은 사라집니다. 계속할까요?")) return;
+    say("내려받는 중…",true);
+    syncPull(false,function(ok,msg){ say(msg,ok); if(ok) toast("동기화했어요"); });
+  };
+  sc.querySelector("#syncForce").onclick=function(){
+    grab(); if(!syncOn()){ say("저장소와 토큰을 먼저 넣어주세요"); return; }
+    if(!window.confirm("서버 내용을 이 기기 내용으로 덮어씁니다.\n다른 기기에서만 공부한 내용이 있으면 사라집니다. 계속할까요?")) return;
+    say("덮어쓰는 중…",true);
+    syncPush(false,function(ok,msg){ say(ok?"덮어썼어요":msg,ok); if(ok) toast("동기화했어요"); },true);
+  };
+  sc.querySelector("#syncOff").onclick=function(){
+    sync.repo=""; sync.token=""; sync.sha=""; sync.lastAt=0; sync.lastRun=0; saveSyncCfg();
+    sc.querySelector("#syncRepo").value=""; sc.querySelector("#syncTok").value="";
+    say("연결을 해제했어요");
+  };
+}
+
+
+/* ================= 단축키 ================= */
+document.addEventListener("keydown",function(e){
+  var tag=(e.target&&e.target.tagName||"").toLowerCase();
+  var typing=(tag==="input"||tag==="textarea"||tag==="select");
+  if(e.key==="Escape"){
+    var extra=document.querySelectorAll("body > .scrim:not(#scrim)");
+    if(extra.length){var last=extra[extra.length-1];
+      var btn=last.querySelector("#syncClose,#artDelCancel,.btn.ghost");
+      if(btn)btn.click(); else if(last.parentNode)last.parentNode.removeChild(last);
+      return;}
+    if($("scrim").className.indexOf("hide")<0){closeSheet();return;}
+    if($("panel").className.indexOf("hide")<0){closePanel();return;}
+    if($("revWrap").className.indexOf("hide")<0){closeRev();return;}
+    if($("reader").className.indexOf("hide")<0){closeReader();return;}
+    return;
+  }
+  if($("revWrap").className.indexOf("hide")<0&&!typing){
+    if(e.key===" "||e.key==="Enter"){e.preventDefault();if(rev){rev.show=true;renderRev();}return;}
+    if(rev&&rev.show&&"1234".indexOf(e.key)>-1){grade(parseInt(e.key,10)-1);return;}
+    if((e.key==="z"||e.key==="Z"||e.key==="Backspace")&&rev&&rev.last){e.preventDefault();undoGrade();return;}
+    return;
+  }
+  if($("panel").className.indexOf("hide")<0&&!typing&&"1234".indexOf(e.key)>-1){
+    if(panelWord)applyStatus(panelWord,parseInt(e.key,10)-1);
+    return;
+  }
+  if(typing)return;
+  if($("scrim").className.indexOf("hide")<0)return;
+  if($("reader").className.indexOf("hide")<0){
+    if(e.key==="ArrowDown"||e.key==="ArrowUp"||e.key==="j"||e.key==="J"){
+      e.preventDefault();moveSent((e.key==="ArrowUp")?-1:1);return;
+    }
+    if(e.key===" "){e.preventDefault();toggleCurKo();return;}
+    if(e.key==="s"||e.key==="S"){var cur=$("rBody").querySelector(".jsent.cur");
+      if(cur){var ids=[cur.dataset.p,cur.dataset.s],ss=curArt.paras[ids[0]][ids[1]];if(ss)speak(ss.ja);}return;}
+    if(e.key==="f"||e.key==="F"){state.ui.furi=state.ui.furi==="off"?"new":(state.ui.furi==="new"?"all":"off");save();renderReader();toast("후리가나 "+({off:"끄기",new:"모르는 단어만",all:"전부"})[state.ui.furi]);}
+    else if(e.key==="k"||e.key==="K"){state.ui.ko=state.ui.ko==="show"?"hide":"show";save();renderReader();}
+    return;
+  }
+  if(e.key==="a"||e.key==="A")openAdd();
+  else if(e.key==="r"||e.key==="R")startReview();
+  else if(e.key==="/"){e.preventDefault();goTab("words");setTimeout(function(){var q=$("wq");if(q)q.focus();},60);}
+});
+
+/* ================= 시작 ================= */
+load();
+loadSync();
+document.documentElement.style.setProperty("--fs",state.ui.fs||1);
+buildIndex();
+render();
+document.addEventListener("visibilitychange",function(){
+  if(document.visibilityState==="hidden"){flushSave();syncFlush();}
+  else{checkUpdate(true);syncBoot();}
+});
+window.addEventListener("pagehide",function(){flushSave();syncFlush();});
+setTimeout(function(){checkUpdate(true);},1500);
+setTimeout(function(){try{syncBoot();}catch(e){}},2300);
+
+(function(){
+  try{
+    var needEl=["app","reader","revWrap","panel","scrim","sheet"];
+    var missEl=needEl.filter(function(id){return !document.getElementById(id);});
+    var needFn=["render","openAdd","openArticle","renderReader","startReview","openPanel","importJson","openSync","openBackup"];
+    var missFn=needFn.filter(function(n){return typeof window[n]!=="function";});
+    if(missEl.length||missFn.length)showErr("화면 구성에 빠진 것: "+missEl.join(", ")+" "+missFn.join(", "));
+  }catch(e){showErr(String(e&&e.message||e));}
+})();
+</script>
+</body>
+</html>

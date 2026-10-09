@@ -2283,7 +2283,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v101 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v102 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2522,6 +2522,108 @@ document.getElementById("tgMore").addEventListener("click",function(){
 setTimeout(function(){ try{ imgGC(); }catch(e){} },4000);
 
 
+
+// ================= 두 기기 내용 합치기 =================
+var PREMERGE="toeic-vocab-premerge";
+function wordKeyOf(w){ return String(w.term||"").trim().toLowerCase(); }
+function dayKeyOf(d){ return normSec(d.section)+"|"+String(d.name||"").trim(); }
+var STUDY_FIELDS=["known","stage","due","reps","lapses","last","first","missDay"];
+var TEXT_FIELDS=["meaning","pos","example","ko","syn","ant","forms","idiom","conf","ipa"];
+function fillEmpty(dst,src){
+  TEXT_FIELDS.forEach(function(k){ if(!String(dst[k]||"").trim()&&String(src[k]||"").trim()) dst[k]=src[k]; });
+  if((!dst.formsx||!dst.formsx.length)&&src.formsx&&src.formsx.length) dst.formsx=src.formsx;
+}
+function mergeWord(local,remote){
+  var lt=local.last||0, rt=remote.last||0;
+  if(rt>lt) STUDY_FIELDS.forEach(function(k){ if(remote[k]!==undefined) local[k]=remote[k]; });
+  local.reps=Math.max(local.reps||0,remote.reps||0);
+  local.lapses=Math.max(local.lapses||0,remote.lapses||0);
+  fillEmpty(local,remote);
+  return rt>lt;
+}
+function mergeRemote(obj){
+  if(!obj||!Array.isArray(obj.days)) return null;
+  var out={changed:0,added:0,newDays:0,newArts:0};
+  var byDay={};
+  state.days.forEach(function(d){ byDay[dayKeyOf(d)]=d; });
+  obj.days.forEach(function(rd){
+    if(!rd||!rd.name||!Array.isArray(rd.words)) return;
+    var ld=byDay[dayKeyOf(rd)];
+    if(!ld){
+      var clone=JSON.parse(JSON.stringify(rd));
+      clone.section=normSec(clone.section);
+      state.days.push(clone); byDay[dayKeyOf(clone)]=clone;
+      out.newDays++; out.added+=clone.words.length;
+      return;
+    }
+    var byW={};
+    ld.words.forEach(function(w){ byW[wordKeyOf(w)]=w; });
+    rd.words.forEach(function(rw){
+      if(!rw||!rw.term) return;
+      var lw=byW[wordKeyOf(rw)];
+      if(!lw){ ld.words.push(JSON.parse(JSON.stringify(rw))); out.added++; return; }
+      if(mergeWord(lw,rw)) out.changed++;
+    });
+  });
+  var rlog=(obj.log&&typeof obj.log==="object")?obj.log:{};
+  Object.keys(rlog).forEach(function(k){
+    var r=rlog[k]||{}, l=state.log[k];
+    if(!l){ state.log[k]=r; return; }
+    ["s","o","x","n"].forEach(function(f){ l[f]=Math.max(l[f]||0,r[f]||0); });
+    if(r.closed) l.closed=true;
+  });
+  var artLen=function(a){
+    var n=String(a.text||"").length+String(a.quote||"").length+String(a.summary||"").length+String(a.note||"").length;
+    if(a.ko) Object.keys(a.ko).forEach(function(k){ n+=String(a.ko[k]).length; });
+    if(a.img) Object.keys(a.img).forEach(function(k){ n+=(a.img[k]||[]).length*50; });
+    return n;
+  };
+  var byArt={};
+  state.articles.forEach(function(a){ byArt[a.id]=a; });
+  (Array.isArray(obj.articles)?obj.articles:[]).forEach(function(ra){
+    if(!ra||!ra.id) return;
+    var la=byArt[ra.id];
+    if(!la){ state.articles.push(ra); out.newArts++; return; }
+    if(artLen(ra)>artLen(la)){ for(var k in ra) if(ra.hasOwnProperty(k)) la[k]=ra[k]; out.changed++; }
+  });
+  return out;
+}
+function snapshotBeforeMerge(){
+  try{ localStorage.setItem(PREMERGE,JSON.stringify({at:Date.now(),days:state.days,log:state.log,articles:state.articles})); }catch(e){}
+}
+function hasPremerge(){ try{ return !!localStorage.getItem(PREMERGE); }catch(e){ return false; } }
+function undoMerge(){
+  try{
+    var o=JSON.parse(localStorage.getItem(PREMERGE)||"null");
+    if(!o||!o.days){ toast("되돌릴 기록이 없어요"); return; }
+    state.days=o.days; state.log=o.log||state.log; state.articles=o.articles||state.articles;
+    localStorage.removeItem(PREMERGE);
+    save(); render(); toast("합치기 전으로 되돌렸어요");
+  }catch(e){ toast("되돌리지 못했어요"); }
+}
+function syncMerge(cb){
+  if(!syncOn()){ cb&&cb(false,"동기화를 먼저 설정해주세요"); return; }
+  fetch(ghUrl()+"?_="+Date.now(),{headers:ghHead(),cache:"no-store"})
+    .then(function(r){ if(r.status===404) return null; if(!r.ok) throw r.status; return r.json(); })
+    .then(function(j){
+      if(!j){ syncPush(false,cb,true); return; }
+      sync.sha=j.sha; saveSyncCfg();
+      var obj=null;
+      try{ obj=JSON.parse(b64dec(j.content)); }catch(e){}
+      if(!obj){ cb&&cb(false,"서버 자료를 읽지 못했어요"); return; }
+      snapshotBeforeMerge();
+      var r2=mergeRemote(obj);
+      if(!r2){ cb&&cb(false,"합칠 수 없는 자료예요"); return; }
+      save(); render();
+      if(obj.images) restoreImages(obj.images);
+      syncPush(false,function(ok,msg){
+        if(ok) cb&&cb(true,"합쳤어요 · 새 단어 "+r2.added+"개 · 갱신 "+r2.changed+"개"+(r2.newDays?(" · 새 DAY "+r2.newDays):""));
+        else cb&&cb(false,msg);
+      },true);
+    })
+    .catch(function(){ cb&&cb(false,"인터넷에 연결되지 않았어요"); });
+}
+
 // ================= 기기 간 동기화 (내 GitHub 비공개 저장소) =================
 var SYNCKEY="toeic-vocab-sync";
 var sync={repo:"",token:"",path:"vocab-sync.json",auto:true,sha:"",lastAt:0,lastRun:0,pendingAt:0,dev:""};
@@ -2688,7 +2790,9 @@ function syncBoot(){
         if(obj&&obj.savedAt>sync.lastAt) theirs=obj.savedAt;
       }
       if(theirs&&mine){
-        toast("이 기기와 다른 기기 내용이 달라요 · 더보기 → 동기화에서 어느 쪽을 남길지 골라주세요",true);
+        if(syncBusyScreen()) return;
+        toast("두 기기 내용을 합치는 중…");
+        syncMerge(function(ok,msg){ toast(ok?msg:("합치지 못했어요 · "+msg),!ok); });
         return;
       }
       if(theirs&&obj){
@@ -2716,10 +2820,12 @@ function openSync(){
     '<label class="lb">토큰 (GitHub 개인 액세스 토큰)</label>'+
     '<input class="inp" id="syncTok" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="github_pat_…" value="'+esc(sync.token)+'">'+
     '<label class="tgline"><input type="checkbox" id="syncAuto"'+(sync.auto?' checked':'')+'> 자동으로 올리고 내려받기</label>'+
+    '<button class="mode" id="syncMerge"><b>두 기기 내용 합치기</b><span>양쪽에서 공부했을 때 · 단어마다 더 최근에 공부한 쪽이 남습니다</span></button>'+
     '<button class="mode" id="syncUp"><b>지금 올리기</b><span>이 기기 내용을 서버에 저장</span></button>'+
     '<button class="mode" id="syncDown"><b>지금 내려받기</b><span>서버 내용으로 이 기기를 맞춤 · 현재 내용은 교체됨</span></button>'+
     '<button class="mode" id="syncForce"><b>이 기기 내용으로 덮어쓰기</b><span>서버가 먼저 바뀌었을 때 · 서버 내용은 사라짐</span></button>'+
-    '<button class="link" id="syncOff" style="margin-top:10px">연결 해제</button>'+
+    (hasPremerge()?'<button class="link" id="syncUndo" style="margin-top:10px">합치기 전으로 되돌리기</button>':'')+
+    '<button class="link" id="syncOff" style="margin-top:10px;margin-left:14px">연결 해제</button>'+
     '<p class="hint" style="margin-top:12px">처음 설정하는 법<br>'+
       '① GitHub에서 <b>비공개(Private)</b> 저장소를 하나 만들어요 (이름 예: vocab-sync).<br>'+
       '② Settings → Developer settings → Personal access tokens → <b>Fine-grained tokens</b> → Generate new token.<br>'+
@@ -2740,6 +2846,14 @@ function openSync(){
   sc.querySelector("#syncClose").onclick=function(){ grab(); close(); };
   sc.onclick=function(e){ if(e.target===sc){ grab(); close(); } };
   sc.querySelector("#syncAuto").onchange=grab;
+  var mg=sc.querySelector("#syncMerge");
+  if(mg) mg.onclick=function(){
+    grab(); if(!syncOn()){ say("저장소와 토큰을 먼저 넣어주세요"); return; }
+    say("합치는 중…",true);
+    syncMerge(function(ok,msg){ say(msg,ok); if(ok) toast("합쳤어요"); });
+  };
+  var ud=sc.querySelector("#syncUndo");
+  if(ud) ud.onclick=function(){ undoMerge(); close(); };
   sc.querySelector("#syncUp").onclick=function(){
     grab(); if(!syncOn()){ say("저장소와 토큰을 먼저 넣어주세요"); return; }
     say("올리는 중…",true);
@@ -2778,7 +2892,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v101";
+var APP_VER="v102";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
