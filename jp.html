@@ -239,6 +239,9 @@ ruby{ruby-align:center;}
 .wrow .t{font-size:17px;font-weight:700;}
 .wrow .r{font-size:12.5px;color:var(--faint);margin-top:2px;}
 .wrow .m{font-size:13.5px;color:var(--dim);margin-top:3px;}
+.wrow .kc{font-size:12.5px;color:var(--dim);margin-top:5px;line-height:1.55;}
+.wrow .kc b{font-size:14px;color:var(--ink);font-weight:700;margin-right:2px;}
+.wrow .kc i{font-style:normal;color:var(--faint);margin:0 5px;}
 .wrow .due{font-size:11px;color:var(--faint);text-align:right;flex:0 0 auto;}
 .dot.s0{background:var(--new);} .dot.s1{background:var(--learn);} .dot.s2{background:var(--fam);} .dot.s3{background:var(--known);}
 /* 기록 */
@@ -348,9 +351,9 @@ ruby{ruby-align:center;}
 <div class="scrim hide" id="scrim"><div class="sheet" id="sheet"></div></div>
 <input type="file" id="fileIn" accept=".json,application/json" style="display:none">
 <script>
-var APP_VER="j4";
+var APP_VER="j6";
 var KEY="jp2";
-var state={v:2,arts:[],bank:{},log:{},gram:{},ui:{furi:"new",ko:"hide",fs:1,tab:"home",tts:true,rate:0.95,jaHide:false},streak:{last:"",n:0}};
+var state={v:2,arts:[],bank:{},log:{},gram:{},ui:{furi:"all",ko:"hide",fs:1,tab:"home",tts:true,rate:0.95,jaHide:false},streak:{last:"",n:0}};
 var toastEl=null,toastTimer=null,saveTimer=null;
 
 function $(id){return document.getElementById(id);}
@@ -384,6 +387,7 @@ function load(){
     if(o.gram&&typeof o.gram==="object")state.gram=o.gram;
     if(o.streak)state.streak=o.streak;
     if(o.ui){for(var k in o.ui)if(o.ui.hasOwnProperty(k))state.ui[k]=o.ui[k];}
+    if(!state.ui.fv){state.ui.furi="all";state.ui.fv=1;}
   }catch(e){}
 }
 function save(){
@@ -485,6 +489,10 @@ function addWord(o){
     if(o.jlpt&&!b.jlpt)b.jlpt=o.jlpt;
     if(o.note&&!b.note)b.note=o.note;
     if(o.kanji&&o.kanji.length&&!(b.kanji||[]).length)b.kanji=o.kanji;
+    else if(o.kanji&&o.kanji.length)(b.kanji||[]).forEach(function(k){
+      if(k.hun)return;
+      for(var q=0;q<o.kanji.length;q++)if(o.kanji[q].c===k.c&&o.kanji[q].hun){k.hun=o.kanji[q].hun;break;}
+    });
     if(o.forms&&o.forms.length){
       b.forms=b.forms||[];
       o.forms.forEach(function(f){if(b.forms.indexOf(f)<0)b.forms.push(f);});
@@ -593,18 +601,24 @@ function splitSents(t){
   return out.length?out:[t];
 }
 function newArticle(o){
-  return {id:uid(),title:o.title||"",titleKo:o.titleKo||"",source:o.source||"",date:o.date||"",url:o.url||"",
+  return {id:uid(),title:o.title||"",titleKo:o.titleKo||"",titleRu:o.titleRu||"",source:o.source||"",date:o.date||"",url:o.url||"",
     topic:o.topic||"",level:o.level||"",paras:o.paras||[],gram:o.gram||[],myko:{},note:"",done:{},at:Date.now(),open:0};
 }
 /* 분석 파일(JSON) */
+function sentOf(s){
+  if(typeof s==="string")return {ja:s,ko:""};
+  var o={ja:String(s.ja||""),ko:String(s.ko||""),n:String(s.n||"")};
+  if(s.ru&&parseRu(String(s.ru),o.ja))o.ru=String(s.ru);
+  return o;
+}
 function importJson(text,quiet){
   var o=null;
   try{o=JSON.parse(text);}catch(e){if(!quiet)toast("파일 형식이 아니에요. 내용을 전부 복사했는지 확인해주세요");return null;}
   if(!o||!Array.isArray(o.paras)||!o.paras.length){if(!quiet)toast("본문이 없는 파일이에요");return null;}
   var paras=o.paras.map(function(p){
     if(typeof p==="string")return splitSents(p).map(function(s){return {ja:s,ko:""};});
-    if(Array.isArray(p))return p.map(function(s){return typeof s==="string"?{ja:s,ko:""}:{ja:String(s.ja||""),ko:String(s.ko||""),n:String(s.n||"")};}).filter(function(s){return s.ja;});
-    if(p&&Array.isArray(p.s))return p.s.map(function(s){return typeof s==="string"?{ja:s,ko:""}:{ja:String(s.ja||""),ko:String(s.ko||""),n:String(s.n||"")};}).filter(function(s){return s.ja;});
+    if(Array.isArray(p))return p.map(function(s){return sentOf(s);}).filter(function(s){return s.ja;});
+    if(p&&Array.isArray(p.s))return p.s.map(function(s){return sentOf(s);}).filter(function(s){return s.ja;});
     if(p&&p.ja){
       var ss=splitSents(String(p.ja));
       if(ss.length===1)return [{ja:ss[0],ko:String(p.ko||"")}];
@@ -617,7 +631,8 @@ function importJson(text,quiet){
     return {p:String(g.p||g.pattern||""),ko:String(g.ko||""),ex:String(g.ex||""),exKo:String(g.exKo||""),
       para:(typeof g.para==="number")?g.para:-1};
   }).filter(function(g){return g.p;});
-  var a=newArticle({title:String(o.title||"").trim()||"제목 없음",titleKo:String(o.titleKo||""),
+  var ttl=String(o.title||"").trim()||"제목 없음",tru=String(o.titleRu||"");
+  var a=newArticle({title:ttl,titleKo:String(o.titleKo||""),titleRu:(tru&&parseRu(tru,ttl))?tru:"",
     source:String(o.source||""),date:String(o.date||""),url:String(o.url||""),topic:String(o.topic||""),
     level:String(o.level||""),paras:paras,gram:gram});
   var same=null;
@@ -636,7 +651,7 @@ function importJson(text,quiet){
       pos:String(w.pos||""),jlpt:String(w.jlpt||""),note:String(w.note||""),
       forms:(Array.isArray(w.forms)?w.forms:[]).map(String),
       kanji:(Array.isArray(w.kanji)?w.kanji:[]).map(function(k){
-        return {c:String(k.c||""),kr:String(k.kr||""),mean:String(k.mean||""),
+        return {c:String(k.c||""),kr:String(k.kr||""),mean:String(k.mean||""),hun:String(k.hun||""),
           on:[].concat(k.on||[]).map(String),kun:[].concat(k.kun||[]).map(String)};})});
     if(before)merged++;else added++;
   });
@@ -667,6 +682,28 @@ function linkArticle(a){
       }
     });
   });
+}
+/* 붙여넣은 글에서 분석 내용(JSON)만 골라낸다.
+   ```json 울타리, 앞뒤 설명 글, 맨 앞 BOM이 섞여 있어도 된다. 기사 모양이 아니면 null */
+function extractJson(text){
+  var t=String(text||"").replace(/^\uFEFF/,"").replace(/^\s+|\s+$/g,"");
+  if(!t)return null;
+  var fence=t.match(/```[a-zA-Z]*\s*([\s\S]*?)```/);
+  if(fence)t=fence[1].replace(/^\s+|\s+$/g,"");
+  var a=t.search(/[\[{]/);
+  if(a<0)return null;
+  var z=Math.max(t.lastIndexOf("}"),t.lastIndexOf("]"));
+  if(z<=a)return null;
+  var core=t.slice(a,z+1),o=null;
+  try{o=JSON.parse(core);}
+  catch(e){try{o=JSON.parse(core.replace(/[\u201c\u201d\u201e]/g,'"'));}catch(e2){return null;}}
+  var looks=Array.isArray(o)||(o&&(Array.isArray(o.paras)||Array.isArray(o.articles)));
+  return looks?JSON.stringify(o):null;
+}
+/* 앞부분은 분석 내용처럼 보이는데 읽지 못했으면 (복사가 덜 된 경우) */
+function looksCut(text){
+  var t=String(text||"").replace(/^\s+/,"").replace(/^```[a-zA-Z]*\s*/,"");
+  return (t.charAt(0)==="{"||t.charAt(0)==="[")&&/"paras"|"ja"\s*:/.test(t);
 }
 /* 한 편이든 여러 편이든 받아들인다 */
 function importAny(text){
@@ -716,7 +753,7 @@ function artProgress(a){
   return {done:done,total:total,pct:total?Math.round(done/total*100):0};
 }
 
-var SAMPLE="{\"app\":\"jp-reader\",\"v\":2,\"title\":\"関税収入が過去最高に　通商摩擦で企業に負担\",\"titleKo\":\"관세 수입이 사상 최고로 — 통상 마찰로 기업에 부담\",\"source\":\"日本経済新聞\",\"date\":\"2026-10-05\",\"url\":\"https://www.nikkei.com/\",\"topic\":\"통상 · 관세\",\"level\":\"N1 수준\",\"paras\":[[{\"ja\":\"財務省が５日発表した統計によると、昨年度の関税収入が過去最高を記録した。\",\"ko\":\"재무성이 5일 발표한 통계에 따르면, 지난해 관세 수입이 사상 최고를 기록했다.\"},{\"ja\":\"主要国が相次いで輸入品への課税を強化したことが背景にある。\",\"ko\":\"주요국이 잇따라 수입품에 대한 과세를 강화한 것이 배경에 있다.\"},{\"ja\":\"伸び率は前年度比で２割を超えた。\",\"ko\":\"증가율은 전년도 대비 20%를 넘었다.\",\"n\":\"２割 = 2할, 즉 20%. 割는 10%를 세는 단위예요.\"}],[{\"ja\":\"企業にとって負担は重い。\",\"ko\":\"기업에게 부담은 무겁다.\"},{\"ja\":\"ある電機メーカーの担当者は「原材料の調達費用が膨らみ、価格転嫁も難しい」と話す。\",\"ko\":\"한 전기기기 업체 담당자는 \\\"원자재 조달 비용이 불어나고, 가격 전가도 어렵다\\\"고 말한다.\"},{\"ja\":\"利益率はこの一年で１ポイント近く下がったという。\",\"ko\":\"이익률은 지난 1년 사이 1%포인트 가까이 떨어졌다고 한다.\"}],[{\"ja\":\"政府は中小企業向けの支援策を検討している。\",\"ko\":\"정부는 중소기업을 위한 지원책을 검토하고 있다.\"},{\"ja\":\"ただ、財源には限りがあり、効果を疑問視する声も根強い。\",\"ko\":\"다만 재원에는 한계가 있어, 효과를 의문시하는 목소리도 뿌리 깊다.\"}],[{\"ja\":\"専門家は、今後も摩擦が続けば供給網の見直しが避けられないと指摘する。\",\"ko\":\"전문가는 앞으로도 마찰이 계속되면 공급망 재검토가 불가피하다고 지적한다.\"},{\"ja\":\"生産拠点を近隣国に移す動きはすでに始まっている。\",\"ko\":\"생산 거점을 인접국으로 옮기는 움직임은 이미 시작되고 있다.\"}]],\"words\":[{\"w\":\"財務省\",\"r\":\"ざいむしょう\",\"ko\":\"재무성 (한국의 기획재정부에 해당)\",\"hanja\":\"재무성\",\"pos\":\"명사\",\"jlpt\":\"N2\",\"kanji\":[{\"c\":\"財\",\"kr\":\"재\",\"mean\":\"재물\",\"on\":[\"ザイ\",\"サイ\"],\"kun\":[]},{\"c\":\"務\",\"kr\":\"무\",\"mean\":\"힘쓰다, 임무\",\"on\":[\"ム\"],\"kun\":[\"つと-める\"]},{\"c\":\"省\",\"kr\":\"성\",\"mean\":\"살피다; 중앙 부처\",\"on\":[\"ショウ\",\"セイ\"],\"kun\":[\"かえり-みる\",\"はぶ-く\"]}]},{\"w\":\"統計\",\"r\":\"とうけい\",\"ko\":\"통계\",\"hanja\":\"통계\",\"pos\":\"명사\",\"jlpt\":\"N2\",\"kanji\":[{\"c\":\"統\",\"kr\":\"통\",\"mean\":\"거느리다, 합치다\",\"on\":[\"トウ\"],\"kun\":[\"す-べる\"]},{\"c\":\"計\",\"kr\":\"계\",\"mean\":\"세다, 꾀하다\",\"on\":[\"ケイ\"],\"kun\":[\"はか-る\"]}]},{\"w\":\"昨年度\",\"r\":\"さくねんど\",\"ko\":\"지난 회계연도\",\"hanja\":\"작년도\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"昨\",\"kr\":\"작\",\"mean\":\"어제, 지난\",\"on\":[\"サク\"],\"kun\":[]},{\"c\":\"年\",\"kr\":\"년\",\"mean\":\"해\",\"on\":[\"ネン\"],\"kun\":[\"とし\"]},{\"c\":\"度\",\"kr\":\"도\",\"mean\":\"번, 정도; 회계연도\",\"on\":[\"ド\"],\"kun\":[\"たび\"]}]},{\"w\":\"関税\",\"r\":\"かんぜい\",\"ko\":\"관세\",\"hanja\":\"관세\",\"pos\":\"명사\",\"jlpt\":\"N1\",\"kanji\":[{\"c\":\"関\",\"kr\":\"관\",\"mean\":\"빗장; 관계하다\",\"on\":[\"カン\"],\"kun\":[\"せき\",\"かか-わる\"]},{\"c\":\"税\",\"kr\":\"세\",\"mean\":\"세금\",\"on\":[\"ゼイ\"],\"kun\":[]}]},{\"w\":\"収入\",\"r\":\"しゅうにゅう\",\"ko\":\"수입 (벌어들인 돈)\",\"hanja\":\"수입\",\"pos\":\"명사\",\"jlpt\":\"N3\",\"note\":\"물건을 사들이는 輸入(ゆにゅう)과 한국어로는 같은 '수입'이라 특히 헷갈려요.\",\"kanji\":[{\"c\":\"収\",\"kr\":\"수\",\"mean\":\"거두다\",\"on\":[\"シュウ\"],\"kun\":[\"おさ-める\"]},{\"c\":\"入\",\"kr\":\"입\",\"mean\":\"들다\",\"on\":[\"ニュウ\"],\"kun\":[\"はい-る\",\"い-れる\"]}]},{\"w\":\"記録\",\"r\":\"きろく\",\"ko\":\"기록; 기록하다\",\"hanja\":\"기록\",\"pos\":\"명사·する동사\",\"jlpt\":\"N3\",\"forms\":[\"記録した\",\"記録する\"],\"kanji\":[{\"c\":\"記\",\"kr\":\"기\",\"mean\":\"적다\",\"on\":[\"キ\"],\"kun\":[\"しる-す\"]},{\"c\":\"録\",\"kr\":\"록\",\"mean\":\"기록하다\",\"on\":[\"ロク\"],\"kun\":[]}]},{\"w\":\"相次いで\",\"r\":\"あいついで\",\"ko\":\"잇따라\",\"hanja\":\"상차—\",\"pos\":\"부사적 표현\",\"forms\":[\"相次ぐ\",\"相次ぎ\"],\"kanji\":[{\"c\":\"相\",\"kr\":\"상\",\"mean\":\"서로\",\"on\":[\"ソウ\",\"ショウ\"],\"kun\":[\"あい\"]},{\"c\":\"次\",\"kr\":\"차\",\"mean\":\"다음; 잇다\",\"on\":[\"ジ\",\"シ\"],\"kun\":[\"つ-ぐ\",\"つぎ\"]}]},{\"w\":\"輸入品\",\"r\":\"ゆにゅうひん\",\"ko\":\"수입품\",\"hanja\":\"수입품\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"輸\",\"kr\":\"수\",\"mean\":\"나르다\",\"on\":[\"ユ\"],\"kun\":[]},{\"c\":\"入\",\"kr\":\"입\",\"mean\":\"들다\",\"on\":[\"ニュウ\"],\"kun\":[\"はい-る\"]},{\"c\":\"品\",\"kr\":\"품\",\"mean\":\"물건\",\"on\":[\"ヒン\"],\"kun\":[\"しな\"]}]},{\"w\":\"課税\",\"r\":\"かぜい\",\"ko\":\"과세\",\"hanja\":\"과세\",\"pos\":\"명사\",\"jlpt\":\"N1\",\"kanji\":[{\"c\":\"課\",\"kr\":\"과\",\"mean\":\"부과하다; 과(부서)\",\"on\":[\"カ\"],\"kun\":[]},{\"c\":\"税\",\"kr\":\"세\",\"mean\":\"세금\",\"on\":[\"ゼイ\"],\"kun\":[]}]},{\"w\":\"強化\",\"r\":\"きょうか\",\"ko\":\"강화\",\"hanja\":\"강화\",\"pos\":\"명사·する동사\",\"jlpt\":\"N2\",\"forms\":[\"強化した\",\"強化する\"],\"kanji\":[{\"c\":\"強\",\"kr\":\"강\",\"mean\":\"강하다\",\"on\":[\"キョウ\"],\"kun\":[\"つよ-い\"]},{\"c\":\"化\",\"kr\":\"화\",\"mean\":\"되다, 바뀌다\",\"on\":[\"カ\"],\"kun\":[\"ば-ける\"]}]},{\"w\":\"伸び率\",\"r\":\"のびりつ\",\"ko\":\"증가율\",\"hanja\":\"신—율\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"伸\",\"kr\":\"신\",\"mean\":\"늘다, 뻗다\",\"on\":[\"シン\"],\"kun\":[\"の-びる\"]},{\"c\":\"率\",\"kr\":\"율\",\"mean\":\"비율\",\"on\":[\"リツ\",\"ソツ\"],\"kun\":[\"ひき-いる\"]}]},{\"w\":\"負担\",\"r\":\"ふたん\",\"ko\":\"부담\",\"hanja\":\"부담\",\"pos\":\"명사\",\"jlpt\":\"N2\",\"kanji\":[{\"c\":\"負\",\"kr\":\"부\",\"mean\":\"지다, 떠맡다\",\"on\":[\"フ\"],\"kun\":[\"ま-ける\",\"お-う\"]},{\"c\":\"担\",\"kr\":\"담\",\"mean\":\"메다, 맡다\",\"on\":[\"タン\"],\"kun\":[\"かつ-ぐ\",\"にな-う\"]}]},{\"w\":\"電機メーカー\",\"r\":\"でんきメーカー\",\"ko\":\"전기기기 제조업체\",\"hanja\":\"전기—\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"電\",\"kr\":\"전\",\"mean\":\"전기\",\"on\":[\"デン\"],\"kun\":[]},{\"c\":\"機\",\"kr\":\"기\",\"mean\":\"기계\",\"on\":[\"キ\"],\"kun\":[\"はた\"]}]},{\"w\":\"担当者\",\"r\":\"たんとうしゃ\",\"ko\":\"담당자\",\"hanja\":\"담당자\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"担\",\"kr\":\"담\",\"mean\":\"맡다\",\"on\":[\"タン\"],\"kun\":[\"にな-う\"]},{\"c\":\"当\",\"kr\":\"당\",\"mean\":\"맞다, 해당하다\",\"on\":[\"トウ\"],\"kun\":[\"あ-たる\"]},{\"c\":\"者\",\"kr\":\"자\",\"mean\":\"사람\",\"on\":[\"シャ\"],\"kun\":[\"もの\"]}]},{\"w\":\"原材料\",\"r\":\"げんざいりょう\",\"ko\":\"원자재\",\"hanja\":\"원재료\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"原\",\"kr\":\"원\",\"mean\":\"근원, 들판\",\"on\":[\"ゲン\"],\"kun\":[\"はら\"]},{\"c\":\"材\",\"kr\":\"재\",\"mean\":\"재료\",\"on\":[\"ザイ\"],\"kun\":[]},{\"c\":\"料\",\"kr\":\"료\",\"mean\":\"재료, 요금\",\"on\":[\"リョウ\"],\"kun\":[]}]},{\"w\":\"調達\",\"r\":\"ちょうたつ\",\"ko\":\"조달\",\"hanja\":\"조달\",\"pos\":\"명사·する동사\",\"jlpt\":\"N1\",\"kanji\":[{\"c\":\"調\",\"kr\":\"조\",\"mean\":\"고르다, 조사하다\",\"on\":[\"チョウ\"],\"kun\":[\"しら-べる\",\"ととの-える\"]},{\"c\":\"達\",\"kr\":\"달\",\"mean\":\"이르다, 통달하다\",\"on\":[\"タツ\"],\"kun\":[]}]},{\"w\":\"膨らみ\",\"r\":\"ふくらみ\",\"ko\":\"부풀어, 불어나\",\"hanja\":\"팽—\",\"pos\":\"동사 膨らむ의 연용형\",\"forms\":[\"膨らむ\",\"膨らんで\",\"膨らんだ\"],\"kanji\":[{\"c\":\"膨\",\"kr\":\"팽\",\"mean\":\"부풀다\",\"on\":[\"ボウ\"],\"kun\":[\"ふく-らむ\",\"ふく-れる\"]}]},{\"w\":\"価格転嫁\",\"r\":\"かかくてんか\",\"ko\":\"가격 전가 (오른 비용을 판매가에 반영하는 것)\",\"hanja\":\"가격전가\",\"pos\":\"명사\",\"note\":\"経済 기사에 자주 나오는 표현이에요.\",\"kanji\":[{\"c\":\"価\",\"kr\":\"가\",\"mean\":\"값\",\"on\":[\"カ\"],\"kun\":[\"あたい\"]},{\"c\":\"格\",\"kr\":\"격\",\"mean\":\"격식, 자리\",\"on\":[\"カク\"],\"kun\":[]},{\"c\":\"転\",\"kr\":\"전\",\"mean\":\"구르다, 옮기다\",\"on\":[\"テン\"],\"kun\":[\"ころ-がる\"]},{\"c\":\"嫁\",\"kr\":\"가\",\"mean\":\"시집가다; 떠넘기다\",\"on\":[\"カ\"],\"kun\":[\"よめ\",\"とつ-ぐ\"]}]},{\"w\":\"利益率\",\"r\":\"りえきりつ\",\"ko\":\"이익률\",\"hanja\":\"이익률\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"利\",\"kr\":\"리\",\"mean\":\"이롭다\",\"on\":[\"リ\"],\"kun\":[\"き-く\"]},{\"c\":\"益\",\"kr\":\"익\",\"mean\":\"더하다, 이익\",\"on\":[\"エキ\"],\"kun\":[]},{\"c\":\"率\",\"kr\":\"율\",\"mean\":\"비율\",\"on\":[\"リツ\"],\"kun\":[]}]},{\"w\":\"中小企業\",\"r\":\"ちゅうしょうきぎょう\",\"ko\":\"중소기업\",\"hanja\":\"중소기업\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"中\",\"kr\":\"중\",\"mean\":\"가운데\",\"on\":[\"チュウ\"],\"kun\":[\"なか\"]},{\"c\":\"小\",\"kr\":\"소\",\"mean\":\"작다\",\"on\":[\"ショウ\"],\"kun\":[\"ちい-さい\"]},{\"c\":\"企\",\"kr\":\"기\",\"mean\":\"꾀하다\",\"on\":[\"キ\"],\"kun\":[\"くわだ-てる\"]},{\"c\":\"業\",\"kr\":\"업\",\"mean\":\"일, 업\",\"on\":[\"ギョウ\"],\"kun\":[\"わざ\"]}]},{\"w\":\"支援策\",\"r\":\"しえんさく\",\"ko\":\"지원책\",\"hanja\":\"지원책\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"支\",\"kr\":\"지\",\"mean\":\"지탱하다\",\"on\":[\"シ\"],\"kun\":[\"ささ-える\"]},{\"c\":\"援\",\"kr\":\"원\",\"mean\":\"돕다\",\"on\":[\"エン\"],\"kun\":[]},{\"c\":\"策\",\"kr\":\"책\",\"mean\":\"꾀, 방책\",\"on\":[\"サク\"],\"kun\":[]}]},{\"w\":\"検討\",\"r\":\"けんとう\",\"ko\":\"검토\",\"hanja\":\"검토\",\"pos\":\"명사·する동사\",\"jlpt\":\"N2\",\"forms\":[\"検討している\",\"検討する\"],\"kanji\":[{\"c\":\"検\",\"kr\":\"검\",\"mean\":\"검사하다\",\"on\":[\"ケン\"],\"kun\":[]},{\"c\":\"討\",\"kr\":\"토\",\"mean\":\"치다, 따지다\",\"on\":[\"トウ\"],\"kun\":[\"う-つ\"]}]},{\"w\":\"財源\",\"r\":\"ざいげん\",\"ko\":\"재원 (돈이 나오는 곳)\",\"hanja\":\"재원\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"財\",\"kr\":\"재\",\"mean\":\"재물\",\"on\":[\"ザイ\"],\"kun\":[]},{\"c\":\"源\",\"kr\":\"원\",\"mean\":\"근원\",\"on\":[\"ゲン\"],\"kun\":[\"みなもと\"]}]},{\"w\":\"疑問視\",\"r\":\"ぎもんし\",\"ko\":\"의문시 (의심스럽게 봄)\",\"hanja\":\"의문시\",\"pos\":\"명사·する동사\",\"forms\":[\"疑問視する\"],\"kanji\":[{\"c\":\"疑\",\"kr\":\"의\",\"mean\":\"의심하다\",\"on\":[\"ギ\"],\"kun\":[\"うたが-う\"]},{\"c\":\"問\",\"kr\":\"문\",\"mean\":\"묻다\",\"on\":[\"モン\"],\"kun\":[\"と-う\"]},{\"c\":\"視\",\"kr\":\"시\",\"mean\":\"보다\",\"on\":[\"シ\"],\"kun\":[]}]},{\"w\":\"根強い\",\"r\":\"ねづよい\",\"ko\":\"뿌리 깊다, 쉽게 사라지지 않다\",\"hanja\":\"근강—\",\"pos\":\"い형용사\",\"forms\":[\"根強く\",\"根強かった\"],\"kanji\":[{\"c\":\"根\",\"kr\":\"근\",\"mean\":\"뿌리\",\"on\":[\"コン\"],\"kun\":[\"ね\"]},{\"c\":\"強\",\"kr\":\"강\",\"mean\":\"강하다\",\"on\":[\"キョウ\"],\"kun\":[\"つよ-い\"]}]},{\"w\":\"摩擦\",\"r\":\"まさつ\",\"ko\":\"마찰\",\"hanja\":\"마찰\",\"pos\":\"명사\",\"jlpt\":\"N1\",\"kanji\":[{\"c\":\"摩\",\"kr\":\"마\",\"mean\":\"문지르다\",\"on\":[\"マ\"],\"kun\":[]},{\"c\":\"擦\",\"kr\":\"찰\",\"mean\":\"비비다\",\"on\":[\"サツ\"],\"kun\":[\"す-る\",\"こす-る\"]}]},{\"w\":\"供給網\",\"r\":\"きょうきゅうもう\",\"ko\":\"공급망\",\"hanja\":\"공급망\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"供\",\"kr\":\"공\",\"mean\":\"바치다, 제공하다\",\"on\":[\"キョウ\"],\"kun\":[\"そな-える\"]},{\"c\":\"給\",\"kr\":\"급\",\"mean\":\"주다\",\"on\":[\"キュウ\"],\"kun\":[]},{\"c\":\"網\",\"kr\":\"망\",\"mean\":\"그물\",\"on\":[\"モウ\"],\"kun\":[\"あみ\"]}]},{\"w\":\"見直し\",\"r\":\"みなおし\",\"ko\":\"재검토\",\"hanja\":\"견직—\",\"pos\":\"명사\",\"forms\":[\"見直す\",\"見直した\"],\"kanji\":[{\"c\":\"見\",\"kr\":\"견\",\"mean\":\"보다\",\"on\":[\"ケン\"],\"kun\":[\"み-る\"]},{\"c\":\"直\",\"kr\":\"직\",\"mean\":\"곧다; 고치다\",\"on\":[\"チョク\",\"ジキ\"],\"kun\":[\"なお-す\",\"ただ-ちに\"]}]},{\"w\":\"避けられない\",\"r\":\"さけられない\",\"ko\":\"피할 수 없다, 불가피하다\",\"hanja\":\"피—\",\"pos\":\"동사 避ける의 가능형 부정\",\"forms\":[\"避ける\",\"避けられる\"],\"kanji\":[{\"c\":\"避\",\"kr\":\"피\",\"mean\":\"피하다\",\"on\":[\"ヒ\"],\"kun\":[\"さ-ける\"]}]},{\"w\":\"指摘\",\"r\":\"してき\",\"ko\":\"지적\",\"hanja\":\"지적\",\"pos\":\"명사·する동사\",\"jlpt\":\"N1\",\"forms\":[\"指摘する\",\"指摘した\"],\"kanji\":[{\"c\":\"指\",\"kr\":\"지\",\"mean\":\"손가락; 가리키다\",\"on\":[\"シ\"],\"kun\":[\"ゆび\",\"さ-す\"]},{\"c\":\"摘\",\"kr\":\"적\",\"mean\":\"따다, 집어내다\",\"on\":[\"テキ\"],\"kun\":[\"つ-む\"]}]},{\"w\":\"生産拠点\",\"r\":\"せいさんきょてん\",\"ko\":\"생산 거점\",\"hanja\":\"생산거점\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"生\",\"kr\":\"생\",\"mean\":\"나다, 살다\",\"on\":[\"セイ\"],\"kun\":[\"い-きる\",\"う-まれる\"]},{\"c\":\"産\",\"kr\":\"산\",\"mean\":\"낳다\",\"on\":[\"サン\"],\"kun\":[\"う-む\"]},{\"c\":\"拠\",\"kr\":\"거\",\"mean\":\"의지하다, 근거\",\"on\":[\"キョ\"],\"kun\":[]},{\"c\":\"点\",\"kr\":\"점\",\"mean\":\"점\",\"on\":[\"テン\"],\"kun\":[]}]},{\"w\":\"近隣国\",\"r\":\"きんりんこく\",\"ko\":\"인접국\",\"hanja\":\"근린국\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"近\",\"kr\":\"근\",\"mean\":\"가깝다\",\"on\":[\"キン\"],\"kun\":[\"ちか-い\"]},{\"c\":\"隣\",\"kr\":\"린\",\"mean\":\"이웃\",\"on\":[\"リン\"],\"kun\":[\"となり\"]},{\"c\":\"国\",\"kr\":\"국\",\"mean\":\"나라\",\"on\":[\"コク\"],\"kun\":[\"くに\"]}]}],\"grammar\":[{\"p\":\"〜によると\",\"ko\":\"~에 따르면 (출처를 밝힐 때)\",\"ex\":\"統計によると、関税収入が増えた。\",\"exKo\":\"통계에 따르면 관세 수입이 늘었다.\",\"para\":0},{\"p\":\"〜にとって\",\"ko\":\"~에게 있어서 (입장에서 보면)\",\"ex\":\"企業にとって負担は重い。\",\"exKo\":\"기업에게 부담은 무겁다.\",\"para\":1},{\"p\":\"〜という\",\"ko\":\"~라고 한다 (전해 들은 내용)\",\"ex\":\"１ポイント近く下がったという。\",\"exKo\":\"1포인트 가까이 떨어졌다고 한다.\",\"para\":1},{\"p\":\"〜ば〜ほど / 〜続けば\",\"ko\":\"~하면 (가정·조건)\",\"ex\":\"摩擦が続けば見直しが避けられない。\",\"exKo\":\"마찰이 계속되면 재검토가 불가피하다.\",\"para\":3},{\"p\":\"〜ざるを得ない\",\"ko\":\"~하지 않을 수 없다\",\"ex\":\"供給網を見直さざるを得ない。\",\"exKo\":\"공급망을 재검토하지 않을 수 없다.\",\"para\":-1}]}";
+var SAMPLE="{\"app\":\"jp-reader\",\"v\":2,\"title\":\"関税収入が過去最高に　通商摩擦で企業に負担\",\"titleKo\":\"관세 수입이 사상 최고로 — 통상 마찰로 기업에 부담\",\"source\":\"日本経済新聞\",\"date\":\"2026-10-05\",\"url\":\"https://www.nikkei.com/\",\"topic\":\"통상 · 관세\",\"level\":\"N1 수준\",\"paras\":[[{\"ja\":\"財務省が５日発表した統計によると、昨年度の関税収入が過去最高を記録した。\",\"ko\":\"재무성이 5일 발표한 통계에 따르면, 지난해 관세 수입이 사상 최고를 기록했다.\",\"ru\":\"財務省[ざいむしょう]が{５日|いつか}発表[はっぴょう]した統計[とうけい]によると、昨年度[さくねんど]の関税[かんぜい]収入[しゅうにゅう]が過去[かこ]最高[さいこう]を記録[きろく]した。\"},{\"ja\":\"主要国が相次いで輸入品への課税を強化したことが背景にある。\",\"ko\":\"주요국이 잇따라 수입품에 대한 과세를 강화한 것이 배경에 있다.\",\"ru\":\"主要国[しゅようこく]が相[あい]次[つ]いで輸入品[ゆにゅうひん]への課税[かぜい]を強化[きょうか]したことが背景[はいけい]にある。\"},{\"ja\":\"伸び率は前年度比で２割を超えた。\",\"ko\":\"증가율은 전년도 대비 20%를 넘었다.\",\"n\":\"２割 = 2할, 즉 20%. 割는 10%를 세는 단위예요.\",\"ru\":\"伸[の]び率[りつ]は前年度比[ぜんねんどひ]で２割[わり]を超[こ]えた。\"}],[{\"ja\":\"企業にとって負担は重い。\",\"ko\":\"기업에게 부담은 무겁다.\",\"ru\":\"企業[きぎょう]にとって負担[ふたん]は重[おも]い。\"},{\"ja\":\"ある電機メーカーの担当者は「原材料の調達費用が膨らみ、価格転嫁も難しい」と話す。\",\"ko\":\"한 전기기기 업체 담당자는 \\\"원자재 조달 비용이 불어나고, 가격 전가도 어렵다\\\"고 말한다.\",\"ru\":\"ある電機[でんき]メーカーの担当者[たんとうしゃ]は「原材料[げんざいりょう]の調達[ちょうたつ]費用[ひよう]が膨[ふく]らみ、価格転嫁[かかくてんか]も難[むずか]しい」と話[はな]す。\"},{\"ja\":\"利益率はこの一年で１ポイント近く下がったという。\",\"ko\":\"이익률은 지난 1년 사이 1%포인트 가까이 떨어졌다고 한다.\",\"ru\":\"利益率[りえきりつ]はこの一年[いちねん]で１ポイント近[ちか]く下[さ]がったという。\"}],[{\"ja\":\"政府は中小企業向けの支援策を検討している。\",\"ko\":\"정부는 중소기업을 위한 지원책을 검토하고 있다.\",\"ru\":\"政府[せいふ]は中小企業[ちゅうしょうきぎょう]向[む]けの支援策[しえんさく]を検討[けんとう]している。\"},{\"ja\":\"ただ、財源には限りがあり、効果を疑問視する声も根強い。\",\"ko\":\"다만 재원에는 한계가 있어, 효과를 의문시하는 목소리도 뿌리 깊다.\",\"ru\":\"ただ、財源[ざいげん]には限[かぎ]りがあり、効果[こうか]を疑問視[ぎもんし]する声[こえ]も根強[ねづよ]い。\"}],[{\"ja\":\"専門家は、今後も摩擦が続けば供給網の見直しが避けられないと指摘する。\",\"ko\":\"전문가는 앞으로도 마찰이 계속되면 공급망 재검토가 불가피하다고 지적한다.\",\"ru\":\"専門家[せんもんか]は、今後[こんご]も摩擦[まさつ]が続[つづ]けば供給網[きょうきゅうもう]の見直[みなお]しが避[さ]けられないと指摘[してき]する。\"},{\"ja\":\"生産拠点を近隣国に移す動きはすでに始まっている。\",\"ko\":\"생산 거점을 인접국으로 옮기는 움직임은 이미 시작되고 있다.\",\"ru\":\"生産拠点[せいさんきょてん]を近隣国[きんりんこく]に移[うつ]す動[うご]きはすでに始[はじ]まっている。\"}]],\"words\":[{\"w\":\"財務省\",\"r\":\"ざいむしょう\",\"ko\":\"재무성 (한국의 기획재정부에 해당)\",\"hanja\":\"재무성\",\"pos\":\"명사\",\"jlpt\":\"N2\",\"kanji\":[{\"c\":\"財\",\"kr\":\"재\",\"mean\":\"재물\",\"on\":[\"ザイ\",\"サイ\"],\"kun\":[],\"hun\":\"재물\"},{\"c\":\"務\",\"kr\":\"무\",\"mean\":\"힘쓰다, 임무\",\"on\":[\"ム\"],\"kun\":[\"つと-める\"],\"hun\":\"힘쓸\"},{\"c\":\"省\",\"kr\":\"성\",\"mean\":\"살피다; 중앙 부처\",\"on\":[\"ショウ\",\"セイ\"],\"kun\":[\"かえり-みる\",\"はぶ-く\"],\"hun\":\"살필\"}]},{\"w\":\"統計\",\"r\":\"とうけい\",\"ko\":\"통계\",\"hanja\":\"통계\",\"pos\":\"명사\",\"jlpt\":\"N2\",\"kanji\":[{\"c\":\"統\",\"kr\":\"통\",\"mean\":\"거느리다, 합치다\",\"on\":[\"トウ\"],\"kun\":[\"す-べる\"],\"hun\":\"거느릴\"},{\"c\":\"計\",\"kr\":\"계\",\"mean\":\"세다, 꾀하다\",\"on\":[\"ケイ\"],\"kun\":[\"はか-る\"],\"hun\":\"셀\"}]},{\"w\":\"昨年度\",\"r\":\"さくねんど\",\"ko\":\"지난 회계연도\",\"hanja\":\"작년도\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"昨\",\"kr\":\"작\",\"mean\":\"어제, 지난\",\"on\":[\"サク\"],\"kun\":[],\"hun\":\"어제\"},{\"c\":\"年\",\"kr\":\"년\",\"mean\":\"해\",\"on\":[\"ネン\"],\"kun\":[\"とし\"],\"hun\":\"해\"},{\"c\":\"度\",\"kr\":\"도\",\"mean\":\"번, 정도; 회계연도\",\"on\":[\"ド\"],\"kun\":[\"たび\"],\"hun\":\"법도\"}]},{\"w\":\"関税\",\"r\":\"かんぜい\",\"ko\":\"관세\",\"hanja\":\"관세\",\"pos\":\"명사\",\"jlpt\":\"N1\",\"kanji\":[{\"c\":\"関\",\"kr\":\"관\",\"mean\":\"빗장; 관계하다\",\"on\":[\"カン\"],\"kun\":[\"せき\",\"かか-わる\"],\"hun\":\"관계할\"},{\"c\":\"税\",\"kr\":\"세\",\"mean\":\"세금\",\"on\":[\"ゼイ\"],\"kun\":[],\"hun\":\"세금\"}]},{\"w\":\"収入\",\"r\":\"しゅうにゅう\",\"ko\":\"수입 (벌어들인 돈)\",\"hanja\":\"수입\",\"pos\":\"명사\",\"jlpt\":\"N3\",\"note\":\"물건을 사들이는 輸入(ゆにゅう)과 한국어로는 같은 '수입'이라 특히 헷갈려요.\",\"kanji\":[{\"c\":\"収\",\"kr\":\"수\",\"mean\":\"거두다\",\"on\":[\"シュウ\"],\"kun\":[\"おさ-める\"],\"hun\":\"거둘\"},{\"c\":\"入\",\"kr\":\"입\",\"mean\":\"들다\",\"on\":[\"ニュウ\"],\"kun\":[\"はい-る\",\"い-れる\"],\"hun\":\"들\"}]},{\"w\":\"記録\",\"r\":\"きろく\",\"ko\":\"기록; 기록하다\",\"hanja\":\"기록\",\"pos\":\"명사·する동사\",\"jlpt\":\"N3\",\"forms\":[\"記録した\",\"記録する\"],\"kanji\":[{\"c\":\"記\",\"kr\":\"기\",\"mean\":\"적다\",\"on\":[\"キ\"],\"kun\":[\"しる-す\"],\"hun\":\"기록할\"},{\"c\":\"録\",\"kr\":\"록\",\"mean\":\"기록하다\",\"on\":[\"ロク\"],\"kun\":[],\"hun\":\"기록할\"}]},{\"w\":\"相次いで\",\"r\":\"あいついで\",\"ko\":\"잇따라\",\"hanja\":\"상차—\",\"pos\":\"부사적 표현\",\"forms\":[\"相次ぐ\",\"相次ぎ\"],\"kanji\":[{\"c\":\"相\",\"kr\":\"상\",\"mean\":\"서로\",\"on\":[\"ソウ\",\"ショウ\"],\"kun\":[\"あい\"],\"hun\":\"서로\"},{\"c\":\"次\",\"kr\":\"차\",\"mean\":\"다음; 잇다\",\"on\":[\"ジ\",\"シ\"],\"kun\":[\"つ-ぐ\",\"つぎ\"],\"hun\":\"버금\"}]},{\"w\":\"輸入品\",\"r\":\"ゆにゅうひん\",\"ko\":\"수입품\",\"hanja\":\"수입품\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"輸\",\"kr\":\"수\",\"mean\":\"나르다\",\"on\":[\"ユ\"],\"kun\":[],\"hun\":\"보낼\"},{\"c\":\"入\",\"kr\":\"입\",\"mean\":\"들다\",\"on\":[\"ニュウ\"],\"kun\":[\"はい-る\"],\"hun\":\"들\"},{\"c\":\"品\",\"kr\":\"품\",\"mean\":\"물건\",\"on\":[\"ヒン\"],\"kun\":[\"しな\"],\"hun\":\"물건\"}]},{\"w\":\"課税\",\"r\":\"かぜい\",\"ko\":\"과세\",\"hanja\":\"과세\",\"pos\":\"명사\",\"jlpt\":\"N1\",\"kanji\":[{\"c\":\"課\",\"kr\":\"과\",\"mean\":\"부과하다; 과(부서)\",\"on\":[\"カ\"],\"kun\":[],\"hun\":\"매길\"},{\"c\":\"税\",\"kr\":\"세\",\"mean\":\"세금\",\"on\":[\"ゼイ\"],\"kun\":[],\"hun\":\"세금\"}]},{\"w\":\"強化\",\"r\":\"きょうか\",\"ko\":\"강화\",\"hanja\":\"강화\",\"pos\":\"명사·する동사\",\"jlpt\":\"N2\",\"forms\":[\"強化した\",\"強化する\"],\"kanji\":[{\"c\":\"強\",\"kr\":\"강\",\"mean\":\"강하다\",\"on\":[\"キョウ\"],\"kun\":[\"つよ-い\"],\"hun\":\"강할\"},{\"c\":\"化\",\"kr\":\"화\",\"mean\":\"되다, 바뀌다\",\"on\":[\"カ\"],\"kun\":[\"ば-ける\"],\"hun\":\"될\"}]},{\"w\":\"伸び率\",\"r\":\"のびりつ\",\"ko\":\"증가율\",\"hanja\":\"신—율\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"伸\",\"kr\":\"신\",\"mean\":\"늘다, 뻗다\",\"on\":[\"シン\"],\"kun\":[\"の-びる\"],\"hun\":\"펼\"},{\"c\":\"率\",\"kr\":\"율\",\"mean\":\"비율\",\"on\":[\"リツ\",\"ソツ\"],\"kun\":[\"ひき-いる\"],\"hun\":\"비율\"}]},{\"w\":\"負担\",\"r\":\"ふたん\",\"ko\":\"부담\",\"hanja\":\"부담\",\"pos\":\"명사\",\"jlpt\":\"N2\",\"kanji\":[{\"c\":\"負\",\"kr\":\"부\",\"mean\":\"지다, 떠맡다\",\"on\":[\"フ\"],\"kun\":[\"ま-ける\",\"お-う\"],\"hun\":\"질\"},{\"c\":\"担\",\"kr\":\"담\",\"mean\":\"메다, 맡다\",\"on\":[\"タン\"],\"kun\":[\"かつ-ぐ\",\"にな-う\"],\"hun\":\"멜\"}]},{\"w\":\"電機メーカー\",\"r\":\"でんきメーカー\",\"ko\":\"전기기기 제조업체\",\"hanja\":\"전기—\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"電\",\"kr\":\"전\",\"mean\":\"전기\",\"on\":[\"デン\"],\"kun\":[],\"hun\":\"번개\"},{\"c\":\"機\",\"kr\":\"기\",\"mean\":\"기계\",\"on\":[\"キ\"],\"kun\":[\"はた\"],\"hun\":\"틀\"}]},{\"w\":\"担当者\",\"r\":\"たんとうしゃ\",\"ko\":\"담당자\",\"hanja\":\"담당자\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"担\",\"kr\":\"담\",\"mean\":\"맡다\",\"on\":[\"タン\"],\"kun\":[\"にな-う\"],\"hun\":\"멜\"},{\"c\":\"当\",\"kr\":\"당\",\"mean\":\"맞다, 해당하다\",\"on\":[\"トウ\"],\"kun\":[\"あ-たる\"],\"hun\":\"마땅\"},{\"c\":\"者\",\"kr\":\"자\",\"mean\":\"사람\",\"on\":[\"シャ\"],\"kun\":[\"もの\"],\"hun\":\"놈\"}]},{\"w\":\"原材料\",\"r\":\"げんざいりょう\",\"ko\":\"원자재\",\"hanja\":\"원재료\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"原\",\"kr\":\"원\",\"mean\":\"근원, 들판\",\"on\":[\"ゲン\"],\"kun\":[\"はら\"],\"hun\":\"근원\"},{\"c\":\"材\",\"kr\":\"재\",\"mean\":\"재료\",\"on\":[\"ザイ\"],\"kun\":[],\"hun\":\"재목\"},{\"c\":\"料\",\"kr\":\"료\",\"mean\":\"재료, 요금\",\"on\":[\"リョウ\"],\"kun\":[],\"hun\":\"헤아릴\"}]},{\"w\":\"調達\",\"r\":\"ちょうたつ\",\"ko\":\"조달\",\"hanja\":\"조달\",\"pos\":\"명사·する동사\",\"jlpt\":\"N1\",\"kanji\":[{\"c\":\"調\",\"kr\":\"조\",\"mean\":\"고르다, 조사하다\",\"on\":[\"チョウ\"],\"kun\":[\"しら-べる\",\"ととの-える\"],\"hun\":\"고를\"},{\"c\":\"達\",\"kr\":\"달\",\"mean\":\"이르다, 통달하다\",\"on\":[\"タツ\"],\"kun\":[],\"hun\":\"통달할\"}]},{\"w\":\"膨らみ\",\"r\":\"ふくらみ\",\"ko\":\"부풀어, 불어나\",\"hanja\":\"팽—\",\"pos\":\"동사 膨らむ의 연용형\",\"forms\":[\"膨らむ\",\"膨らんで\",\"膨らんだ\"],\"kanji\":[{\"c\":\"膨\",\"kr\":\"팽\",\"mean\":\"부풀다\",\"on\":[\"ボウ\"],\"kun\":[\"ふく-らむ\",\"ふく-れる\"],\"hun\":\"부풀\"}]},{\"w\":\"価格転嫁\",\"r\":\"かかくてんか\",\"ko\":\"가격 전가 (오른 비용을 판매가에 반영하는 것)\",\"hanja\":\"가격전가\",\"pos\":\"명사\",\"note\":\"経済 기사에 자주 나오는 표현이에요.\",\"kanji\":[{\"c\":\"価\",\"kr\":\"가\",\"mean\":\"값\",\"on\":[\"カ\"],\"kun\":[\"あたい\"],\"hun\":\"값\"},{\"c\":\"格\",\"kr\":\"격\",\"mean\":\"격식, 자리\",\"on\":[\"カク\"],\"kun\":[],\"hun\":\"격식\"},{\"c\":\"転\",\"kr\":\"전\",\"mean\":\"구르다, 옮기다\",\"on\":[\"テン\"],\"kun\":[\"ころ-がる\"],\"hun\":\"구를\"},{\"c\":\"嫁\",\"kr\":\"가\",\"mean\":\"시집가다; 떠넘기다\",\"on\":[\"カ\"],\"kun\":[\"よめ\",\"とつ-ぐ\"],\"hun\":\"시집갈\"}]},{\"w\":\"利益率\",\"r\":\"りえきりつ\",\"ko\":\"이익률\",\"hanja\":\"이익률\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"利\",\"kr\":\"리\",\"mean\":\"이롭다\",\"on\":[\"リ\"],\"kun\":[\"き-く\"],\"hun\":\"이로울\"},{\"c\":\"益\",\"kr\":\"익\",\"mean\":\"더하다, 이익\",\"on\":[\"エキ\"],\"kun\":[],\"hun\":\"더할\"},{\"c\":\"率\",\"kr\":\"율\",\"mean\":\"비율\",\"on\":[\"リツ\"],\"kun\":[],\"hun\":\"비율\"}]},{\"w\":\"中小企業\",\"r\":\"ちゅうしょうきぎょう\",\"ko\":\"중소기업\",\"hanja\":\"중소기업\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"中\",\"kr\":\"중\",\"mean\":\"가운데\",\"on\":[\"チュウ\"],\"kun\":[\"なか\"],\"hun\":\"가운데\"},{\"c\":\"小\",\"kr\":\"소\",\"mean\":\"작다\",\"on\":[\"ショウ\"],\"kun\":[\"ちい-さい\"],\"hun\":\"작을\"},{\"c\":\"企\",\"kr\":\"기\",\"mean\":\"꾀하다\",\"on\":[\"キ\"],\"kun\":[\"くわだ-てる\"],\"hun\":\"꾀할\"},{\"c\":\"業\",\"kr\":\"업\",\"mean\":\"일, 업\",\"on\":[\"ギョウ\"],\"kun\":[\"わざ\"],\"hun\":\"업\"}]},{\"w\":\"支援策\",\"r\":\"しえんさく\",\"ko\":\"지원책\",\"hanja\":\"지원책\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"支\",\"kr\":\"지\",\"mean\":\"지탱하다\",\"on\":[\"シ\"],\"kun\":[\"ささ-える\"],\"hun\":\"지탱할\"},{\"c\":\"援\",\"kr\":\"원\",\"mean\":\"돕다\",\"on\":[\"エン\"],\"kun\":[],\"hun\":\"도울\"},{\"c\":\"策\",\"kr\":\"책\",\"mean\":\"꾀, 방책\",\"on\":[\"サク\"],\"kun\":[],\"hun\":\"꾀\"}]},{\"w\":\"検討\",\"r\":\"けんとう\",\"ko\":\"검토\",\"hanja\":\"검토\",\"pos\":\"명사·する동사\",\"jlpt\":\"N2\",\"forms\":[\"検討している\",\"検討する\"],\"kanji\":[{\"c\":\"検\",\"kr\":\"검\",\"mean\":\"검사하다\",\"on\":[\"ケン\"],\"kun\":[],\"hun\":\"검사할\"},{\"c\":\"討\",\"kr\":\"토\",\"mean\":\"치다, 따지다\",\"on\":[\"トウ\"],\"kun\":[\"う-つ\"],\"hun\":\"칠\"}]},{\"w\":\"財源\",\"r\":\"ざいげん\",\"ko\":\"재원 (돈이 나오는 곳)\",\"hanja\":\"재원\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"財\",\"kr\":\"재\",\"mean\":\"재물\",\"on\":[\"ザイ\"],\"kun\":[],\"hun\":\"재물\"},{\"c\":\"源\",\"kr\":\"원\",\"mean\":\"근원\",\"on\":[\"ゲン\"],\"kun\":[\"みなもと\"],\"hun\":\"근원\"}]},{\"w\":\"疑問視\",\"r\":\"ぎもんし\",\"ko\":\"의문시 (의심스럽게 봄)\",\"hanja\":\"의문시\",\"pos\":\"명사·する동사\",\"forms\":[\"疑問視する\"],\"kanji\":[{\"c\":\"疑\",\"kr\":\"의\",\"mean\":\"의심하다\",\"on\":[\"ギ\"],\"kun\":[\"うたが-う\"],\"hun\":\"의심할\"},{\"c\":\"問\",\"kr\":\"문\",\"mean\":\"묻다\",\"on\":[\"モン\"],\"kun\":[\"と-う\"],\"hun\":\"물을\"},{\"c\":\"視\",\"kr\":\"시\",\"mean\":\"보다\",\"on\":[\"シ\"],\"kun\":[],\"hun\":\"볼\"}]},{\"w\":\"根強い\",\"r\":\"ねづよい\",\"ko\":\"뿌리 깊다, 쉽게 사라지지 않다\",\"hanja\":\"근강—\",\"pos\":\"い형용사\",\"forms\":[\"根強く\",\"根強かった\"],\"kanji\":[{\"c\":\"根\",\"kr\":\"근\",\"mean\":\"뿌리\",\"on\":[\"コン\"],\"kun\":[\"ね\"],\"hun\":\"뿌리\"},{\"c\":\"強\",\"kr\":\"강\",\"mean\":\"강하다\",\"on\":[\"キョウ\"],\"kun\":[\"つよ-い\"],\"hun\":\"강할\"}]},{\"w\":\"摩擦\",\"r\":\"まさつ\",\"ko\":\"마찰\",\"hanja\":\"마찰\",\"pos\":\"명사\",\"jlpt\":\"N1\",\"kanji\":[{\"c\":\"摩\",\"kr\":\"마\",\"mean\":\"문지르다\",\"on\":[\"マ\"],\"kun\":[],\"hun\":\"문지를\"},{\"c\":\"擦\",\"kr\":\"찰\",\"mean\":\"비비다\",\"on\":[\"サツ\"],\"kun\":[\"す-る\",\"こす-る\"],\"hun\":\"문지를\"}]},{\"w\":\"供給網\",\"r\":\"きょうきゅうもう\",\"ko\":\"공급망\",\"hanja\":\"공급망\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"供\",\"kr\":\"공\",\"mean\":\"바치다, 제공하다\",\"on\":[\"キョウ\"],\"kun\":[\"そな-える\"],\"hun\":\"이바지할\"},{\"c\":\"給\",\"kr\":\"급\",\"mean\":\"주다\",\"on\":[\"キュウ\"],\"kun\":[],\"hun\":\"줄\"},{\"c\":\"網\",\"kr\":\"망\",\"mean\":\"그물\",\"on\":[\"モウ\"],\"kun\":[\"あみ\"],\"hun\":\"그물\"}]},{\"w\":\"見直し\",\"r\":\"みなおし\",\"ko\":\"재검토\",\"hanja\":\"견직—\",\"pos\":\"명사\",\"forms\":[\"見直す\",\"見直した\"],\"kanji\":[{\"c\":\"見\",\"kr\":\"견\",\"mean\":\"보다\",\"on\":[\"ケン\"],\"kun\":[\"み-る\"],\"hun\":\"볼\"},{\"c\":\"直\",\"kr\":\"직\",\"mean\":\"곧다; 고치다\",\"on\":[\"チョク\",\"ジキ\"],\"kun\":[\"なお-す\",\"ただ-ちに\"],\"hun\":\"곧을\"}]},{\"w\":\"避けられない\",\"r\":\"さけられない\",\"ko\":\"피할 수 없다, 불가피하다\",\"hanja\":\"피—\",\"pos\":\"동사 避ける의 가능형 부정\",\"forms\":[\"避ける\",\"避けられる\"],\"kanji\":[{\"c\":\"避\",\"kr\":\"피\",\"mean\":\"피하다\",\"on\":[\"ヒ\"],\"kun\":[\"さ-ける\"],\"hun\":\"피할\"}]},{\"w\":\"指摘\",\"r\":\"してき\",\"ko\":\"지적\",\"hanja\":\"지적\",\"pos\":\"명사·する동사\",\"jlpt\":\"N1\",\"forms\":[\"指摘する\",\"指摘した\"],\"kanji\":[{\"c\":\"指\",\"kr\":\"지\",\"mean\":\"손가락; 가리키다\",\"on\":[\"シ\"],\"kun\":[\"ゆび\",\"さ-す\"],\"hun\":\"가리킬\"},{\"c\":\"摘\",\"kr\":\"적\",\"mean\":\"따다, 집어내다\",\"on\":[\"テキ\"],\"kun\":[\"つ-む\"],\"hun\":\"딸\"}]},{\"w\":\"生産拠点\",\"r\":\"せいさんきょてん\",\"ko\":\"생산 거점\",\"hanja\":\"생산거점\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"生\",\"kr\":\"생\",\"mean\":\"나다, 살다\",\"on\":[\"セイ\"],\"kun\":[\"い-きる\",\"う-まれる\"],\"hun\":\"날\"},{\"c\":\"産\",\"kr\":\"산\",\"mean\":\"낳다\",\"on\":[\"サン\"],\"kun\":[\"う-む\"],\"hun\":\"낳을\"},{\"c\":\"拠\",\"kr\":\"거\",\"mean\":\"의지하다, 근거\",\"on\":[\"キョ\"],\"kun\":[],\"hun\":\"근거\"},{\"c\":\"点\",\"kr\":\"점\",\"mean\":\"점\",\"on\":[\"テン\"],\"kun\":[],\"hun\":\"점\"}]},{\"w\":\"近隣国\",\"r\":\"きんりんこく\",\"ko\":\"인접국\",\"hanja\":\"근린국\",\"pos\":\"명사\",\"kanji\":[{\"c\":\"近\",\"kr\":\"근\",\"mean\":\"가깝다\",\"on\":[\"キン\"],\"kun\":[\"ちか-い\"],\"hun\":\"가까울\"},{\"c\":\"隣\",\"kr\":\"린\",\"mean\":\"이웃\",\"on\":[\"リン\"],\"kun\":[\"となり\"],\"hun\":\"이웃\"},{\"c\":\"国\",\"kr\":\"국\",\"mean\":\"나라\",\"on\":[\"コク\"],\"kun\":[\"くに\"],\"hun\":\"나라\"}]}],\"grammar\":[{\"p\":\"〜によると\",\"ko\":\"~에 따르면 (출처를 밝힐 때)\",\"ex\":\"統計によると、関税収入が増えた。\",\"exKo\":\"통계에 따르면 관세 수입이 늘었다.\",\"para\":0},{\"p\":\"〜にとって\",\"ko\":\"~에게 있어서 (입장에서 보면)\",\"ex\":\"企業にとって負担は重い。\",\"exKo\":\"기업에게 부담은 무겁다.\",\"para\":1},{\"p\":\"〜という\",\"ko\":\"~라고 한다 (전해 들은 내용)\",\"ex\":\"１ポイント近く下がったという。\",\"exKo\":\"1포인트 가까이 떨어졌다고 한다.\",\"para\":1},{\"p\":\"〜ば〜ほど / 〜続けば\",\"ko\":\"~하면 (가정·조건)\",\"ex\":\"摩擦が続けば見直しが避けられない。\",\"exKo\":\"마찰이 계속되면 재검토가 불가피하다.\",\"para\":3},{\"p\":\"〜ざるを得ない\",\"ko\":\"~하지 않을 수 없다\",\"ex\":\"供給網を見直さざるを得ない。\",\"exKo\":\"공급망을 재검토하지 않을 수 없다.\",\"para\":-1}],\"titleRu\":\"関税[かんぜい]収入[しゅうにゅう]が過去[かこ]最高[さいこう]に　通商[つうしょう]摩擦[まさつ]で企業[きぎょう]に負担[ふたん]\"}";
 /* ================= 화면 전환 ================= */
 function render(){
   var t=state.ui.tab;
@@ -876,19 +913,91 @@ function furiWrap(word,b){
   }
   return "<ruby>"+esc(word)+"<rt>"+esc(r)+"</rt></ruby>";
 }
-function sentHtml(t){
+/* ---------- 읽기 층: 문장 안 모든 한자의 후리가나 ----------
+   분석 파일의 ru 필드. 漢字[かんじ] = 바로 앞 한자 묶음에 읽기,
+   {５日|いつか} = 한자가 아닌 글자까지 묶어서 읽기. ru에서 괄호를 지운 글이 ja와 같아야 쓴다. */
+var RU_CACHE={};
+function parseRu(ru,ja){
+  if(!ru)return null;
+  var ck=ru+"\u0001"+ja;
+  if(RU_CACHE.hasOwnProperty(ck))return RU_CACHE[ck];
+  var out="",spans=[],i=0,last=0,ok=true;
+  while(i<ru.length){
+    var c=ru.charAt(i);
+    if(c==="{"){
+      var bar=ru.indexOf("|",i),end=ru.indexOf("}",i);
+      if(bar<0||end<bar){ok=false;break;}
+      var base=ru.slice(i+1,bar);
+      spans.push({s:out.length,e:out.length+base.length,r:ru.slice(bar+1,end)});
+      out+=base;i=end+1;last=out.length;continue;
+    }
+    if(c==="["){
+      var close=ru.indexOf("]",i);
+      if(close<0){ok=false;break;}
+      var e=out.length,st=e;
+      while(st>last&&RE_KANJI.test(out.charAt(st-1)))st--;
+      if(st<e)spans.push({s:st,e:e,r:ru.slice(i+1,close)});
+      i=close+1;last=out.length;continue;
+    }
+    out+=c;i++;
+  }
+  var res=(ok&&out===ja)?spans:null;
+  RU_CACHE[ck]=res;
+  return res;
+}
+/* [i,j) 구간을 후리가나와 함께 그린다. 구간을 넘나드는 읽기가 있으면 null */
+function rubyRange(t,i,j,spans,show){
+  var out="",p=i,inside=[];
+  for(var k=0;k<spans.length;k++){
+    var sp=spans[k];
+    if(sp.e<=i||sp.s>=j)continue;
+    if(sp.s<i||sp.e>j)return null;
+    inside.push(sp);
+  }
+  if(!inside.length)return {html:esc(t.slice(i,j)),n:0};
+  inside.sort(function(a,b){return a.s-b.s;});
+  for(var q=0;q<inside.length;q++){
+    var s2=inside[q];
+    if(s2.s>p)out+=esc(t.slice(p,s2.s));
+    var base=t.slice(s2.s,s2.e);
+    out+=show?("<ruby>"+esc(base)+"<rt>"+esc(s2.r)+"</rt></ruby>"):esc(base);
+    p=s2.e;
+  }
+  if(p<j)out+=esc(t.slice(p,j));
+  return {html:out,n:inside.length};
+}
+function sentHtml(t,ru){
+  var spans=parseRu(ru,t)||[];
+  var mode=state.ui.furi;
+  var startAt={};
+  spans.forEach(function(sp){startAt[sp.s]=sp;});
   var out="",i=0;
   while(i<t.length){
     var m=matchAt(t,i);
     if(m){
-      out+='<span class="w s'+(m.b.st===4?3:m.b.st)+'" data-k="'+esc(m.b.key)+'">'+furiWrap(m.s,m.b)+"</span>";
-      i+=m.s.length;continue;
+      var j=i+m.s.length;
+      var show=mode==="all"||(mode==="new"&&m.b.st<2);
+      var rr=spans.length?rubyRange(t,i,j,spans,show):null;
+      var inner=(rr&&rr.n)?rr.html:furiWrap(m.s,m.b);
+      out+='<span class="w s'+(m.b.st===4?3:m.b.st)+'" data-k="'+esc(m.b.key)+'">'+inner+"</span>";
+      i=j;continue;
     }
-    var c=cls(t.charAt(i)),run=t.charAt(i),j=i+1;
-    while(j<t.length&&cls(t.charAt(j))===c&&!matchAt(t,j)){run+=t.charAt(j);j++;}
+    var sp=startAt[i];
+    if(sp){
+      var hit=false;
+      for(var x=sp.s+1;x<sp.e;x++)if(matchAt(t,x)){hit=true;break;}
+      if(!hit){
+        var base=t.slice(sp.s,sp.e);
+        out+='<span class="tok" data-t="'+esc(base)+'" data-r="'+esc(sp.r)+'">'+
+          (mode==="all"?"<ruby>"+esc(base)+"<rt>"+esc(sp.r)+"</rt></ruby>":esc(base))+"</span>";
+        i=sp.e;continue;
+      }
+    }
+    var c=cls(t.charAt(i)),run=t.charAt(i),jj=i+1;
+    while(jj<t.length&&cls(t.charAt(jj))===c&&!matchAt(t,jj)&&!startAt[jj]){run+=t.charAt(jj);jj++;}
     if(c==="k"||c==="c"||c==="a")out+='<span class="tok" data-t="'+esc(run)+'">'+esc(run)+"</span>";
     else out+=esc(run);
-    i=j;
+    i=jj;
   }
   return out;
 }
@@ -896,7 +1005,7 @@ function renderReader(){
   var a=curArt;if(!a)return;
   $("rTitle").textContent=a.title;
   var showKo=state.ui.ko==="show";
-  var html='<div class="rinner"><div class="artitle">'+sentHtml(a.title)+'</div>'+
+  var html='<div class="rinner"><div class="artitle">'+sentHtml(a.title,a.titleRu)+'</div>'+
     (a.titleKo?'<div class="artitleko">'+esc(a.titleKo)+'</div>':'')+
     '<div class="armeta">'+(a.topic?'<span class="chip">'+esc(a.topic)+'</span>':'')+
       (a.level?'<span class="chip gray">'+esc(a.level)+'</span>':'')+
@@ -906,7 +1015,7 @@ function renderReader(){
     html+='<div class="jpara" data-p="'+pi+'">';
     sents.forEach(function(s,si){
       html+='<span class="jsent'+(state.ui.jaHide?" jahide":"")+'" data-p="'+pi+'" data-s="'+si+'">'+
-        (state.ui.jaHide?'<span class="jacover" data-ja="'+pi+"."+si+'">'+esc(s.ko||"(해석 없음)")+' <b>▸ 일본어 보기</b></span><span class="jareal hide">'+sentHtml(s.ja)+'</span>':sentHtml(s.ja))+
+        (state.ui.jaHide?'<span class="jacover" data-ja="'+pi+"."+si+'">'+esc(s.ko||"(해석 없음)")+' <b>▸ 일본어 보기</b></span><span class="jareal hide">'+sentHtml(s.ja,s.ru)+'</span>':sentHtml(s.ja,s.ru))+
         (s.ko?'<button class="kobtn" data-kob="'+pi+"."+si+'" aria-label="이 문장 해석">訳</button>':'')+
         (TTS&&state.ui.tts!==false?'<button class="kobtn sp" data-sp="'+pi+"."+si+'" aria-label="소리내어 읽기">▶</button>':'')+'</span>';
       if(s.ko)html+='<span class="koS'+(showKo?"":" hide")+'" data-ko="'+pi+"."+si+'">'+esc(s.ko)+
@@ -982,7 +1091,8 @@ function wrowHtml(b){
     '<span class="dot s'+Math.min(b.st,3)+'"></span>'+
     '<div class="bd"><div class="t">'+esc(b.w)+'</div>'+
     (b.r?'<div class="r">'+esc(b.r)+(b.hanja?" · "+esc(b.hanja):"")+'</div>':'')+
-    (b.ko?'<div class="m">'+esc(b.ko)+'</div>':'')+'</div>'+
+    (b.ko?'<div class="m">'+esc(b.ko)+'</div>':'')+
+    (function(){var kc=kanjiCombo(b);return kc?'<div class="kc">'+kc+'</div>':'';})()+'</div>'+
     '<div class="due">'+esc(due)+'</div></div>';
 }
 function relDay(t){
@@ -1031,7 +1141,7 @@ $("rBody").addEventListener("click",function(e){
   var w=e.target.closest("[data-k]");
   if(w){selectWord(w);return;}
   var tk=e.target.closest("[data-t]");
-  if(tk){openNewWord(tk.dataset.t);return;}
+  if(tk){openNewWord(tk.dataset.t,null,tk.dataset.r||"");return;}
   var pl=e.target.closest("[data-play]");
   if(pl){ speakPara(a,parseInt(pl.dataset.play,10)); return; }
   var gt=e.target.closest("[data-gt]");
@@ -1170,11 +1280,45 @@ function openPanel(b){
     '</div></div>';
   p.className="panel";
 }
+/* 훈(뜻 이름). 분석 파일의 hun이 있으면 그대로, 없으면 뜻에서 만든다 (쓰다→쓸, 살다→살) */
+function hunOf(k){
+  if(!k)return "";
+  if(k.hun)return k.hun;
+  var m=String(k.mean||"").split(/[,;·\/(]/)[0].replace(/^\s+|\s+$/g,"");
+  if(m.length>=2&&m.charAt(m.length-1)==="다"){
+    var st=m.slice(0,-1),ch=st.charCodeAt(st.length-1);
+    if(ch>=0xAC00&&ch<=0xD7A3){
+      var fin=(ch-0xAC00)%28;
+      if(fin===0)return st.slice(0,-1)+String.fromCharCode(ch+8);
+      if(fin===8)return st;
+    }
+  }
+  return m;
+}
+function hunEum(k){
+  var h=hunOf(k);
+  return h&&k.kr?(h+" "+k.kr):(k.kr||h||"");
+}
+/* 단어를 이루는 한자들: 財(재물 재) + 務(힘쓸 무) */
+function kanjiCombo(b){
+  var w=String(b.w||""),out=[],seen={};
+  for(var i=0;i<w.length;i++){
+    var ch=w.charAt(i);
+    if(!RE_KANJI.test(ch)||ch==="々"||seen[ch])continue;
+    seen[ch]=1;
+    var k=null,ks=b.kanji||[];
+    for(var j=0;j<ks.length;j++)if(ks[j].c===ch){k=ks[j];break;}
+    if(!k||(!k.kr&&!k.mean))k=knownKanji(ch)||k;
+    var he=k?hunEum(k):"";
+    out.push("<b>"+esc(ch)+"</b>"+(he?esc(he):""));
+  }
+  return out.length>1||(out.length===1&&out[0].indexOf("</b>")<out[0].length-4)?out.join("<i>+</i>"):"";
+}
 function kanjiHtml(b){
   if(!b.kanji||!b.kanji.length)return "";
   return '<div class="kgrid">'+b.kanji.map(function(k){
     return '<div class="kcard"><div class="ch">'+esc(k.c)+'</div>'+
-      (k.kr?'<div class="kr">'+esc(k.kr)+'</div>':'')+
+      (k.kr||k.mean?'<div class="kr">'+esc(hunEum(k))+'</div>':'')+
       (k.mean?'<div class="mn">'+esc(k.mean)+'</div>':'')+
       ((k.on&&k.on.length)?'<div class="rd"><b>음</b>'+esc(k.on.join(" · "))+'</div>':'')+
       ((k.kun&&k.kun.length)?'<div class="rd"><b>훈</b>'+esc(k.kun.join(" · "))+'</div>':'')+
@@ -1275,7 +1419,7 @@ function autoKanjiRows(term){
   }
   return out.join("\n");
 }
-function openNewWord(token,edit){
+function openNewWord(token,edit,rd){
   var b=edit||null;
   var owner=edit?null:formOwner(token);
   var kan=((b&&b.kanji)||[]).map(function(k){
@@ -1285,7 +1429,7 @@ function openNewWord(token,edit){
     (owner?'<div class="suggest"><b>'+esc(owner.w)+'</b> ('+esc(owner.r||"")+" "+esc(owner.ko||"")+')의 활용형 같아요.'+
       '<button class="btn mini" data-s="form">이 형태를 '+esc(owner.w)+'에 붙이기</button></div>':'')+
     '<label class="lb">단어</label><input class="inp" id="nwW" value="'+esc(b?b.w:token)+'">'+
-    '<label class="lb">읽기</label><input class="inp" id="nwR" placeholder="かんぜい" value="'+esc(b?b.r:"")+'">'+
+    '<label class="lb">읽기</label><input class="inp" id="nwR" placeholder="かんぜい" value="'+esc(b?b.r:(rd||""))+'">'+
     '<label class="lb">뜻</label><input class="inp" id="nwKo" placeholder="관세" value="'+esc(b?b.ko:"")+'">'+
     '<div style="display:flex;gap:9px"><div style="flex:1"><label class="lb">한국 한자음</label>'+
       '<input class="inp" id="nwH" placeholder="관세" value="'+esc(b?b.hanja:"")+'"></div>'+
@@ -1658,7 +1802,7 @@ function kanjiStats(){
   bankList().forEach(function(b){
     (b.kanji||[]).forEach(function(k){
       if(!k.c)return;
-      var e=map[k.c]||(map[k.c]={c:k.c,kr:k.kr,mean:k.mean,n:0,known:0});
+      var e=map[k.c]||(map[k.c]={c:k.c,kr:k.kr,mean:k.mean,hun:k.hun,n:0,known:0});
       e.n++;if(b.st>=2)e.known++;
     });
   });
@@ -1668,7 +1812,7 @@ function kanjiStats(){
   return '<p class="hint">단어장에 나온 한자 '+list.length+'자 · 자주 나오는 순</p>'+
     '<div class="kgrid">'+list.slice(0,12).map(function(e){
       return '<div class="kcard"><div class="ch">'+esc(e.c)+'</div>'+
-        (e.kr?'<div class="kr">'+esc(e.kr)+'</div>':'')+
+        (e.kr||e.mean?'<div class="kr">'+esc(hunEum(e))+'</div>':'')+
         (e.mean?'<div class="mn">'+esc(e.mean)+'</div>':'')+
         '<div class="rd">'+e.n+'개 단어에 · '+e.known+'개 익숙</div></div>';
     }).join("")+'</div>';
@@ -1713,24 +1857,39 @@ function openAdd(){
       '<div style="flex:1"><label class="lb">날짜</label><input class="inp" id="rD" placeholder="2026-10-06"></div></div>'+
       '<label class="lb">주제</label><input class="inp" id="rC" placeholder="통상 · 관세">'+
     '</div>'+
+    '<button class="mode" data-s="clip"><b>복사한 내용 바로 넣기</b><span>클로드가 준 분석 내용을 복사해 왔다면 이 버튼 하나로 끝 · 키보드가 있으면 홈에서 Ctrl+V / ⌘V</span></button>'+
     '<button class="mode" data-s="file"><b>파일에서 불러오기</b><span>클로드가 보낸 분석 파일(.json)을 그대로 선택 · 여러 편이 든 파일도 됩니다</span></button>'+
     '<div class="acts"><button class="btn ghost" data-s="cancel">닫기<span class="kbd">Esc</span></button>'+
     '<button class="btn" data-s="go">넣기</button></div>',
     function(act,sh){
       if(act==="cancel"){closeSheet();return;}
       if(act==="file"){fileMode="article";closeSheet();$("fileIn").click();return;}
+      if(act==="clip"){
+        if(!(navigator.clipboard&&navigator.clipboard.readText)){toast("이 브라우저는 바로 넣기를 지원하지 않아요. 칸을 길게 눌러 붙여넣어 주세요");return;}
+        navigator.clipboard.readText().then(function(ct){
+          var js=extractJson(ct);
+          if(js){importAny(js);return;}
+          sh.querySelector("#pasteBox").value=ct||"";
+          if(looksCut(ct))toast("분석 내용이 중간에 잘린 것 같아요. 처음부터 끝까지 다시 복사해 주세요");
+          else toast(ct?"분석 내용이 아니라서 칸에 넣어뒀어요. 원문이면 ‘넣기’를 눌러요":"복사된 내용이 없어요");
+          var ev=document.createEvent("Event");ev.initEvent("input",true,true);sh.querySelector("#pasteBox").dispatchEvent(ev);
+        },function(){toast("붙여넣기 권한이 막혀 있어요. 칸을 길게 눌러 붙여넣어 주세요");});
+        return;
+      }
       var t=sh.querySelector("#pasteBox").value.trim();
       if(!t){toast("내용을 붙여넣어 주세요");return;}
+      var js2=extractJson(t);
+      if(js2){importAny(js2);return;}
+      if(looksCut(t)){toast("분석 내용이 중간에 잘린 것 같아요. 처음부터 끝까지 다시 복사해 주세요");return;}
       var a=null;
-      if(t.charAt(0)==="{")a=importJson(t);
-      else a=importRaw(t,{title:sh.querySelector("#rT").value,source:sh.querySelector("#rS").value,
+      a=importRaw(t,{title:sh.querySelector("#rT").value,source:sh.querySelector("#rS").value,
         date:sh.querySelector("#rD").value,topic:sh.querySelector("#rC").value});
       if(a){closeSheet();openArticle(a.id);}
     });
   var box=sh.querySelector("#pasteBox");
   box.addEventListener("input",function(){
     var t=box.value.trim();
-    sh.querySelector("#rawF").className=(t&&t.charAt(0)!=="{")?"":"hide";
+    sh.querySelector("#rawF").className=(t&&!/"paras"\s*:/.test(t)&&t.charAt(0)!=="{"&&t.charAt(0)!=="["&&t.indexOf("```")<0)?"":"hide";
   });
   setTimeout(function(){box.focus();},60);
 }
@@ -1888,7 +2047,7 @@ $("fileIn").addEventListener("change",function(){
   if(fileMode==="article"){
     fileMode="backup";
     var r2=new FileReader();
-    r2.onload=function(){ importAny(String(r2.result)); };
+    r2.onload=function(){ var raw=String(r2.result),js=extractJson(raw); importAny(js||raw); };
     r2.onerror=function(){ toast("파일을 읽지 못했어요"); };
     r2.readAsText(f);
     return;
@@ -2381,8 +2540,43 @@ document.addEventListener("keydown",function(e){
   else if(e.key==="/"){e.preventDefault();goTab("words");setTimeout(function(){var q=$("wq");if(q)q.focus();},60);}
 });
 
+document.addEventListener("paste",function(e){
+  var t=e.target;
+  if(t&&t.tagName&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.isContentEditable))return;
+  var cd=e.clipboardData||window.clipboardData;
+  if(!cd)return;
+  var raw=cd.getData("text")||cd.getData("text/plain")||"";
+  var js=extractJson(raw);
+  if(!js){if(looksCut(raw))toast("분석 내용이 중간에 잘린 것 같아요. 처음부터 끝까지 다시 복사해 주세요");return;}
+  if(e.preventDefault)e.preventDefault();
+  if(curArt&&typeof closeReader==="function")try{closeReader();}catch(err){}
+  importAny(js);
+});
 /* ================= 시작 ================= */
 load();
+(function(){ /* 이미 넣어둔 샘플 기사에 전체 후리가나·한자 이름을 채운다 */
+  try{
+    var sm=JSON.parse(SAMPLE);
+    state.arts.forEach(function(a){
+      if(a.title!==sm.title)return;
+      if(!a.titleRu&&sm.titleRu)a.titleRu=sm.titleRu;
+      (a.paras||[]).forEach(function(p,pi){
+        (p||[]).forEach(function(x,si){
+          var o=sm.paras[pi]&&sm.paras[pi][si];
+          if(o&&o.ja===x.ja&&o.ru&&!x.ru)x.ru=o.ru;
+        });
+      });
+    });
+    (sm.words||[]).forEach(function(w){
+      var b=state.bank[wkey(w.w,w.r||"")];
+      if(!b||!b.kanji)return;
+      b.kanji.forEach(function(k){
+        if(k.hun)return;
+        for(var q=0;q<w.kanji.length;q++)if(w.kanji[q].c===k.c&&w.kanji[q].hun){k.hun=w.kanji[q].hun;break;}
+      });
+    });
+  }catch(e){}
+})();
 loadSync();
 document.documentElement.style.setProperty("--fs",state.ui.fs||1);
 buildIndex();
