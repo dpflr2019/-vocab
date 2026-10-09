@@ -36,6 +36,14 @@ h1 span{color:var(--ink-soft);font-weight:500;}
 .seg{display:flex;gap:2px;background:#EBEAE3;border-radius:10px;padding:3px;margin:18px 0 12px;}
 .seg button{flex:1;min-width:0;border:0;background:transparent;padding:8px 2px;border-radius:8px;font:600 12.5px inherit;font-family:inherit;color:var(--ink-soft);cursor:pointer;}
 .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(22,35,63,.12);}
+.xcan{cursor:grab;}
+.xdrag{cursor:grabbing!important;-webkit-user-select:none;user-select:none;}
+@media (hover:hover) and (pointer:fine){
+  .xscroll{scrollbar-width:thin;}
+  .xscroll::-webkit-scrollbar{display:block;height:6px;}
+  .xscroll::-webkit-scrollbar-thumb{background:rgba(120,120,120,.32);border-radius:99px;}
+  .xscroll::-webkit-scrollbar-track{background:transparent;}
+}
 .days{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none;}
 .days::-webkit-scrollbar{display:none;}
 .chip{flex:0 0 auto;border:1px solid var(--rule);background:var(--card);border-radius:10px;padding:8px 12px 7px;cursor:pointer;text-align:left;min-width:74px;font-family:inherit;color:inherit;}
@@ -480,7 +488,7 @@ h1 span{color:var(--ink-soft);}
     <button data-sec="news">기사</button>
   </div>
 
-  <div class="days" id="dayRow"></div>
+  <div class="days xscroll" id="dayRow"></div>
 
   <div id="warnBox"></div>
     <div id="errBox"></div>
@@ -2283,7 +2291,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v102 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v103 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2624,6 +2632,84 @@ function syncMerge(cb){
     .catch(function(){ cb&&cb(false,"인터넷에 연결되지 않았어요"); });
 }
 
+
+// ================= 가로 스트립: 마우스 드래그 / 휠 스크롤 =================
+(function(){
+  function scrollerOf(el){
+    while(el&&el.nodeType===1&&el!==document.body){
+      if(el.scrollWidth-el.clientWidth>4){
+        var ov="";
+        try{ ov=window.getComputedStyle(el).overflowX; }catch(err){}
+        if(ov==="auto"||ov==="scroll") return el;
+      }
+      el=el.parentNode;
+    }
+    return null;
+  }
+  function isField(t){
+    if(!t||!t.tagName) return false;
+    var n=t.tagName;
+    return n==="INPUT"||n==="TEXTAREA"||n==="SELECT"||t.isContentEditable;
+  }
+  var cur=null,sx=0,sl=0,moved=0,suppress=false;
+  document.addEventListener("click",function(e){
+    if(!suppress) return;
+    suppress=false;
+    e.stopPropagation();
+    if(e.preventDefault) e.preventDefault();
+  },true);
+  document.addEventListener("mousedown",function(e){
+    suppress=false;
+    if(e.button!==0||isField(e.target)) return;
+    var el=scrollerOf(e.target);
+    if(!el) return;
+    cur=el; sx=e.clientX; sl=el.scrollLeft; moved=0;
+    el.className+=" xdrag";
+  });
+  document.addEventListener("mousemove",function(e){
+    if(!cur) return;
+    var d=e.clientX-sx;
+    if(Math.abs(d)>moved) moved=Math.abs(d);
+    if(moved>3){ cur.scrollLeft=sl-d; if(e.preventDefault) e.preventDefault(); }
+  });
+  document.addEventListener("mouseup",function(){
+    if(!cur) return;
+    cur.className=cur.className.replace(/\s*xdrag/g,"");
+    if(moved>5){
+      suppress=true;
+      setTimeout(function(){ suppress=false; },300);
+    }
+    cur=null;
+  });
+  document.addEventListener("mouseleave",function(){
+    if(cur){ cur.className=cur.className.replace(/\s*xdrag/g,""); cur=null; }
+  });
+  document.addEventListener("mouseover",function(e){
+    var el=e.target;
+    while(el&&el.nodeType===1&&el!==document.body){
+      if(typeof el.className==="string"&&/\bxscroll\b/.test(el.className)){
+        var can=el.scrollWidth-el.clientWidth>4;
+        var has=/\bxcan\b/.test(el.className);
+        if(can&&!has) el.className+=" xcan";
+        else if(!can&&has) el.className=el.className.replace(/\s*xcan/g,"");
+        return;
+      }
+      el=el.parentNode;
+    }
+  });
+  try{
+    document.addEventListener("wheel",function(e){
+      if(e.ctrlKey||e.shiftKey) return;
+      if(Math.abs(e.deltaY)<=Math.abs(e.deltaX)) return;
+      var el=scrollerOf(e.target);
+      if(!el) return;
+      var before=el.scrollLeft;
+      el.scrollLeft=before+e.deltaY;
+      if(el.scrollLeft!==before&&e.cancelable) e.preventDefault();
+    },{passive:false});
+  }catch(err){}
+})();
+
 // ================= 기기 간 동기화 (내 GitHub 비공개 저장소) =================
 var SYNCKEY="toeic-vocab-sync";
 var sync={repo:"",token:"",path:"vocab-sync.json",auto:true,sha:"",lastAt:0,lastRun:0,pendingAt:0,dev:""};
@@ -2892,7 +2978,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v102";
+var APP_VER="v103";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;

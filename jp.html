@@ -219,6 +219,14 @@ ruby{ruby-align:center;}
 .revdone{text-align:center;}
 .revdone .big{font-size:44px;font-weight:800;letter-spacing:-.02em;}
 /* 단어 탭 */
+.xcan{cursor:grab;}
+.xdrag{cursor:grabbing!important;-webkit-user-select:none;user-select:none;}
+@media (hover:hover) and (pointer:fine){
+  .xscroll{scrollbar-width:thin;}
+  .xscroll::-webkit-scrollbar{display:block;height:6px;}
+  .xscroll::-webkit-scrollbar-thumb{background:rgba(120,120,120,.32);border-radius:99px;}
+  .xscroll::-webkit-scrollbar-track{background:transparent;}
+}
 .filters{display:flex;gap:7px;overflow-x:auto;padding:4px 0 2px;margin:0 -2px;}
 .filters button{flex:0 0 auto;border:1px solid var(--line);background:var(--sheet);color:var(--dim);border-radius:999px;
   font:600 12.5px inherit;padding:8px 13px;min-height:38px;cursor:pointer;}
@@ -340,7 +348,7 @@ ruby{ruby-align:center;}
 <div class="scrim hide" id="scrim"><div class="sheet" id="sheet"></div></div>
 <input type="file" id="fileIn" accept=".json,application/json" style="display:none">
 <script>
-var APP_VER="j3";
+var APP_VER="j4";
 var KEY="jp2";
 var state={v:2,arts:[],bank:{},log:{},gram:{},ui:{furi:"new",ko:"hide",fs:1,tab:"home",tts:true,rate:0.95,jaHide:false},streak:{last:"",n:0}};
 var toastEl=null,toastTimer=null,saveTimer=null;
@@ -761,7 +769,7 @@ function renderHome(){
   html+='<div class="sgrp">기사</div>';
   if(arts.length>5){
     html+='<input class="inp" id="aq" placeholder="기사 제목·출처로 찾기" value="'+esc(artQuery)+'" style="margin-top:0">'+
-      '<div class="filters" style="margin-top:10px">'+
+      '<div class="filters xscroll" style="margin-top:10px">'+
       [["all","전체 "+arts.length],["doing","읽는 중"],["done","다 읽음"],["new","안 읽음"]].map(function(f){
         return '<button data-act="afilter" data-f="'+f[0]+'" class="'+(artFilter===f[0]?"on":"")+'">'+f[1]+'</button>';
       }).join("")+'</div>';
@@ -1573,7 +1581,7 @@ function renderWords(){
   });
   var html='<div class="pagehead"><div><h1>단어</h1><div class="sub">모두 '+all.length+'개 · 외움 '+counts.s3+'개</div></div></div>'+
     '<input class="inp" id="wq" placeholder="단어 · 읽기 · 뜻으로 찾기  ( / )" value="'+esc(wordQuery)+'">'+
-    '<div class="filters" style="margin-top:10px">'+
+    '<div class="filters xscroll" style="margin-top:10px">'+
       fbtn("all","전체 "+counts.all)+fbtn("due","복습 차례 "+counts.due)+
       fbtn("s0","새 단어 "+counts.s0)+fbtn("s1","학습 중 "+counts.s1)+
       fbtn("s2","익숙 "+counts.s2)+fbtn("s3","외움 "+counts.s3)+
@@ -2022,6 +2030,84 @@ function syncMerge(cb){
 }
 
 /* ================= 기기 간 동기화 ================= */
+
+// ================= 가로 스트립: 마우스 드래그 / 휠 스크롤 =================
+(function(){
+  function scrollerOf(el){
+    while(el&&el.nodeType===1&&el!==document.body){
+      if(el.scrollWidth-el.clientWidth>4){
+        var ov="";
+        try{ ov=window.getComputedStyle(el).overflowX; }catch(err){}
+        if(ov==="auto"||ov==="scroll") return el;
+      }
+      el=el.parentNode;
+    }
+    return null;
+  }
+  function isField(t){
+    if(!t||!t.tagName) return false;
+    var n=t.tagName;
+    return n==="INPUT"||n==="TEXTAREA"||n==="SELECT"||t.isContentEditable;
+  }
+  var cur=null,sx=0,sl=0,moved=0,suppress=false;
+  document.addEventListener("click",function(e){
+    if(!suppress) return;
+    suppress=false;
+    e.stopPropagation();
+    if(e.preventDefault) e.preventDefault();
+  },true);
+  document.addEventListener("mousedown",function(e){
+    suppress=false;
+    if(e.button!==0||isField(e.target)) return;
+    var el=scrollerOf(e.target);
+    if(!el) return;
+    cur=el; sx=e.clientX; sl=el.scrollLeft; moved=0;
+    el.className+=" xdrag";
+  });
+  document.addEventListener("mousemove",function(e){
+    if(!cur) return;
+    var d=e.clientX-sx;
+    if(Math.abs(d)>moved) moved=Math.abs(d);
+    if(moved>3){ cur.scrollLeft=sl-d; if(e.preventDefault) e.preventDefault(); }
+  });
+  document.addEventListener("mouseup",function(){
+    if(!cur) return;
+    cur.className=cur.className.replace(/\s*xdrag/g,"");
+    if(moved>5){
+      suppress=true;
+      setTimeout(function(){ suppress=false; },300);
+    }
+    cur=null;
+  });
+  document.addEventListener("mouseleave",function(){
+    if(cur){ cur.className=cur.className.replace(/\s*xdrag/g,""); cur=null; }
+  });
+  document.addEventListener("mouseover",function(e){
+    var el=e.target;
+    while(el&&el.nodeType===1&&el!==document.body){
+      if(typeof el.className==="string"&&/\bxscroll\b/.test(el.className)){
+        var can=el.scrollWidth-el.clientWidth>4;
+        var has=/\bxcan\b/.test(el.className);
+        if(can&&!has) el.className+=" xcan";
+        else if(!can&&has) el.className=el.className.replace(/\s*xcan/g,"");
+        return;
+      }
+      el=el.parentNode;
+    }
+  });
+  try{
+    document.addEventListener("wheel",function(e){
+      if(e.ctrlKey||e.shiftKey) return;
+      if(Math.abs(e.deltaY)<=Math.abs(e.deltaX)) return;
+      var el=scrollerOf(e.target);
+      if(!el) return;
+      var before=el.scrollLeft;
+      el.scrollLeft=before+e.deltaY;
+      if(el.scrollLeft!==before&&e.cancelable) e.preventDefault();
+    },{passive:false});
+  }catch(err){}
+})();
+
 // ================= 기기 간 동기화 (내 GitHub 비공개 저장소) =================
 var SYNCKEY="jp2-sync";
 var sync={repo:"",token:"",path:"jp2-sync.json",auto:true,sha:"",lastAt:0,lastRun:0,pendingAt:0,dev:""};
