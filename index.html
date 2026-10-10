@@ -1649,7 +1649,7 @@ function vwPattern(term,selfMode){
     }
     else {
       var fs=[];
-      lowAlts.forEach(function(a){ vwForms(a,selfMode&&lowAlts.length===1&&a.length>3).forEach(function(f){ if(fs.indexOf(f)<0) fs.push(f); }); });
+      lowAlts.forEach(function(a){ vwForms(a,selfMode&&lowAlts.length===1&&a.length>2).forEach(function(f){ if(fs.indexOf(f)<0) fs.push(f); }); });
       fs.sort(function(x,y){return y.length-x.length;});
       src="(?:"+fs.map(vwEsc).join("|")+")";
     }
@@ -1673,7 +1673,7 @@ function vwPattern(term,selfMode){
       if(opt){ body+="(?:"+p.src+"\\s+)?"; continue; }
       body+=p.src; started=true; continue;
     }
-    var sep=p.gap?GAP:"\\s+";
+    var sep=p.gap?GAP:(selfMode?"\\s+(?:"+VW_DET+"\\s+)?":"\\s+");
     body+=opt?("(?:"+sep+p.src+")?"):(sep+p.src);
   }
   if(!started) return null;
@@ -1712,14 +1712,11 @@ function vwFind(text,sec,selfKey,selfTerm){
   var hits=[];
   var ms=vwMatchers(sec);
   if(selfKey){
-    var has=false;
-    for(var i=0;i<ms.length;i++) if(ms[i].k===selfKey){has=true;break;}
-    if(!has){
-      var idx=xlIndex();
-      idx.selfRx=idx.selfRx||{};
-      if(!(selfKey in idx.selfRx)) idx.selfRx[selfKey]=vwPattern(selfTerm||selfKey,true);
-      if(idx.selfRx[selfKey]) ms=ms.concat([{k:selfKey,re:idx.selfRx[selfKey]}]);
-    }
+    /* 이 카드 단어는 더 넓게 찾는다 (beyond our control, 흔한 단어 포함) */
+    var idx=xlIndex();
+    idx.selfRx=idx.selfRx||{};
+    if(!(selfKey in idx.selfRx)) idx.selfRx[selfKey]=vwPattern(selfTerm||selfKey,true);
+    if(idx.selfRx[selfKey]) ms=ms.filter(function(x){return x.k!==selfKey;}).concat([{k:selfKey,re:idx.selfRx[selfKey]}]);
   }
   ms.forEach(function(mt){
     mt.re.lastIndex=0;
@@ -1760,17 +1757,31 @@ function exHtml(s,card){
   plain+=s.slice(last);
   var auto=vwFind(plain,sec,selfKey,card&&card.term);
   var all=marks.slice();
+  var hasSelfMark=marks.some(function(t){return t.self;});
   auto.forEach(function(h){
-    for(var i=0;i<marks.length;i++){ var t=marks[i]; if(h.s<t.e&&t.s<h.e) return; }
+    for(var i=0;i<marks.length;i++){
+      var t=marks[i];
+      if(!(h.s<t.e&&t.s<h.e)) continue;
+      /* 이 카드 단어가 다른 단어 표시를 품고 있으면(exchange [[tray]] for) 함께 그린다 */
+      if(h.self&&!hasSelfMark&&t.s>=h.s&&t.e<=h.e&&!t.self){ h.inner=(h.inner||[]).concat([t]); t.inside=true; continue; }
+      return;
+    }
     all.push(h);
   });
+  all=all.filter(function(h){return !h.inside;});
   all.sort(function(a,b){return a.s-b.s;});
+  var link=function(k,txt){ return idx.terms[k]?'<span class="xl" data-xt="'+esc(k)+'" data-xs="'+sec+'">'+txt+'</span>':txt; };
   var out="",p=0;
   all.forEach(function(h){
     if(h.s<p) return;
     out+=esc(plain.slice(p,h.s));
     var txt=esc(plain.slice(h.s,h.e));
-    if(h.self) out+='<b class="vt">'+txt+'</b>';
+    if(h.self&&h.inner){
+      var q=h.s,inner="";
+      h.inner.sort(function(a,b){return a.s-b.s;}).forEach(function(t){ inner+=esc(plain.slice(q,t.s))+link(t.k,esc(plain.slice(t.s,t.e))); q=t.e; });
+      out+='<b class="vt">'+inner+esc(plain.slice(q,h.e))+'</b>';
+    }
+    else if(h.self) out+='<b class="vt">'+txt+'</b>';
     else if(idx.terms[h.k]) out+='<span class="xl" data-xt="'+esc(h.k)+'" data-xs="'+sec+'">'+txt+'</span>';
     else out+=txt;
     p=h.e;
@@ -2554,7 +2565,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v107 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v108 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -3345,7 +3356,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v107";
+var APP_VER="v108";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
