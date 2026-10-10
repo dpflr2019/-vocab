@@ -2104,10 +2104,11 @@ $("saveAdd").addEventListener("click",function(){
         if(nw.syn) ex.syn=nw.syn;
         if(nw.ant) ex.ant=nw.ant;
         ["forms","idiom","conf","ipa"].forEach(function(k){ if(nw[k]) ex[k]=nw[k]; });
+        ex.ed=Date.now();
         updated++;
       }else{
         day.words.push({id:uid(),term:nw.term,ipa:nw.ipa||"",meaning:nw.meaning,pos:nw.pos,
-          example:nw.example,ko:nw.ko,syn:nw.syn||"",ant:nw.ant||"",forms:nw.forms||"",idiom:nw.idiom||"",conf:nw.conf||"",known:false});
+          example:nw.example,ko:nw.ko,syn:nw.syn||"",ant:nw.ant||"",forms:nw.forms||"",idiom:nw.idiom||"",conf:nw.conf||"",known:false,ed:Date.now()});
         added++;
       }
     });
@@ -2355,6 +2356,7 @@ document.getElementById("eSave").addEventListener("click",function(){
   w.pos=document.getElementById("ePos").value.trim();
   w.ipa=document.getElementById("eIpa").value.trim().replace(/^[\[\/]|[\]\/]$/g,"");
   w.example=document.getElementById("eEx").value.trim();
+  w.ed=Date.now();
   w.ko=document.getElementById("eKo").value.trim();
   ["Forms","Idiom","Conf"].forEach(function(k){
     var el=document.getElementById("e"+k); if(el) w[k.toLowerCase()]=el.value.trim();
@@ -2552,7 +2554,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v105 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v107 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2760,12 +2762,110 @@ function openCloseDay(){
   };
 }
 
+// ---- 결합 예문 요청용 복사 ----
+function dayBaseNum(name){ var m=String(name||"").match(/(\d+)/); return m?parseInt(m[1],10):0; }
+function wordLine(w){
+  return w.term+(w.ipa?" ["+w.ipa+"]":"")+" | "+(w.meaning||"")+" | "+(w.pos||"")+" | "+(w.example||"")+" | "+(w.ko||"")+" | "+(w.syn||"")+" | "+(w.ant||"")+((w.forms||w.idiom||w.conf)?" | "+(w.forms||"")+" | "+(w.idiom||"")+" | "+(w.conf||""):"");
+}
+function exReqText(sec,from,to,withPrev){
+  var days=daySort(state.days.filter(function(d){return d.section===sec&&dayBaseNum(d.name)>0;}));
+  var label=secLabel(sec);
+  var head="[결합 예문 요청] "+label+" DAY "+from+(to>from?"~"+to:"")+"\n"+
+    "규칙: DAY 5개씩 묶음 · 같은 묶음에서 자기 DAY와 그 이전 DAY 단어만 섞기 · 네 개 중 하나 정도는 앞 묶음 단어 · 섞은 단어는 [[표면형=표제어]] 표시 · 단어 칸과 순서는 그대로\n";
+  var body=[],n=0,prev=[];
+  days.forEach(function(d){
+    var k=dayBaseNum(d.name);
+    if(k>=from&&k<=to){
+      body.push("["+label+" "+d.name+"]\n"+d.words.map(wordLine).join("\n"));
+      n+=d.words.length;
+    }else if(k<from&&withPrev&&!/\+/.test(d.name)){
+      var seen={},terms=[];
+      d.words.forEach(function(w){ var t=String(w.term||"").trim(); if(t&&!seen[t.toLowerCase()]){seen[t.toLowerCase()]=1;terms.push(t);} });
+      if(terms.length) prev.push(d.name+": "+terms.join(" · "));
+    }
+  });
+  var text=head+"\n"+body.join("\n\n");
+  if(prev.length) text+="\n\n--- 섞어 쓸 수 있는 앞 DAY 단어 (표제어) ---\n"+prev.join("\n");
+  return {text:text,n:n,prevDays:prev.length};
+}
+function openExReq(){
+  var sec=state.section;
+  var nums=[];
+  state.days.forEach(function(d){ if(d.section===sec){ var k=dayBaseNum(d.name); if(k>0&&nums.indexOf(k)<0) nums.push(k); } });
+  nums.sort(function(a,b){return a-b;});
+  if(!nums.length){ toast("이 단어장에는 DAY가 없어요"); return; }
+  var max=nums[nums.length-1],blocks=[];
+  for(var b=1;b<=max;b+=5) blocks.push([b,b+4]);
+  var cur=0;
+  if(state.day!=="all"){
+    var dd=state.days.filter(function(x){return x.id===state.day;})[0];
+    if(dd) cur=dayBaseNum(dd.name);
+  }
+  var pick=cur?Math.floor((cur-1)/5):blocks.length-1;
+  var from=blocks[pick][0],to=Math.min(blocks[pick][1],max),withPrev=true;
+  var sc=document.createElement("div"); sc.className="scrim";
+  sc.innerHTML='<div class="sheet"><h2>예문 요청용 복사</h2>'+
+    '<p class="hint">고른 DAY의 단어를 복사해요. 클로드와의 대화창에 붙여넣고 보내면 결합 예문 파일을 받아요. '+
+    '받은 파일 내용을 <b>단어 추가</b> 칸에 붙여넣으면 예문만 바뀌고 외운 기록은 그대로예요.</p>'+
+    '<div class="lbl" style="font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-top:10px">'+esc(secLabel(sec))+' · 묶음</div>'+
+    '<div class="seg" id="erBlocks" style="flex-wrap:wrap;margin:8px 0 10px">'+blocks.map(function(bk,i){
+      return '<button data-bk="'+i+'">'+bk[0]+'~'+Math.min(bk[1],max)+'</button>';
+    }).join("")+'</div>'+
+    '<div style="display:flex;gap:8px;align-items:center;font-size:14px">DAY '+
+      '<input class="search" id="erFrom" type="number" min="1" max="'+max+'" style="flex:0 0 76px;min-width:0">'+
+      ' ~ <input class="search" id="erTo" type="number" min="1" max="'+max+'" style="flex:0 0 76px;min-width:0"></div>'+
+    '<label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:13.5px;cursor:pointer">'+
+      '<input type="checkbox" id="erPrev" checked> 앞 DAY 단어 목록도 같이 (앞 묶음 단어를 섞으려면 필요)</label>'+
+    '<p class="hint" id="erInfo" style="margin-top:10px"></p>'+
+    '<textarea class="area hide" id="erArea" style="min-height:160px;margin-top:6px"></textarea>'+
+    '<div class="acts"><button class="btn ghost" id="erClose">닫기</button><button class="btn" id="erCopy">복사하기</button></div></div>';
+  document.body.appendChild(sc);
+  var $f=sc.querySelector("#erFrom"),$t=sc.querySelector("#erTo"),$p=sc.querySelector("#erPrev"),$i=sc.querySelector("#erInfo");
+  var close=function(){if(sc.parentNode)document.body.removeChild(sc)};
+  var refresh=function(){
+    $f.value=from; $t.value=to;
+    sc.querySelector("#erArea").className="area hide";
+    [].forEach.call(sc.querySelectorAll("#erBlocks button"),function(x){
+      var bk=blocks[+x.dataset.bk]; x.className=(bk[0]===from&&Math.min(bk[1],max)===to)?"on":"";
+    });
+    var r=exReqText(sec,from,to,withPrev);
+    $i.textContent="DAY "+from+(to>from?"~"+to:"")+" · 단어 "+r.n+"개"+(r.prevDays?" · 앞 DAY "+r.prevDays+"개 표제어 포함":"");
+    sc.querySelector("#erCopy").disabled=!r.n;
+  };
+  sc.querySelector("#erBlocks").onclick=function(e){
+    var x=e.target.closest("[data-bk]"); if(!x) return;
+    var bk=blocks[+x.dataset.bk]; from=bk[0]; to=Math.min(bk[1],max); refresh();
+  };
+  var num=function(){
+    var a=parseInt($f.value,10),z=parseInt($t.value,10);
+    if(a>0) from=Math.min(a,max); if(z>0) to=Math.min(z,max); if(to<from) to=from;
+    refresh();
+  };
+  $f.onchange=num; $t.onchange=num;
+  $p.onchange=function(){ withPrev=$p.checked; refresh(); };
+  sc.querySelector("#erClose").onclick=close;
+  sc.onclick=function(e){ if(e.target===sc) close(); };
+  sc.querySelector("#erCopy").onclick=function(){
+    var r=exReqText(sec,from,to,withPrev);
+    var ta=sc.querySelector("#erArea");
+    ta.className="area"; ta.value=r.text;
+    ta.focus(); ta.setSelectionRange(0,ta.value.length);
+    var ok=false; try{ok=document.execCommand("copy")}catch(err){}
+    var done=function(){ toast("DAY "+from+(to>from?"~"+to:"")+" 단어 "+r.n+"개를 복사했어요 · 대화창에 붙여넣어 주세요"); };
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(r.text).then(done,function(){ if(ok) done(); else toast("길게 눌러 직접 복사해주세요"); });
+    }else{ if(ok) done(); else toast("길게 눌러 직접 복사해주세요"); }
+  };
+  refresh();
+}
+
 // ---- 더보기 메뉴 ----
 document.getElementById("tgMore").addEventListener("click",function(){
   var sc=document.createElement("div"); sc.className="scrim";
   sc.innerHTML='<div class="sheet"><h2>더보기</h2>'+
     '<button class="mode" data-go="stats"><b>학습 기록</b><span>날짜별 · DAY별</span></button>'+
     '<button class="mode" data-go="end"><b>오늘 기록 마감</b><span>단어 상태는 그대로 · 기록만 확정</span></button>'+
+    '<button class="mode" data-go="exreq"><b>예문 요청용 복사</b><span>DAY 1~5처럼 골라서 단어 복사 · 결합 예문 만들기용</span></button>'+
     '<button class="mode" data-go="export"><b>백업</b><span>저장 · 복원 · 복사</span></button>'+
     '<button class="mode" data-go="sync"><b>기기 간 동기화</b><span>'+(syncOn()?('연결됨 · '+syncTime(sync.lastRun)):'아이패드 ↔ 휴대폰')+'</span></button>'+
     '<button class="mode" data-go="upd"><b>업데이트 확인</b><span>현재 '+APP_VER+'</span></button>'+
@@ -2781,6 +2881,7 @@ document.getElementById("tgMore").addEventListener("click",function(){
       if(go==="stats") openStats();
       else if(go==="end") openCloseDay();
       else if(go==="export") openBackup();
+      else if(go==="exreq") openExReq();
       else if(go==="sync") openSync();
       else if(go==="upd") checkUpdate(false);
     },60);
@@ -2807,7 +2908,12 @@ function mergeWord(local,remote){
   if(rt>lt) STUDY_FIELDS.forEach(function(k){ if(remote[k]!==undefined) local[k]=remote[k]; });
   local.reps=Math.max(local.reps||0,remote.reps||0);
   local.lapses=Math.max(local.lapses||0,remote.lapses||0);
-  fillEmpty(local,remote);
+  /* 글자(뜻·예문·해석…)는 더 나중에 고친 쪽을 따른다. 고친 기록이 없으면 빈 칸만 채운다 */
+  if((remote.ed||0)>(local.ed||0)){
+    TEXT_FIELDS.forEach(function(k){ if(remote[k]!==undefined) local[k]=remote[k]; });
+    if(remote.formsx!==undefined) local.formsx=remote.formsx;
+    local.ed=remote.ed;
+  }else fillEmpty(local,remote);
   return rt>lt;
 }
 function mergeRemote(obj){
@@ -3239,7 +3345,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v105";
+var APP_VER="v107";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
