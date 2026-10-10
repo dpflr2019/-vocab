@@ -1573,6 +1573,7 @@ function blankInfo(sentence,term){
 var XL_RE=/\[\[([^\]=]+?)(?:=([^\]]+?))?\]\]/g;
 function exPlain(s){ return String(s||"").replace(XL_RE,function(m,a){return a;}); }
 var XL_IDX=null;
+var VW_DAYLIMIT=false; /* true면 카드 DAY 이후 단어는 색칠하지 않음 */
 var VW_FUNC={a:1,an:1,the:1,to:1,of:1,"for":1,on:1,"in":1,at:1,by:1,"with":1,from:1,as:1,that:1,"this":1,is:1,it:1,be:1,so:1,
   much:1,up:1,out:1,off:1,into:1,over:1,about:1,around:1,and:1,or:1,but:1,not:1,only:1,also:1,well:1,own:1,than:1,
   one:1,"one's":1,its:1,there:1,here:1,then:1,just:1,even:1,still:1,once:1,since:1,more:1,most:1,very:1};
@@ -1613,7 +1614,7 @@ function vwForms(w,force){
 }
 var VW_DET="(?:a|an|the|this|that|these|those|its|their|your|our|his|her|my|one's)";
 /* 단어장 표제어 → 정규식 (못 만들면 null) */
-function vwPattern(term,selfMode){
+function vwPattern(term,selfMode,relax){
   var t=String(term||"").replace(/\[[^\]]*\]$/,"");
   t=t.replace(/[’‘]/g,"'").replace(/[ㄱ-힝]+/g," ").replace(/[~\-]ing\b|S\s*\+\s*V|\+/gi," ").replace(/~/g," N ");
   t=t.split("/")[0];
@@ -1673,11 +1674,12 @@ function vwPattern(term,selfMode){
       if(opt){ body+="(?:"+p.src+"\\s+)?"; continue; }
       body+=p.src; started=true; continue;
     }
-    var sep=p.gap?GAP:(selfMode?"(?:[\\s\\-]+(?:"+VW_DET+"\\s+)?|\\-?)":"\\s+");
+    var sep=p.gap?(relax?"(?:\\s+[A-Za-z'’\\-]+){1,6}\\s+":GAP):
+      (relax?"(?:[\\s\\-]+(?:[A-Za-z'’\\-]+\\s+){0,3}|\\-?)":(selfMode?"(?:[\\s\\-]+(?:"+VW_DET+"\\s+)?|\\-?)":"\\s+"));
     body+=opt?("(?:"+sep+p.src+")?"):(sep+p.src);
   }
   if(!started) return null;
-  try{ return new RegExp("(^|[^A-Za-z'’\\-])("+body+")(?=[^A-Za-z'’\\-]|$)","gi"); }catch(e){ return null; }
+  try{ return new RegExp("(^|[^A-Za-z'’\\-])("+body+"(?:['’]s)?)(?=[^A-Za-z'’\\-]|$)","gi"); }catch(e){ return null; }
 }
 function xlIndex(){
   if(XL_IDX) return XL_IDX;
@@ -1702,21 +1704,28 @@ function vwMatchers(sec){
   var list=[],T=idx.bySec[sec]||{};
   Object.keys(T).forEach(function(k){
     var re=vwPattern(T[k][0].w.term);
-    if(re) list.push({k:k,re:re});
+    var min=0;
+    T[k].forEach(function(h){ var n=dayBaseNum(h.day.name); if(n&&(!min||n<min)) min=n; });
+    if(re) list.push({k:k,re:re,min:min});
   });
   idx.rx[sec]=list;
   return list;
 }
 /* 문장 안에서 단어장 단어 위치를 찾는다 (긴 표현 우선, 겹치면 앞선 것) */
-function vwFind(text,sec,selfKey,selfTerm){
+function vwFind(text,sec,selfKey,selfTerm,maxDay){
   var hits=[];
   var ms=vwMatchers(sec);
+  /* maxDay를 주면 그 DAY까지 나온 단어만 색칠 (지금은 DAY를 따지지 않음) */
+  if(maxDay) ms=ms.filter(function(x){ return !x.min||x.min<=maxDay; });
   if(selfKey){
     /* 이 카드 단어는 더 넓게 찾는다 (beyond our control, 흔한 단어 포함) */
     var idx=xlIndex();
     idx.selfRx=idx.selfRx||{};
-    if(!(selfKey in idx.selfRx)) idx.selfRx[selfKey]=vwPattern(selfTerm||selfKey,true);
-    if(idx.selfRx[selfKey]) ms=ms.filter(function(x){return x.k!==selfKey;}).concat([{k:selfKey,re:idx.selfRx[selfKey]}]);
+    if(!(selfKey in idx.selfRx)) idx.selfRx[selfKey]={a:vwPattern(selfTerm||selfKey,true),b:vwPattern(selfTerm||selfKey,true,true)};
+    var sr=idx.selfRx[selfKey],pick=sr.a;
+    /* 먼저 붙어 있는 형태로 찾고, 없으면 사이에 몇 단어가 끼어도 찾는다 (took the printer apart) */
+    if(sr.a){ sr.a.lastIndex=0; if(!sr.a.test(text)) pick=sr.b; sr.a.lastIndex=0; } else pick=sr.b;
+    if(pick) ms=ms.filter(function(x){return x.k!==selfKey;}).concat([{k:selfKey,re:pick}]);
   }
   ms.forEach(function(mt){
     mt.re.lastIndex=0;
@@ -1755,7 +1764,8 @@ function exHtml(s,card){
     last=m.index+m[0].length;
   }
   plain+=s.slice(last);
-  var auto=vwFind(plain,sec,selfKey,card&&card.term);
+  var maxDay=day?dayBaseNum(day.name):0;
+  var auto=vwFind(plain,sec,selfKey,card&&card.term,VW_DAYLIMIT?maxDay:0);
   var all=marks.slice();
   var hasSelfMark=marks.some(function(t){return t.self;});
   auto.forEach(function(h){
@@ -1770,7 +1780,7 @@ function exHtml(s,card){
   });
   all=all.filter(function(h){return !h.inside;});
   all.sort(function(a,b){return a.s-b.s;});
-  var link=function(k,txt){ return idx.terms[k]?'<span class="xl" data-xt="'+esc(k)+'" data-xs="'+sec+'">'+txt+'</span>':txt; };
+  var link=function(k,txt){ return idx.terms[k]?'<span class="xl" data-xt="'+esc(k)+'" data-xs="'+sec+'" data-xd="'+maxDay+'">'+txt+'</span>':txt; };
   var out="",p=0;
   all.forEach(function(h){
     if(h.s<p) return;
@@ -1782,7 +1792,7 @@ function exHtml(s,card){
       out+='<b class="vt">'+inner+esc(plain.slice(q,h.e))+'</b>';
     }
     else if(h.self) out+='<b class="vt">'+txt+'</b>';
-    else if(idx.terms[h.k]) out+='<span class="xl" data-xt="'+esc(h.k)+'" data-xs="'+sec+'">'+txt+'</span>';
+    else if(idx.terms[h.k]) out+=link(h.k,txt);
     else out+=txt;
     p=h.e;
   });
@@ -1798,6 +1808,12 @@ function openXpop(el){
   var idx=xlIndex();
   var list=(idx.bySec[sec]&&idx.bySec[sec][k])||idx.terms[k];
   if(!list||!list.length) return;
+  var md=VW_DAYLIMIT?parseInt(el.getAttribute("data-xd")||"0",10):0;
+  if(md){
+    var upto=list.filter(function(h){ var n=dayBaseNum(h.day.name); return !n||n<=md; });
+    if(upto.length) list=upto;
+  }
+  list=list.slice().sort(function(a,b){ return dayBaseNum(a.day.name)-dayBaseNum(b.day.name); });
   if(xpopFrom===el){closeXpop();return;}
   closeXpop();
   var w=list[0].w,seen={},rows=[];
@@ -2565,7 +2581,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v109 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v112 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -3356,7 +3372,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v109";
+var APP_VER="v112";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
