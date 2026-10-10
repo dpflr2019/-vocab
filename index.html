@@ -699,7 +699,7 @@ var SAMPLE=[
 var listCap=150;
 var pickDays={}, pickRange="unknown", revPick={};
 var expOpen={};
-var state={days:[],log:{},articles:[],onlyHard:false,section:"v2026",day:"all",q:"",mask:false,onlyUnknown:false,revealed:{}};
+var state={days:[],log:{},articles:[],gone:{},onlyHard:false,section:"v2026",day:"all",q:"",mask:false,onlyUnknown:false,revealed:{}};
 var quiz=null;
 
 function load(){
@@ -709,6 +709,7 @@ function load(){
       var o=JSON.parse(raw);
       state.days=o.days||[];
       state.log=o.log||{};
+      state.gone=(o.gone&&typeof o.gone==="object")?o.gone:{};
       state.articles=(Array.isArray(o.articles)?o.articles:[]).filter(function(a){return a&&typeof a==="object"&&a.id}).map(function(a){
         a.title=a.title==null?"":String(a.title); a.text=a.text==null?"":String(a.text);
         if(!a.ko||typeof a.ko!=="object") a.ko={};
@@ -751,7 +752,7 @@ window.addEventListener("pagehide",function(){ flushSave(); syncFlush(); });
 function save(){
   XL_IDX=null;
   try{
-    localStorage.setItem(KEY,JSON.stringify({days:state.days,log:state.log,articles:state.articles,ui:{section:state.section,day:state.day,pick:pickDays,range:pickRange,vmark:state.vmark!==false}}));
+    localStorage.setItem(KEY,JSON.stringify({days:state.days,log:state.log,articles:state.articles,gone:state.gone,ui:{section:state.section,day:state.day,pick:pickDays,range:pickRange,vmark:state.vmark!==false}}));
     if(saveBroken){saveBroken=false;showWarn();}
     syncSoon();
   }catch(e){
@@ -1047,6 +1048,7 @@ document.getElementById("listArea").addEventListener("click",function(e){
   if(r){state.revealed[r.dataset.reveal]=true; render(); return;}
   var d=e.target.closest("[data-del]");
   if(d){
+    markGone(d.dataset.del);
     state.days.forEach(function(day){day.words=day.words.filter(function(w){return w.id!==d.dataset.del})});
     save(); render(); return;
   }
@@ -1862,7 +1864,7 @@ function toast(msg,sticky){
   if(!toastEl){toastEl=document.createElement("div");toastEl.className="toast";document.body.appendChild(toastEl);}
   toastEl.textContent=msg; toastEl.style.display="block";
   clearTimeout(toastTimer);
-  if(!sticky) toastTimer=setTimeout(function(){toastEl.style.display="none"},2200);
+  if(sticky!==true) toastTimer=setTimeout(function(){toastEl.style.display="none"},typeof sticky==="number"?sticky:2200);
 }
 
 function openCopySheet(words,title){
@@ -2105,7 +2107,7 @@ $("saveAdd").addEventListener("click",function(){
   })();
   var groups=parseGroups($("bulk").value,defSec);
   if(!groups.length){ toast("인식된 단어가 없어요"); return; }
-  var added=0,updated=0,lastDay=null;
+  var added=0,updated=0,merged=0,addedTerms=[],lastDay=null;
   groups.forEach(function(g){
     var day;
     if(g.name){
@@ -2116,13 +2118,53 @@ $("saveAdd").addEventListener("click",function(){
     }
     if(!day) return;
     lastDay=day;
-    var used={};
+    var used={},taken={},pairs=[];
     g.words.forEach(function(nw){
       var key=nw.term.toLowerCase();
       var matches=day.words.filter(function(w){return w.term.toLowerCase()===key});
       var idx=used[key]||0;
       used[key]=idx+1;
       var ex=matches[idx]; // 같은 단어가 여러 줄이면 순서대로 짝지음
+      if(ex) taken[ex.id]=1;
+      pairs.push([nw,ex]);
+    });
+    // 앱에서 철자를 고친 단어: 뜻이 같거나 철자가 거의 같으면 같은 단어로 봄
+    var full=g.words.length>=day.words.length*0.8;
+    pairs.forEach(function(pr){
+      if(pr[1]||!full) return;
+      var nw=pr[0],best=null,bs=1e9,nm=full?normMean(nw.meaning):"",nt=nw.term.toLowerCase();
+      day.words.forEach(function(w){
+        if(taken[w.id]) return;
+        var wt=String(w.term||"").toLowerCase(),d=levDist(nt,wt);
+        var lim=Math.max(2,Math.floor(Math.max(nt.length,wt.length)/4));
+        var s=(nm&&normMean(w.meaning)===nm)?(d>Math.max(nt.length,wt.length)/2?500:d):(d<=lim?100+d:1e9);
+        if(s<bs){bs=s;best=w;}
+      });
+      if(best&&bs<1e9){ pr[1]=best; taken[best.id]=1; }
+    });
+    // 예전 붙여넣기로 생긴 중복(옛 철자로 새로 추가된 빈 단어) 정리: 진도 있는 원래 단어로 합침
+    if(full){
+      var drop={};
+      day.words.forEach(function(u){
+        if(taken[u.id]) return;
+        var ut=String(u.term||"").toLowerCase(),um=normMean(u.meaning);
+        pairs.forEach(function(pr){
+          var t=pr[1]; if(!t||t.id===u.id||drop[t.id]||taken[u.id]) return;
+          if(t.known||t.reps||t.stage) return;
+          var tt=String(t.term||"").toLowerCase(),d=levDist(ut,tt);
+          if((um&&normMean(t.meaning)===um&&d<=Math.max(ut.length,tt.length)/2)||d<=Math.max(2,Math.floor(Math.max(ut.length,tt.length)/4))){
+            drop[t.id]=1; pr[1]=u; taken[u.id]=1;
+          }
+        });
+      });
+      if(Object.keys(drop).length){
+        Object.keys(drop).forEach(markGone);
+        day.words=day.words.filter(function(w){return !drop[w.id]});
+        merged+=Object.keys(drop).length;
+      }
+    }
+    pairs.forEach(function(pr){
+      var nw=pr[0],ex=pr[1];
       if(ex){
         if(nw.meaning) ex.meaning=nw.meaning;
         if(nw.pos) ex.pos=nw.pos;
@@ -2136,16 +2178,29 @@ $("saveAdd").addEventListener("click",function(){
       }else{
         day.words.push({id:uid(),term:nw.term,ipa:nw.ipa||"",meaning:nw.meaning,pos:nw.pos,
           example:nw.example,ko:nw.ko,syn:nw.syn||"",ant:nw.ant||"",forms:nw.forms||"",idiom:nw.idiom||"",conf:nw.conf||"",known:false,ed:Date.now()});
-        added++;
+        added++; addedTerms.push(nw.term);
       }
     });
   });
   if(lastDay) focusDay(lastDay);
   logAdded(added);
   save(); closeSheet(); render();
-  toast("추가 "+added+"개 · 수정 "+updated+"개");
-  if(added&&lastDay) enrichDay(lastDay);
+  toast("수정 "+updated+"개"+(added?" · 새로 추가 "+added+"개: "+addedTerms.slice(0,4).join(", ")+(addedTerms.length>4?" 외":""):"")+(merged?" · 중복 "+merged+"개 정리":""),(added||merged)?6000:2200);
+  if(added&&lastDay) enrichDays([lastDay],function(){});
 });
+function markGone(id){ if(!id) return; (state.gone||(state.gone={}))[id]=Date.now(); }
+function normMean(s){return String(s||"").replace(/[\s,.·;()\[\]~]/g,"");}
+function levDist(a,b){
+  if(a===b) return 0;
+  var m=a.length,n=b.length,prev=[],cur,i,j;
+  for(j=0;j<=n;j++) prev[j]=j;
+  for(i=1;i<=m;i++){
+    cur=[i];
+    for(j=1;j<=n;j++) cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a.charAt(i-1)===b.charAt(j-1)?0:1));
+    prev=cur;
+  }
+  return prev[n];
+}
 
 // flashcards
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
@@ -2401,6 +2456,7 @@ document.getElementById("eDelete").addEventListener("click",function(){
   if(!editing) return;
   if(!window.confirm("'"+editing.w.term+"'을(를) 삭제할까요?")) return;
   var id=editing.w.id;
+  markGone(id);
   editing.d.words=editing.d.words.filter(function(x){return x.id!==id});
   save(); closeEdit(); render(); toast("삭제했어요");
 });
@@ -2581,7 +2637,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v113 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v114 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2946,6 +3002,10 @@ function mergeWord(local,remote){
 function mergeRemote(obj){
   if(!obj||!Array.isArray(obj.days)) return null;
   var out={changed:0,added:0,newDays:0,newArts:0};
+  var G=state.gone||(state.gone={}),RG=(obj.gone&&typeof obj.gone==="object")?obj.gone:{};
+  Object.keys(RG).forEach(function(k){ if(!G[k]) G[k]=RG[k]; });
+  state.days.forEach(function(d){ var n=d.words.length; d.words=d.words.filter(function(w){return !G[w.id]}); if(d.words.length!==n) out.changed++; });
+  obj.days.forEach(function(rd){ if(rd&&Array.isArray(rd.words)) rd.words=rd.words.filter(function(w){return !(w&&G[w.id])}); });
   var byDay={};
   state.days.forEach(function(d){ byDay[dayKeyOf(d)]=d; });
   obj.days.forEach(function(rd){
@@ -3131,7 +3191,7 @@ function syncTime(t){
 var SYNC_IMG_MAX=3500000;    // 그림은 3.5MB 까지만 함께 올림
 function syncPayload(cb){
   var base={app:"toeic-vocab",version:3,savedAt:Date.now(),device:sync.dev,
-    days:state.days,log:state.log,articles:state.articles};
+    days:state.days,log:state.log,articles:state.articles,gone:state.gone||{}};
   var ids=Object.keys(allImgIds());
   if(!ids.length||!IMG_OK){ cb(base); return; }
   var imgs={}, left=ids.length, bytes=0, done=function(){
@@ -3372,7 +3432,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v113";
+var APP_VER="v114";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
@@ -4209,7 +4269,7 @@ function removeArticleWord(a,wid){
   var pos=-1, w=null;
   day.words.forEach(function(x,i){ if(x.id===wid){pos=i;w=x;} });
   if(!w) return;
-  day.words.splice(pos,1);
+  day.words.splice(pos,1); markGone(w.id);
   if(a.picked) delete a.picked[w.term.toLowerCase()];
   undoState={kind:"word",artId:a.id,dayId:day.id,word:w,pos:pos};
   save(); renderReader();
@@ -4484,7 +4544,7 @@ document.getElementById("reader").addEventListener("click",function(ev){
   if(undoState.kind==="word"){
     var aw=state.articles.filter(function(x){return x.id===undoState.artId})[0];
     var dw=state.days.filter(function(d){return d.id===undoState.dayId})[0];
-    if(dw){ dw.words.splice(Math.min(undoState.pos,dw.words.length),0,undoState.word); }
+    if(dw){ dw.words.splice(Math.min(undoState.pos,dw.words.length),0,undoState.word); if(state.gone) delete state.gone[undoState.word.id]; }
     if(aw){ aw.picked=aw.picked||{}; aw.picked[undoState.word.term.toLowerCase()]=1; }
     save(); if(curArt&&aw===curArt) renderReader(undoState.word.id);
   }else{
