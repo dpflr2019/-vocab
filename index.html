@@ -71,6 +71,16 @@ h1 span{color:var(--ink-soft);font-weight:500;}
 .tag.leech{border-color:var(--miss);color:var(--miss);}
 .mn{font-size:14.5px;margin-top:4px;line-height:1.45;}
 .ex{font-size:13px;color:var(--ink-soft);margin-top:6px;line-height:1.5;}
+.xl{background:rgba(255,214,51,.42);box-shadow:inset 0 -2px 0 rgba(214,170,0,.75);border-radius:3px;padding:0 1px;cursor:pointer;color:inherit;}
+.xl:hover,.xl.on{background:rgba(255,200,0,.7);}
+.vt{font-weight:800;color:var(--ink);}
+@media (prefers-color-scheme: dark){.xl{background:rgba(255,214,51,.16);color:#FFE07A;box-shadow:inset 0 -2px 0 rgba(255,214,51,.55);}.xl:hover,.xl.on{background:rgba(255,214,51,.32);}.vt{color:#fff;}}
+.xpop .xk{font-size:11px;background:#1F8A63;color:#fff;border-radius:6px;padding:1px 6px;margin-left:6px;}
+.xpop{position:fixed;z-index:90;max-width:min(300px,calc(100vw - 24px));background:#16233F;color:#fff;border-radius:11px;padding:10px 13px 11px;font-size:13.5px;line-height:1.45;box-shadow:0 8px 24px rgba(0,0,0,.22);}
+.xpop b{font-size:15px;}
+.xpop .xd{font-size:11.5px;opacity:.7;margin-left:6px;}
+.xpop .xm{margin-top:3px;}
+.xpop .xi{opacity:.7;font-size:12px;margin-left:4px;}
 .ko{font-size:12.5px;color:var(--ink-soft);opacity:.85;margin-top:4px;line-height:1.5;}
 .rel{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:7px;}
 .rellabel{font-size:10.5px;font-weight:700;color:var(--ink-soft);border:1px solid var(--rule);border-radius:4px;padding:2px 5px;flex:0 0 auto;}
@@ -739,6 +749,7 @@ function flushSave(){ if(saveTimer){ clearTimeout(saveTimer); saveTimer=null; sa
 document.addEventListener("visibilitychange",function(){ if(document.visibilityState==="hidden"){ flushSave(); syncFlush(); } });
 window.addEventListener("pagehide",function(){ flushSave(); syncFlush(); });
 function save(){
+  XL_IDX=null;
   try{
     localStorage.setItem(KEY,JSON.stringify({days:state.days,log:state.log,articles:state.articles,ui:{section:state.section,day:state.day,pick:pickDays,range:pickRange,vmark:state.vmark!==false}}));
     if(saveBroken){saveBroken=false;showWarn();}
@@ -995,7 +1006,7 @@ function render(){
         (state.day==="all"?'<span class="tag">'+esc(o.dayName)+'</span>':'')+(srsTag(w)?'<span class="tag srs">'+srsTag(w)+'</span>':'')+(isLeech(w)?'<span class="tag leech">취약 '+(w.lapses||0)+'</span>':'')+
       '</div>'+mean+
       (expOpen[w.id]
-        ? (w.example?'<div class="ex">'+esc(w.example)+'</div>':'')+
+        ? (w.example?'<div class="ex">'+exHtml(w.example,w)+'</div>':'')+
           (w.ko?'<div class="ko">'+esc(w.ko)+'</div>':'')+
           (hasSenses(w)?senseHtml(w):((w.syn||w.ant)?relHtml(w):''))+detailHtml(w)
         : ((w.example||w.ko||w.syn||w.ant||w.forms||w.idiom||w.conf)?'<div class="exhint">자세히 보기</div>':''))+'</div>'+
@@ -1554,6 +1565,256 @@ function blankInfo(sentence,term){
   }
   return null;
 }
+/* ---------- 예문 속 단어장 단어 ----------
+   예문을 보여줄 때 단어장(같은 단어장 묶음)에 있는 단어를 자동으로 찾아 색칠하고,
+   누르면 뜻·DAY가 뜬다. 활용형(agreed, shredded, placed an order)과
+   A/B/N 자리(compensate customers for)도 찾는다.
+   예문에 [[budgeted=budget]] 처럼 적어두면 자동 인식보다 우선한다. */
+var XL_RE=/\[\[([^\]=]+?)(?:=([^\]]+?))?\]\]/g;
+function exPlain(s){ return String(s||"").replace(XL_RE,function(m,a){return a;}); }
+var XL_IDX=null;
+var VW_FUNC={a:1,an:1,the:1,to:1,of:1,"for":1,on:1,"in":1,at:1,by:1,"with":1,from:1,as:1,that:1,"this":1,is:1,it:1,be:1,so:1,
+  much:1,up:1,out:1,off:1,into:1,over:1,about:1,around:1,and:1,or:1,but:1,not:1,only:1,also:1,well:1,own:1,than:1,
+  one:1,"one's":1,its:1,there:1,here:1,then:1,just:1,even:1,still:1,once:1,since:1,more:1,most:1,very:1};
+var VW_IRR={be:"am is are was were been being",have:"has had having",take:"takes took taken taking",make:"makes made making",
+  put:"puts putting",set:"sets setting",meet:"meets met meeting",keep:"keeps kept keeping",stand:"stands stood standing",
+  come:"comes came coming",go:"goes went gone going",get:"gets got gotten getting",give:"gives gave given giving",
+  hold:"holds held holding",lead:"leads led leading",run:"runs ran running",see:"sees saw seen seeing",
+  send:"sends sent sending",spend:"spends spent spending",bring:"brings brought bringing",buy:"buys bought buying",
+  find:"finds found finding",leave:"leaves left leaving",pay:"pays paid paying",sell:"sells sold selling",
+  tell:"tells told telling",think:"thinks thought thinking",understand:"understands understood understanding",
+  write:"writes wrote written writing",choose:"chooses chose chosen choosing",shrink:"shrinks shrank shrunk shrinking",
+  seek:"seeks sought seeking",rise:"rises rose risen rising",fall:"falls fell fallen falling",grow:"grows grew grown growing",
+  know:"knows knew known knowing",show:"shows showed shown showing",break:"breaks broke broken breaking",
+  speak:"speaks spoke spoken speaking",win:"wins won winning",catch:"catches caught catching",build:"builds built building",
+  feel:"feels felt feeling",lose:"loses lost losing",read:"reads reading",say:"says said saying",
+  undergo:"undergoes underwent undergone undergoing",oversee:"oversees oversaw overseen overseeing",
+  withdraw:"withdraws withdrew withdrawn withdrawing",overcome:"overcomes overcame overcoming",draw:"draws drew drawn drawing",
+  drive:"drives drove driven driving",forget:"forgets forgot forgotten forgetting",begin:"begins began begun beginning",
+  cut:"cuts cutting",let:"lets letting",shut:"shuts shutting",deal:"deals dealt dealing",mean:"means meant meaning",
+  sit:"sits sat sitting",lay:"lays laid laying",arise:"arises arose arisen arising",fly:"flies flew flown flying",
+  foresee:"foresees foresaw foreseen foreseeing",withhold:"withholds withheld withholding",uphold:"upholds upheld upholding",
+  forgo:"forgoes forwent forgone forgoing",shed:"sheds shedding",hire:"hires hired hiring",
+  stay:"stays stayed staying",do:"does did done doing"};
+function vwEsc(s){ return s.replace(/[.*+?^${}()|[\]\\\/]/g,"\\$&"); }
+function vwForms(w,force){
+  var out={},lw=w.toLowerCase(),add=function(x){out[x]=1;};
+  add(lw);
+  if(VW_FUNC[lw]&&lw!=="be"&&!force) return [lw];
+  if(VW_IRR[lw]) VW_IRR[lw].split(" ").forEach(add);
+  if(!/^[a-z][a-z'\-]*[a-z]$/.test(lw)||lw.length<3) return Object.keys(out);
+  var last=lw.charAt(lw.length-1),prev=lw.charAt(lw.length-2),vow=/[aeiou]/;
+  if(/(s|x|z|ch|sh)$/.test(lw)) add(lw+"es"); else if(last==="y"&&!vow.test(prev)) add(lw.slice(0,-1)+"ies"); else add(lw+"s");
+  if(last==="e"){ add(lw+"d"); if(!/(ee|ye|oe)$/.test(lw)) add(lw.slice(0,-1)+"ing"); else add(lw+"ing"); }
+  else if(last==="y"&&!vow.test(prev)){ add(lw.slice(0,-1)+"ied"); add(lw+"ing"); }
+  else { add(lw+"ed"); add(lw+"ing"); if(!vow.test(last)&&vow.test(prev)&&!/[wxy]/.test(last)){ add(lw+last+"ed"); add(lw+last+"ing"); } }
+  if(/ie$/.test(lw)) add(lw.slice(0,-2)+"ying");
+  return Object.keys(out);
+}
+var VW_DET="(?:a|an|the|this|that|these|those|its|their|your|our|his|her|my|one's)";
+/* 단어장 표제어 → 정규식 (못 만들면 null) */
+function vwPattern(term,selfMode){
+  var t=String(term||"").replace(/\[[^\]]*\]$/,"");
+  t=t.replace(/[’‘]/g,"'").replace(/[ㄱ-힝]+/g," ").replace(/[~\-]ing\b|S\s*\+\s*V|\+/gi," ").replace(/~/g," N ");
+  t=t.split("/")[0];
+  var parts=[],gap=false,real=0,allFunc=true;
+  var re=/([A-Za-z][A-Za-z'’\-]*)(\(([^)]*)\))?|\(([^)]*)\)|(\d+%?)|&/g,m;
+  while((m=re.exec(t))){
+    var alts=null,optional=false;
+    if(m[1]){
+      var base=m[1];
+      if(/^(N|A|B|V)$/.test(base)||/^(someone|somebody|something|sb|sth)$/i.test(base)){ gap=true; continue; }
+      if(/^(do|N~)$/i.test(base)&&parts.length) continue;
+      alts=[base];
+      if(m[3]!==undefined){
+        var inside=m[3].split(/[,\s]+/).filter(function(x){return /^[A-Za-z]+$/.test(x);});
+        if(/\.\./.test(m[3])) inside=[];
+        alts=alts.concat(inside);
+      }
+    }else if(m[4]!==undefined){
+      var opt=m[4].split(/[,\s]+/).filter(function(x){return /^[A-Za-z]+$/.test(x);});
+      if(!opt.length) continue;
+      alts=opt; optional=true;
+    }else if(m[5]){ alts=[m[5]]; }
+    else { alts=["&","and"]; }
+    var lowAlts=alts.map(function(a){return a.toLowerCase();});
+    var isFunc=lowAlts.every(function(a){return VW_FUNC[a];});
+    if(!isFunc) allFunc=false;
+    var src;
+    if(lowAlts.length===1&&/^(a|an|the)$/.test(lowAlts[0])&&parts.length){ parts.push({src:VW_DET,det:true,gap:gap}); gap=false; continue; }
+    else if(lowAlts.length===1&&/^(a|an|the)$/.test(lowAlts[0])){ src=lowAlts[0]; }
+    else if(lowAlts.length===1&&lowAlts[0]==="one's"){
+      if(parts.length){ parts.push({src:"(?:one['’]s|my|your|his|her|its|our|their|the|a|an)",det:true,gap:gap}); gap=false; continue; }
+      src="(?:one['’]s|my|your|his|her|its|our|their|the)";
+    }
+    else {
+      var fs=[];
+      lowAlts.forEach(function(a){ vwForms(a,selfMode&&lowAlts.length===1&&a.length>3).forEach(function(f){ if(fs.indexOf(f)<0) fs.push(f); }); });
+      fs.sort(function(x,y){return y.length-x.length;});
+      src="(?:"+fs.map(vwEsc).join("|")+")";
+    }
+    if(!isFunc) real++;
+    parts.push({src:src,optional:optional,gap:gap,lead:parts.length===0&&lowAlts[0]==="be"});
+    gap=false;
+  }
+  if(!parts.length) return null;
+  if(!selfMode){
+    if(allFunc||!real) return null;
+    var hasGap=false;
+    for(var g=1;g<parts.length;g++) if(parts[g].gap) hasGap=true;
+    if(hasGap&&real<2) return null;
+    if(parts.length===1&&parts[0].src.length<5) return null;
+  }
+  var GAP="(?:\\s+[A-Za-z'’\\-]+){1,3}\\s+",body="",started=false;
+  for(var i=0;i<parts.length;i++){
+    var p=parts[i],opt=p.lead||p.optional;
+    if(p.det){ if(started) body+="(?:\\s+"+p.src+")?(?:\\s+[A-Za-z'’\\-]+)?"; continue; }
+    if(!started){
+      if(opt){ body+="(?:"+p.src+"\\s+)?"; continue; }
+      body+=p.src; started=true; continue;
+    }
+    var sep=p.gap?GAP:"\\s+";
+    body+=opt?("(?:"+sep+p.src+")?"):(sep+p.src);
+  }
+  if(!started) return null;
+  try{ return new RegExp("(^|[^A-Za-z'’\\-])("+body+")(?=[^A-Za-z'’\\-]|$)","gi"); }catch(e){ return null; }
+}
+function xlIndex(){
+  if(XL_IDX) return XL_IDX;
+  var idx={terms:{},bySec:{},rx:{},byId:{}};
+  state.days.forEach(function(d){
+    var sec=normSec(d.section);
+    var T=idx.bySec[sec]||(idx.bySec[sec]={});
+    d.words.forEach(function(w){
+      var k=String(w.term||"").trim().toLowerCase();
+      if(!k) return;
+      idx.byId[w.id]=d;
+      (T[k]=T[k]||[]).push({w:w,day:d});
+      (idx.terms[k]=idx.terms[k]||[]).push({w:w,day:d});
+    });
+  });
+  XL_IDX=idx;
+  return idx;
+}
+function vwMatchers(sec){
+  var idx=xlIndex();
+  if(idx.rx[sec]) return idx.rx[sec];
+  var list=[],T=idx.bySec[sec]||{};
+  Object.keys(T).forEach(function(k){
+    var re=vwPattern(T[k][0].w.term);
+    if(re) list.push({k:k,re:re});
+  });
+  idx.rx[sec]=list;
+  return list;
+}
+/* 문장 안에서 단어장 단어 위치를 찾는다 (긴 표현 우선, 겹치면 앞선 것) */
+function vwFind(text,sec,selfKey,selfTerm){
+  var hits=[];
+  var ms=vwMatchers(sec);
+  if(selfKey){
+    var has=false;
+    for(var i=0;i<ms.length;i++) if(ms[i].k===selfKey){has=true;break;}
+    if(!has){
+      var idx=xlIndex();
+      idx.selfRx=idx.selfRx||{};
+      if(!(selfKey in idx.selfRx)) idx.selfRx[selfKey]=vwPattern(selfTerm||selfKey,true);
+      if(idx.selfRx[selfKey]) ms=ms.concat([{k:selfKey,re:idx.selfRx[selfKey]}]);
+    }
+  }
+  ms.forEach(function(mt){
+    mt.re.lastIndex=0;
+    var m;
+    while((m=mt.re.exec(text))){
+      var s=m.index+m[1].length,e=s+m[2].length;
+      if(e>s) hits.push({s:s,e:e,k:mt.k,x:(mt.k===selfKey?0:(m[2].toLowerCase()===mt.k?1:2))});
+      if(mt.re.lastIndex===m.index) mt.re.lastIndex++;
+    }
+  });
+  hits.sort(function(a,b){ return ((a.k===selfKey?0:1)-(b.k===selfKey?0:1))||(b.e-b.s)-(a.e-a.s)||a.x-b.x||a.s-b.s||(a.k<b.k?-1:1); });
+  var taken=[],out=[];
+  hits.forEach(function(h){
+    for(var i=0;i<taken.length;i++){ var t=taken[i]; if(h.s<t.e&&t.s<h.e) return; }
+    taken.push(h); out.push(h);
+  });
+  out.forEach(function(h){ h.self=(h.k===selfKey); });
+  return out.sort(function(a,b){return a.s-b.s;});
+}
+function dayNum(n){ var m=String(n||"").match(/(\d+)/); var v=m?parseInt(m[1],10):999; return v+((String(n).match(/\+/g)||[]).length*0.1); }
+/* 예문 HTML: 이 카드의 단어는 굵게, 다른 단어장 단어는 색칠 + 누르면 뜻 */
+function exHtml(s,card){
+  s=String(s||"");
+  var idx=xlIndex();
+  var day=card&&idx.byId[card.id];
+  var sec=day?normSec(day.section):normSec(state.section);
+  var selfKey=card?String(card.term||"").trim().toLowerCase():"";
+  var plain="",marks=[],m,last=0;
+  XL_RE.lastIndex=0;
+  while((m=XL_RE.exec(s))){
+    plain+=s.slice(last,m.index);
+    var st=plain.length;
+    plain+=m[1];
+    var mk=(m[2]||m[1]).trim().toLowerCase();
+    marks.push({s:st,e:plain.length,k:mk,self:mk===selfKey,mark:true});
+    last=m.index+m[0].length;
+  }
+  plain+=s.slice(last);
+  var auto=vwFind(plain,sec,selfKey,card&&card.term);
+  var all=marks.slice();
+  auto.forEach(function(h){
+    for(var i=0;i<marks.length;i++){ var t=marks[i]; if(h.s<t.e&&t.s<h.e) return; }
+    all.push(h);
+  });
+  all.sort(function(a,b){return a.s-b.s;});
+  var out="",p=0;
+  all.forEach(function(h){
+    if(h.s<p) return;
+    out+=esc(plain.slice(p,h.s));
+    var txt=esc(plain.slice(h.s,h.e));
+    if(h.self) out+='<b class="vt">'+txt+'</b>';
+    else if(idx.terms[h.k]) out+='<span class="xl" data-xt="'+esc(h.k)+'" data-xs="'+sec+'">'+txt+'</span>';
+    else out+=txt;
+    p=h.e;
+  });
+  return out+esc(plain.slice(p));
+}
+var xpopEl=null,xpopFrom=null;
+function closeXpop(){
+  if(xpopEl){xpopEl.parentNode&&xpopEl.parentNode.removeChild(xpopEl);xpopEl=null;}
+  if(xpopFrom){xpopFrom.className=xpopFrom.className.replace(/\s*\bon\b/g,"");xpopFrom=null;}
+}
+function openXpop(el){
+  var k=(el.getAttribute("data-xt")||"").toLowerCase(),sec=el.getAttribute("data-xs")||"";
+  var idx=xlIndex();
+  var list=(idx.bySec[sec]&&idx.bySec[sec][k])||idx.terms[k];
+  if(!list||!list.length) return;
+  if(xpopFrom===el){closeXpop();return;}
+  closeXpop();
+  var w=list[0].w,seen={},rows=[];
+  list.forEach(function(h){
+    var mean=String(h.w.meaning||"").trim();
+    var key=mean+"|"+(posLabel(h.w)||"");
+    if(seen[key]||rows.length>=3) return; seen[key]=1;
+    rows.push('<div class="xm">'+esc(mean||"(뜻 없음)")+(posLabel(h.w)?' <span class="xi">'+esc(posLabel(h.w))+'</span>':'')+
+      '<span class="xd">'+esc(h.day.name)+'</span>'+(h.w.known?'<span class="xk">외움</span>':'')+'</div>');
+  });
+  var p=document.createElement("div");
+  p.className="xpop";
+  p.innerHTML='<b>'+esc(w.term)+'</b>'+(w.ipa?'<span class="xi">'+esc(ipaText(w))+'</span>':'')+rows.join("");
+  document.body.appendChild(p);
+  var r=el.getBoundingClientRect(),pw=p.offsetWidth,ph=p.offsetHeight,vw=window.innerWidth,vh=window.innerHeight;
+  var left=Math.max(12,Math.min(vw-pw-12,r.left+r.width/2-pw/2));
+  var top=r.bottom+8;
+  if(top+ph>vh-12) top=Math.max(12,r.top-ph-8);
+  p.style.left=left+"px"; p.style.top=top+"px";
+  xpopEl=p; xpopFrom=el; el.className+=" on";
+}
+document.addEventListener("click",function(e){
+  var t=e.target&&e.target.closest?e.target.closest(".xl"):null;
+  if(t){ e.stopPropagation(); if(e.preventDefault)e.preventDefault(); openXpop(t); return; }
+  if(xpopEl&&!(e.target.closest&&e.target.closest(".xpop"))) closeXpop();
+},true);
+window.addEventListener("scroll",function(){ if(xpopEl) closeXpop(); },true);
+document.addEventListener("keydown",function(e){ if(xpopEl&&(e.key==="Escape"||e.key==="Esc")){ closeXpop(); e.stopPropagation(); if(e.preventDefault)e.preventDefault(); } },true);
 function blankTag(s){return String(s).replace(/_{4,}/g,'<span class="blank"></span>');}
 function blankOut(sentence,term){var r=blankInfo(sentence,term);return r?r.text:(sentence||"");}
 
@@ -1631,7 +1892,7 @@ function enrichDays(list,cb){
       if(!w.meaning) w.meaning=b.meaning;
       filled++;
       if(w.example&&!w.ko){
-        translateText(w.example).then(function(t){ if(t) w.ko=t; setTimeout(step,150); });
+        translateText(exPlain(w.example)).then(function(t){ if(t) w.ko=t; setTimeout(step,150); });
       }else{ setTimeout(step,0); }
       return;
     }
@@ -1917,11 +2178,11 @@ function renderQuiz(){
   var frontIpa=(quiz.front==="term"&&c.ipa)?'<div class="qipa">'+esc(ipaText(c))+'</div>':'';
   var front=quiz.front==="term"?c.term:((hasSenses(c)?splitSense(c.meaning).join(" / "):c.meaning)||c.term);
   var backMain=(quiz.front==="term"?(hasSenses(c)?c.term:(c.meaning||"(뜻 없음)")):c.term)+(posLabel(c)?" · "+posLabel(c):"")+(c.ipa?" "+ipaText(c):"");
-  var hint=c.example?'<div class="qex">'+blankTag(esc(blankOut(c.example,c.term)))+'</div>'
+  var hint=c.example?'<div class="qex">'+blankTag(exHtml(blankOut(exPlain(c.example),c.term),c))+'</div>'
                     :(quiz.flipped?'<div class="qex" style="opacity:.6">예문 없음 — 수정(✎)에서 예문을 넣을 수 있어요</div>':"");
   card.innerHTML='<div class="qfront">'+esc(front)+'</div>'+frontIpa+hint+
     (quiz.flipped
-      ? '<div class="qback"><div class="qmean">'+esc(backMain)+'</div>'+(c.example?'<div class="qex" style="color:#16233F">'+esc(c.example)+'</div>':'')+(c.ko?'<div class="qko">'+esc(c.ko)+'</div>':'')+(hasSenses(c)?senseList(c).map(function(s,i){return '<div class="qsense"><b>'+(i+1)+'</b> '+(perPos(c)&&s.pos?'<i class="qpos">'+esc(s.pos)+'</i> ':'')+esc(s.mean)+(perForms(c)&&s.forms?'<span style="color:var(--ink-soft)"> 파생 '+esc(s.forms)+'</span>':'')+(s.syn?'<span style="color:var(--done)"> 유의 '+esc(s.syn)+'</span>':'')+(s.ant?'<span style="color:var(--miss)"> 반의 '+esc(s.ant)+'</span>':'')+'</div>'}).join(''):((c.syn?'<div class="qko" style="color:var(--done);font-weight:600">유의 '+esc(c.syn)+'</div>':'')+(c.ant?'<div class="qko" style="color:var(--miss);font-weight:600">반의 '+esc(c.ant)+'</div>':'')))+'</div>'
+      ? '<div class="qback"><div class="qmean">'+esc(backMain)+'</div>'+(c.example?'<div class="qex" style="color:#16233F">'+exHtml(c.example,c)+'</div>':'')+(c.ko?'<div class="qko">'+esc(c.ko)+'</div>':'')+(hasSenses(c)?senseList(c).map(function(s,i){return '<div class="qsense"><b>'+(i+1)+'</b> '+(perPos(c)&&s.pos?'<i class="qpos">'+esc(s.pos)+'</i> ':'')+esc(s.mean)+(perForms(c)&&s.forms?'<span style="color:var(--ink-soft)"> 파생 '+esc(s.forms)+'</span>':'')+(s.syn?'<span style="color:var(--done)"> 유의 '+esc(s.syn)+'</span>':'')+(s.ant?'<span style="color:var(--miss)"> 반의 '+esc(s.ant)+'</span>':'')+'</div>'}).join(''):((c.syn?'<div class="qko" style="color:var(--done);font-weight:600">유의 '+esc(c.syn)+'</div>':'')+(c.ant?'<div class="qko" style="color:var(--miss);font-weight:600">반의 '+esc(c.ant)+'</div>':'')))+'</div>'
       : '<div class="qtap">탭해서 뒤집기<span class="kbd">Space</span></div>');
   acts.innerHTML='<button class="again" id="qAgain">다시<span class="kbd">←</span></button>'+
     '<button class="got" id="qGot">외웠어요<span class="kbd">→</span></button>';
@@ -2291,7 +2552,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v103 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v105 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2978,7 +3239,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v103";
+var APP_VER="v105";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
