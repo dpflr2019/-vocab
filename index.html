@@ -1673,7 +1673,7 @@ function vwPattern(term,selfMode){
       if(opt){ body+="(?:"+p.src+"\\s+)?"; continue; }
       body+=p.src; started=true; continue;
     }
-    var sep=p.gap?GAP:(selfMode?"\\s+(?:"+VW_DET+"\\s+)?":"\\s+");
+    var sep=p.gap?GAP:(selfMode?"(?:[\\s\\-]+(?:"+VW_DET+"\\s+)?|\\-?)":"\\s+");
     body+=opt?("(?:"+sep+p.src+")?"):(sep+p.src);
   }
   if(!started) return null;
@@ -2565,7 +2565,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v108 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v109 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -3356,7 +3356,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v108";
+var APP_VER="v109";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
