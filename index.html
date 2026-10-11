@@ -2112,7 +2112,7 @@ $("saveAdd").addEventListener("click",function(){
   })();
   var groups=parseGroups($("bulk").value,defSec);
   if(!groups.length){ toast("인식된 단어가 없어요"); return; }
-  var added=0,updated=0,merged=0,addedTerms=[],lastDay=null;
+  var added=0,updated=0,merged=0,addedTerms=[],skipped=[],lastDay=null;
   groups.forEach(function(g){
     var day;
     if(g.name){
@@ -2180,6 +2180,8 @@ $("saveAdd").addEventListener("click",function(){
         ["forms","idiom","conf","ipa"].forEach(function(k){ if(nw[k]) ex[k]=nw[k]; });
         ex.ed=Date.now();
         updated++;
+      }else if(nw.ipa&&!nw.meaning&&!nw.pos&&!nw.example&&!nw.ko){
+        skipped.push(nw.term);   // 발음기호만 있는 줄은 기존 단어에만 넣고 새 단어로 만들지 않음
       }else{
         day.words.push({id:uid(),term:nw.term,ipa:nw.ipa||"",meaning:nw.meaning,pos:nw.pos,
           example:nw.example,ko:nw.ko,syn:nw.syn||"",ant:nw.ant||"",forms:nw.forms||"",idiom:nw.idiom||"",conf:nw.conf||"",known:false,ed:Date.now()});
@@ -2190,7 +2192,7 @@ $("saveAdd").addEventListener("click",function(){
   if(lastDay) focusDay(lastDay);
   logAdded(added);
   save(); closeSheet(); render();
-  toast("수정 "+updated+"개"+(added?" · 새로 추가 "+added+"개: "+addedTerms.slice(0,4).join(", ")+(addedTerms.length>4?" 외":""):"")+(merged?" · 중복 "+merged+"개 정리":""),(added||merged)?6000:2200);
+  toast("수정 "+updated+"개"+(added?" · 새로 추가 "+added+"개: "+addedTerms.slice(0,4).join(", ")+(addedTerms.length>4?" 외":""):"")+(merged?" · 중복 "+merged+"개 정리":"")+(skipped.length?" · 단어장에 없어서 건너뜀 "+skipped.length+"개: "+skipped.slice(0,3).join(", "):""),(added||merged||skipped.length)?6000:2200);
   if(added&&lastDay) enrichDays([lastDay],function(){});
 });
 function markGone(id){ if(!id) return; (state.gone||(state.gone={}))[id]=Date.now(); }
@@ -2645,7 +2647,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v118 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v120 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -2858,6 +2860,19 @@ function dayBaseNum(name){ var m=String(name||"").match(/(\d+)/); return m?parse
 function wordLine(w){
   return w.term+(w.ipa?" ["+w.ipa+"]":"")+" | "+(w.meaning||"")+" | "+(w.pos||"")+" | "+(w.example||"")+" | "+(w.ko||"")+" | "+(w.syn||"")+" | "+(w.ant||"")+((w.forms||w.idiom||w.conf)?" | "+(w.forms||"")+" | "+(w.idiom||"")+" | "+(w.conf||""):"");
 }
+function ipaReqText(sec,from,to){
+  var days=daySort(state.days.filter(function(d){return d.section===sec&&dayBaseNum(d.name)>0;}));
+  var label=secLabel(sec), body=[], n=0, miss=0;
+  days.forEach(function(d){
+    var k=dayBaseNum(d.name);
+    if(k<from||k>to) return;
+    body.push("["+label+" "+d.name+"]\n"+d.words.map(function(w){ if(!w.ipa) miss++; return w.term; }).join("\n"));
+    n+=d.words.length;
+  });
+  var head="[발음기호 요청] "+label+" DAY "+from+(to>from?"~"+to:"")+"\n"+
+    "규칙: 영국식(RP) 발음기호 · 한 줄에 '단어 [발음기호] |' 형식 · DAY 줄과 단어 순서 그대로 · 다른 칸은 비워두기\n";
+  return {text:head+"\n"+body.join("\n\n"),n:n,miss:miss,prevDays:0};
+}
 function exReqText(sec,from,to,withPrev){
   var days=daySort(state.days.filter(function(d){return d.section===sec&&dayBaseNum(d.name)>0;}));
   var label=secLabel(sec);
@@ -2879,7 +2894,8 @@ function exReqText(sec,from,to,withPrev){
   if(prev.length) text+="\n\n--- 섞어 쓸 수 있는 앞 DAY 단어 (표제어) ---\n"+prev.join("\n");
   return {text:text,n:n,prevDays:prev.length};
 }
-function openExReq(){
+function openExReq(mode){
+  var ipa=mode==="ipa";
   var sec=state.section;
   var nums=[];
   state.days.forEach(function(d){ if(d.section===sec){ var k=dayBaseNum(d.name); if(k>0&&nums.indexOf(k)<0) nums.push(k); } });
@@ -2895,9 +2911,11 @@ function openExReq(){
   var pick=cur?Math.floor((cur-1)/5):blocks.length-1;
   var from=blocks[pick][0],to=Math.min(blocks[pick][1],max),withPrev=true;
   var sc=document.createElement("div"); sc.className="scrim";
-  sc.innerHTML='<div class="sheet"><h2>예문 요청용 복사</h2>'+
-    '<p class="hint">고른 DAY의 단어를 복사해요. 클로드와의 대화창에 붙여넣고 보내면 결합 예문 파일을 받아요. '+
-    '받은 파일 내용을 <b>단어 추가</b> 칸에 붙여넣으면 예문만 바뀌고 외운 기록은 그대로예요.</p>'+
+  sc.innerHTML='<div class="sheet"><h2>'+(ipa?'발음기호 요청용 복사':'예문 요청용 복사')+'</h2>'+
+    (ipa?'<p class="hint">고른 DAY의 단어만 복사해요. 클로드와의 대화창에 붙여넣으면 발음기호를 붙여 돌려줘요. '+
+      '받은 내용을 <b>단어 추가</b> 칸에 붙여넣으면 발음기호만 채워지고 뜻·예문·외운 기록은 그대로예요.</p>'
+    :'<p class="hint">고른 DAY의 단어를 복사해요. 클로드와의 대화창에 붙여넣고 보내면 결합 예문 파일을 받아요. '+
+    '받은 파일 내용을 <b>단어 추가</b> 칸에 붙여넣으면 예문만 바뀌고 외운 기록은 그대로예요.</p>')+
     '<div class="lbl" style="font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-top:10px">'+esc(secLabel(sec))+' · 묶음</div>'+
     '<div class="seg" id="erBlocks" style="flex-wrap:wrap;margin:8px 0 10px">'+blocks.map(function(bk,i){
       return '<button data-bk="'+i+'">'+bk[0]+'~'+Math.min(bk[1],max)+'</button>';
@@ -2905,7 +2923,7 @@ function openExReq(){
     '<div style="display:flex;gap:8px;align-items:center;font-size:14px">DAY '+
       '<input class="search" id="erFrom" type="number" min="1" max="'+max+'" style="flex:0 0 76px;min-width:0">'+
       ' ~ <input class="search" id="erTo" type="number" min="1" max="'+max+'" style="flex:0 0 76px;min-width:0"></div>'+
-    '<label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:13.5px;cursor:pointer">'+
+    '<label style="display:'+(ipa?'none':'flex')+';gap:8px;align-items:center;margin-top:12px;font-size:13.5px;cursor:pointer">'+
       '<input type="checkbox" id="erPrev" checked> 앞 DAY 단어 목록도 같이 (앞 묶음 단어를 섞으려면 필요)</label>'+
     '<p class="hint" id="erInfo" style="margin-top:10px"></p>'+
     '<textarea class="area hide" id="erArea" style="min-height:160px;margin-top:6px"></textarea>'+
@@ -2919,8 +2937,8 @@ function openExReq(){
     [].forEach.call(sc.querySelectorAll("#erBlocks button"),function(x){
       var bk=blocks[+x.dataset.bk]; x.className=(bk[0]===from&&Math.min(bk[1],max)===to)?"on":"";
     });
-    var r=exReqText(sec,from,to,withPrev);
-    $i.textContent="DAY "+from+(to>from?"~"+to:"")+" · 단어 "+r.n+"개"+(r.prevDays?" · 앞 DAY "+r.prevDays+"개 표제어 포함":"");
+    var r=ipa?ipaReqText(sec,from,to):exReqText(sec,from,to,withPrev);
+    $i.textContent="DAY "+from+(to>from?"~"+to:"")+" · 단어 "+r.n+"개"+(ipa?" · 발음기호 없는 단어 "+r.miss+"개":(r.prevDays?" · 앞 DAY "+r.prevDays+"개 표제어 포함":""));
     sc.querySelector("#erCopy").disabled=!r.n;
   };
   sc.querySelector("#erBlocks").onclick=function(e){
@@ -2937,7 +2955,7 @@ function openExReq(){
   sc.querySelector("#erClose").onclick=close;
   sc.onclick=function(e){ if(e.target===sc) close(); };
   sc.querySelector("#erCopy").onclick=function(){
-    var r=exReqText(sec,from,to,withPrev);
+    var r=ipa?ipaReqText(sec,from,to):exReqText(sec,from,to,withPrev);
     var ta=sc.querySelector("#erArea");
     ta.className="area"; ta.value=r.text;
     ta.focus(); ta.setSelectionRange(0,ta.value.length);
@@ -2957,6 +2975,7 @@ document.getElementById("tgMore").addEventListener("click",function(){
     '<button class="mode" data-go="stats"><b>학습 기록</b><span>날짜별 · DAY별</span></button>'+
     '<button class="mode" data-go="end"><b>오늘 기록 마감</b><span>단어 상태는 그대로 · 기록만 확정</span></button>'+
     '<button class="mode" data-go="exreq"><b>예문 요청용 복사</b><span>DAY 1~5처럼 골라서 단어 복사 · 결합 예문 만들기용</span></button>'+
+    '<button class="mode" data-go="ipareq"><b>발음기호 요청용 복사</b><span>DAY를 골라 단어만 복사 · 영국식 발음기호 받기용</span></button>'+
     '<button class="mode" data-go="export"><b>백업</b><span>저장 · 복원 · 복사</span></button>'+
     '<button class="mode" data-go="sync"><b>기기 간 동기화</b><span>'+(syncOn()?('연결됨 · '+syncTime(sync.lastRun)):'아이패드 ↔ 휴대폰')+'</span></button>'+
     '<button class="mode" data-go="upd"><b>업데이트 확인</b><span>현재 '+APP_VER+'</span></button>'+
@@ -2973,6 +2992,7 @@ document.getElementById("tgMore").addEventListener("click",function(){
       else if(go==="end") openCloseDay();
       else if(go==="export") openBackup();
       else if(go==="exreq") openExReq();
+      else if(go==="ipareq") openExReq("ipa");
       else if(go==="sync") openSync();
       else if(go==="upd") checkUpdate(false);
     },60);
@@ -3450,7 +3470,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v118";
+var APP_VER="v120";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
