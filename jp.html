@@ -15,7 +15,7 @@
   --new:#D97706; --learn:#B45309; --fam:#0E7490; --known:#15803D;
   --new-bg:#FEF3C7; --learn-bg:#FFEDD5; --fam-bg:#E0F2FE; --ok:#15803D; --bad:#B91C1C;
   --shadow:0 10px 30px rgba(20,22,30,.10);
-  --fs:1;
+  --fs:1; --rfs:.6;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html{-webkit-text-size-adjust:100%;}
@@ -98,15 +98,19 @@ h2{font-size:17px;margin:0 0 12px;font-weight:700;letter-spacing:-.01em;}
 .armeta{font-size:12.5px;color:var(--faint);margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 .armeta a{color:var(--accent);}
 .jpara{margin:30px 0;}
-.jsent{display:block;font-size:calc(18px * var(--fs));line-height:2.2;margin:0 -6px 2px;padding:2px 6px;
+.jsent{display:block;font-size:calc(18px * var(--fs));line-height:calc(2.05 + var(--rfs));margin:0 -6px 2px;padding:2px 6px;
   border-radius:8px;word-break:normal;overflow-wrap:break-word;line-break:strict;cursor:pointer;}
 .jsent.cur{background:var(--accent-soft);}
 .koS{display:block;font-size:calc(14px * var(--fs));line-height:1.75;color:var(--dim);margin:4px 0 12px;padding:8px 11px;
   background:var(--sheet);border:1px solid var(--line);border-radius:10px;}
 .koS.hide{display:none;}
 ruby{ruby-align:center;}
-.jsent rt{font-size:.44em;color:var(--faint);font-weight:600;letter-spacing:-.06em;line-height:1.1;}
-.artitle rt{font-size:.4em;color:var(--faint);font-weight:600;letter-spacing:-.06em;}
+.jsent rt{font-size:calc(1em * var(--rfs));color:var(--dim);font-weight:600;letter-spacing:-.02em;line-height:1.15;}
+.artitle rt{font-size:calc(.85em * var(--rfs));color:var(--dim);font-weight:600;letter-spacing:-.02em;}
+.arow{position:relative;}
+.arow .acard{padding-right:64px;height:100%;}
+.adel{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:1px solid var(--line);background:var(--paper);color:var(--dim);font-size:12.5px;font-weight:700;border-radius:10px;min-width:44px;min-height:40px;padding:0 8px;cursor:pointer;}
+.adel:active{color:var(--bad);border-color:var(--bad);}
 .suggest{background:var(--fam-bg);border:1px solid var(--fam);border-radius:12px;padding:11px 13px;margin-top:10px;
   font-size:13.5px;line-height:1.7;display:flex;flex-direction:column;gap:8px;align-items:flex-start;}
 .suggest b{font-weight:800;}
@@ -351,7 +355,7 @@ ruby{ruby-align:center;}
 <div class="scrim hide" id="scrim"><div class="sheet" id="sheet"></div></div>
 <input type="file" id="fileIn" accept=".json,application/json" style="display:none">
 <script>
-var APP_VER="j6";
+var APP_VER="j7";
 var KEY="jp2";
 var state={v:2,arts:[],bank:{},log:{},gram:{},ui:{furi:"all",ko:"hide",fs:1,tab:"home",tts:true,rate:0.95,jaHide:false},streak:{last:"",n:0}};
 var toastEl=null,toastTimer=null,saveTimer=null;
@@ -382,6 +386,7 @@ function load(){
     var raw=localStorage.getItem(KEY);if(!raw)return;
     var o=JSON.parse(raw);if(!o)return;
     if(Array.isArray(o.arts))state.arts=o.arts;
+    state.gone=(o.gone&&typeof o.gone==="object")?o.gone:{};
     if(o.bank&&typeof o.bank==="object")state.bank=o.bank;
     if(o.log&&typeof o.log==="object")state.log=o.log;
     if(o.gram&&typeof o.gram==="object")state.gram=o.gram;
@@ -392,7 +397,7 @@ function load(){
 }
 function save(){
   try{
-    localStorage.setItem(KEY,JSON.stringify({v:2,arts:state.arts,bank:state.bank,log:state.log,gram:state.gram,ui:state.ui,streak:state.streak}));
+    localStorage.setItem(KEY,JSON.stringify({v:2,arts:state.arts,gone:state.gone||{},bank:state.bank,log:state.log,gram:state.gram,ui:state.ui,streak:state.streak}));
     syncSoon();
   }catch(e){showErr("저장 공간이 가득 찼을 수 있어요. 더보기 → 백업으로 내보낸 뒤 오래된 기사를 지워주세요.");}
 }
@@ -823,7 +828,7 @@ function renderHome(){
     html+='<div class="alist">'+shown.map(function(a){
       var p=artProgress(a),ws=artWordRefs(a);
       var unknown=ws.filter(function(b){return b.st<2;}).length;
-      return '<button class="acard" data-act="open" data-id="'+a.id+'">'+
+      return '<div class="arow"><button class="acard" data-act="open" data-id="'+a.id+'">'+
         '<div class="bd"><b>'+esc(a.title)+'</b>'+
         '<div class="meta">'+(a.topic?'<span class="chip">'+esc(a.topic)+'</span>':'')+
           (a.level?'<span class="chip gray">'+esc(a.level)+'</span>':'')+
@@ -832,7 +837,7 @@ function renderHome(){
         '<div class="bar"><i style="width:'+p.pct+'%"></i></div></div>'+
         '<div style="flex:0 0 auto;text-align:right"><div style="font-size:12.5px;font-weight:700">'+p.pct+'%</div>'+
         '<div style="font-size:11px;color:var(--faint)">'+p.done+"/"+p.total+' 문단</div></div>'+
-        '</button>';
+        '</button><button class="adel" data-act="adel" data-id="'+a.id+'" aria-label="기사 삭제: '+esc(a.title)+'">삭제</button></div>';
     }).join("")+'</div>'+
     '<div style="margin-top:14px"><button class="btn ghost" data-act="add" style="width:100%">＋ 기사 넣기<span class="kbd">A</span></button></div>';
   }
@@ -842,6 +847,17 @@ function renderHome(){
     artQuery=aq.value;var pos=aq.selectionStart;renderHome();
     var n2=$("aq");if(n2){n2.focus();try{n2.setSelectionRange(pos,pos);}catch(e){}}
   };
+}
+function deleteArticle(id){
+  var a=state.arts.filter(function(x){return x.id===id;})[0]; if(!a) return;
+  if(!window.confirm('"'+(a.title||"제목 없음")+'"을(를) 삭제할까요?\n단어장에 담긴 단어는 그대로 남습니다.')) return;
+  var pos=state.arts.indexOf(a), occ={};
+  bankList().forEach(function(b){ var mine=(b.occ||[]).filter(function(o){return o.a===id;}); if(mine.length){ occ[b.key]=mine; b.occ=(b.occ||[]).filter(function(o){return o.a!==id;}); } });
+  state.arts.splice(pos,1);
+  (state.gone||(state.gone={}))[id]=Date.now();
+  save();
+  if(curArt&&curArt.id===id) closeReader(); else renderHome();
+  toast("삭제했어요");
 }
 function dueRing(n){
   var total=Math.max(n,1),pct=n?1:0;
@@ -857,6 +873,7 @@ $("app").addEventListener("click",function(e){
   if(act==="more")openMore();
   else if(act==="add")openAdd();
   else if(act==="open")openArticle(b.dataset.id);
+  else if(act==="adel")deleteArticle(b.dataset.id);
   else if(act==="review")startReview();
   else if(act==="word")openPanel(bankGet(b.dataset.key));
   else if(act==="filter"){wordFilter=b.dataset.f;renderWords();}
@@ -1186,11 +1203,7 @@ $("rBody").addEventListener("click",function(e){
       if(!ws.length){toast("이 기사에서 더 외울 단어가 없어요");return;}
       startReview(ws);
     }else{
-      if(window.confirm('"'+a.title+'"을(를) 삭제할까요?\n단어장에 담긴 단어는 그대로 남습니다.')){
-        var id=a.id;state.arts=state.arts.filter(function(x){return x.id!==id;});
-        bankList().forEach(function(b){b.occ=(b.occ||[]).filter(function(o){return o.a!==id;});});
-        save();closeReader();toast("삭제했어요");
-      }
+      deleteArticle(a.id);
     }
     return;
   }
@@ -1899,6 +1912,10 @@ function openDisplay(){
     '<div class="seg">'+["new","all","off"].map(function(v,i){
       return '<button data-s="furi:'+v+'" class="'+(state.ui.furi===v?"on":"")+'">'+["모르는 단어만","전부","끄기"][i]+'</button>';
     }).join("")+'</div>'+
+    '<label class="lb">후리가나 크기</label>'+
+    '<div class="seg">'+[0.5,0.6,0.72].map(function(v,i){
+      return '<button data-s="rfs:'+v+'" class="'+((state.ui.rfs||0.6)===v?"on":"")+'">'+["작게","보통","크게"][i]+'</button>';
+    }).join("")+'</div>'+
     '<label class="lb">해석</label>'+
     '<div class="seg">'+["hide","show"].map(function(v,i){
       return '<button data-s="ko:'+v+'" class="'+(state.ui.ko===v?"on":"")+'">'+["문장을 탭하면 보기","처음부터 보기"][i]+'</button>';
@@ -1939,6 +1956,7 @@ function openDisplay(){
       else if(p[0]==="rm")state.ui.revMax=parseInt(p[1],10);
       else if(p[0]==="ko")state.ui.ko=p[1];
       else if(p[0]==="fs"){state.ui.fs=parseFloat(p[1]);document.documentElement.style.setProperty("--fs",state.ui.fs);}
+      else if(p[0]==="rfs"){state.ui.rfs=parseFloat(p[1]);document.documentElement.style.setProperty("--rfs",state.ui.rfs);}
       save();openDisplay();
       if(curArt)renderReader();
     });
@@ -1989,11 +2007,12 @@ function backupName(){
 }
 function backupObj(){
   return {app:"jp-reader",version:2,savedAt:Date.now(),device:sync.dev,
-    arts:state.arts,bank:state.bank,log:state.log,gram:state.gram,ui:state.ui,streak:state.streak};
+    arts:state.arts,gone:state.gone||{},bank:state.bank,log:state.log,gram:state.gram,ui:state.ui,streak:state.streak};
 }
 function applyBackup(o){
   if(!o||!Array.isArray(o.arts))return false;
   state.arts=o.arts;
+  state.gone=(o.gone&&typeof o.gone==="object")?o.gone:(state.gone||{});
   state.bank=(o.bank&&typeof o.bank==="object")?o.bank:{};
   state.log=(o.log&&typeof o.log==="object")?o.log:{};
   state.gram=(o.gram&&typeof o.gram==="object")?o.gram:{};
@@ -2123,8 +2142,12 @@ function mergeRemote(obj){
   });
   /* 기사: 없는 것은 받고, 있는 것은 읽은 문단과 내 해석을 합친다 */
   var byId={};
+  var G=state.gone||(state.gone={}),RG=(obj.gone&&typeof obj.gone==="object")?obj.gone:{};
+  Object.keys(RG).forEach(function(k){ if(!G[k]) G[k]=RG[k]; });
+  state.arts=state.arts.filter(function(a){ return !G[a.id]; });
   state.arts.forEach(function(a){ byId[a.id]=a; });
   obj.arts.forEach(function(ra){
+    if(ra&&G[ra.id]) return;
     if(!ra||!ra.id)return;
     var la=byId[ra.id];
     if(!la){ state.arts.push(ra); out.newArts++; return; }
@@ -2579,6 +2602,7 @@ load();
 })();
 loadSync();
 document.documentElement.style.setProperty("--fs",state.ui.fs||1);
+document.documentElement.style.setProperty("--rfs",state.ui.rfs||0.6);
 buildIndex();
 render();
 document.addEventListener("visibilitychange",function(){
