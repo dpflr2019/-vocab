@@ -1786,14 +1786,8 @@ function exHtml(s,card){
   });
   all=all.filter(function(h){return !h.inside;});
   all.sort(function(a,b){return a.s-b.s;});
-  /* 이 카드와 같은 DAY 단어는 형광펜, 다른 DAY 단어는 밑줄만 */
-  var sameDay=function(k){
-    if(!maxDay) return true;
-    var es=(idx.bySec[sec]&&idx.bySec[sec][k])||[];
-    for(var i=0;i<es.length;i++) if(dayBaseNum(es[i].day.name)===maxDay) return true;
-    return false;
-  };
-  var link=function(k,txt){ return idx.terms[k]?'<span class="xl'+(sameDay(k)?'':' xo')+'" data-xt="'+esc(k)+'" data-xs="'+sec+'" data-xd="'+maxDay+'">'+txt+'</span>':txt; };
+  /* 단어장 단어는 모두 밑줄만 (형광펜 없음) */
+  var link=function(k,txt){ return idx.terms[k]?'<span class="xl xo" data-xt="'+esc(k)+'" data-xs="'+sec+'" data-xd="'+maxDay+'">'+txt+'</span>':txt; };
   var out="",p=0;
   all.forEach(function(h){
     if(h.s<p) return;
@@ -2651,7 +2645,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v117 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v118 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -3456,7 +3450,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v117";
+var APP_VER="v118";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
