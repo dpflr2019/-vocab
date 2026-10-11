@@ -74,7 +74,10 @@ h1 span{color:var(--ink-soft);font-weight:500;}
 .xl{background:rgba(255,214,51,.42);box-shadow:inset 0 -2px 0 rgba(214,170,0,.75);border-radius:3px;padding:0 1px;cursor:pointer;color:inherit;}
 .xl:hover,.xl.on{background:rgba(255,200,0,.7);}
 .vt{font-weight:800;color:var(--ink);}
-@media (prefers-color-scheme: dark){.xl{background:rgba(255,214,51,.16);color:#FFE07A;box-shadow:inset 0 -2px 0 rgba(255,214,51,.55);}.xl:hover,.xl.on{background:rgba(255,214,51,.32);}.vt{color:#fff;}}
+.xl.xo{background:transparent;box-shadow:none;border-radius:0;padding:0;text-decoration:underline;text-decoration-color:rgba(199,148,0,.85);text-decoration-thickness:1.5px;text-underline-offset:3px;}
+.xl.xo:hover,.xl.xo.on{background:rgba(255,214,51,.3);}
+@media (prefers-color-scheme: dark){.xl{background:rgba(255,214,51,.16);color:#FFE07A;box-shadow:inset 0 -2px 0 rgba(255,214,51,.55);}.xl:hover,.xl.on{background:rgba(255,214,51,.32);}.vt{color:#fff;}
+  .xl.xo{background:transparent;box-shadow:none;color:inherit;text-decoration-color:rgba(255,214,51,.7);}.xl.xo:hover,.xl.xo.on{background:rgba(255,214,51,.2);}}
 .xpop .xk{font-size:11px;background:#1F8A63;color:#fff;border-radius:6px;padding:1px 6px;margin-left:6px;}
 .xpop{position:fixed;z-index:90;max-width:min(300px,calc(100vw - 24px));background:#16233F;color:#fff;border-radius:11px;padding:10px 13px 11px;font-size:13.5px;line-height:1.45;box-shadow:0 8px 24px rgba(0,0,0,.22);}
 .xpop b{font-size:15px;}
@@ -1783,7 +1786,14 @@ function exHtml(s,card){
   });
   all=all.filter(function(h){return !h.inside;});
   all.sort(function(a,b){return a.s-b.s;});
-  var link=function(k,txt){ return idx.terms[k]?'<span class="xl" data-xt="'+esc(k)+'" data-xs="'+sec+'" data-xd="'+maxDay+'">'+txt+'</span>':txt; };
+  /* 이 카드와 같은 DAY 단어는 형광펜, 다른 DAY 단어는 밑줄만 */
+  var sameDay=function(k){
+    if(!maxDay) return true;
+    var es=(idx.bySec[sec]&&idx.bySec[sec][k])||[];
+    for(var i=0;i<es.length;i++) if(dayBaseNum(es[i].day.name)===maxDay) return true;
+    return false;
+  };
+  var link=function(k,txt){ return idx.terms[k]?'<span class="xl'+(sameDay(k)?'':' xo')+'" data-xt="'+esc(k)+'" data-xs="'+sec+'" data-xd="'+maxDay+'">'+txt+'</span>':txt; };
   var out="",p=0;
   all.forEach(function(h){
     if(h.s<p) return;
@@ -2641,7 +2651,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v116 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v117 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -3446,7 +3456,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v116";
+var APP_VER="v117";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
