@@ -698,7 +698,8 @@ var SAMPLE=[
 
 var listCap=150;
 var pickDays={}, pickRange="unknown", revPick={};
-var expOpen={};
+var expOpen={};   // 단어별로 직접 접거나 편 상태 (없으면 기본: 펼침, 뜻 가리기 중엔 접힘)
+function isOpen(w){ return expOpen.hasOwnProperty(w.id)?expOpen[w.id]:(!state.mask||!!state.revealed[w.id]); }
 var state={days:[],log:{},articles:[],gone:{},onlyHard:false,section:"v2026",day:"all",q:"",mask:false,onlyUnknown:false,revealed:{}};
 var quiz=null;
 
@@ -1006,7 +1007,7 @@ function render(){
         (posLabel(w)?'<span class="tag">'+esc(posLabel(w))+'</span>':'')+
         (state.day==="all"?'<span class="tag">'+esc(o.dayName)+'</span>':'')+(srsTag(w)?'<span class="tag srs">'+srsTag(w)+'</span>':'')+(isLeech(w)?'<span class="tag leech">취약 '+(w.lapses||0)+'</span>':'')+
       '</div>'+mean+
-      (expOpen[w.id]
+      (isOpen(w)
         ? (w.example?'<div class="ex">'+exHtml(w.example,w)+'</div>':'')+
           (w.ko?'<div class="ko">'+esc(w.ko)+'</div>':'')+
           (hasSenses(w)?senseHtml(w):((w.syn||w.ant)?relHtml(w):''))+detailHtml(w)
@@ -2426,7 +2427,10 @@ document.getElementById("listArea").addEventListener("click",function(e){
   var pen=e.target.closest("[data-editbtn]");
   if(pen){ openEdit(pen.dataset.editbtn); return; }
   var b=e.target.closest("[data-exp]");
-  if(b){ var id=b.dataset.exp; expOpen[id]=!expOpen[id]; render(); }
+  if(b){
+    if(e.target.closest(".ex,.ko,.xl,.sense,.wblock,a")&&!e.target.closest(".exhint")) return;   // 예문·해석 안을 누를 땐 접지 않음
+    var id=b.dataset.exp, w=findWord(id); expOpen[id]=!(w?isOpen(w):!!expOpen[id]); render();
+  }
 });
 document.getElementById("editScrim").addEventListener("click",function(e){if(e.target===this)closeEdit()});
 document.getElementById("eSave").addEventListener("click",function(){
@@ -2637,7 +2641,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v115 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v116 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -3442,7 +3446,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v115";
+var APP_VER="v116";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
