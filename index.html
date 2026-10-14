@@ -2623,10 +2623,11 @@ function chipRow(label,raw,cls,key,openMap){
   var list=String(raw).split(",").map(function(s){return s.trim()}).filter(Boolean);
   if(!list.length) return "";
   var open=openMap[key];
-  var show=(list.length<=4||open)?list:list.slice(0,4);
+  var all=state.section==="transfer";   /* 편입영어: 책에 있는 유의어·반의어를 접지 않고 모두 보여줌 */
+  var show=(all||list.length<=4||open)?list:list.slice(0,4);
   return '<div class="rel"><span class="rellabel">'+label+'</span>'+
     show.map(function(t){return '<span class="'+cls+'">'+esc(t)+'</span>'}).join("")+
-    (list.length>4?'<button class="relmore" data-syn="'+key+'">'+(open?'접기':'+'+(list.length-4))+'</button>':'')+
+    (!all&&list.length>4?'<button class="relmore" data-syn="'+key+'">'+(open?'접기':'+'+(list.length-4))+'</button>':'')+
     '</div>';
 }
 function senseHtml(w){
@@ -2644,10 +2645,11 @@ function relHtml(w){
     var raw=w[cfg[0]]; if(!raw) return;
     var list=String(raw).split(",").map(function(s){return s.trim()}).filter(Boolean);
     var key=w.id+":"+cfg[0], open=synOpen[key];
-    var show=(list.length<=4||open)?list:list.slice(0,4);
+    var all=state.section==="transfer";
+    var show=(all||list.length<=4||open)?list:list.slice(0,4);
     out+='<div class="rel"><span class="rellabel">'+cfg[1]+'</span>'+
       show.map(function(t){return '<span class="'+cfg[2]+'">'+esc(t)+'</span>'}).join("")+
-      (list.length>4?'<button class="relmore" data-syn="'+key+'">'+(open?'접기':'+'+(list.length-4))+'</button>':'')+
+      (!all&&list.length>4?'<button class="relmore" data-syn="'+key+'">'+(open?'접기':'+'+(list.length-4))+'</button>':'')+
       '</div>';
   });
   return out;
@@ -2683,8 +2685,9 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v124 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
-render();
+document.getElementById("verLine").textContent="v126 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+// 첫 화면에서 오류가 나도 나머지 기능(메뉴·업데이트)은 살아 있도록, 스크립트를 다 읽은 뒤 다시 그린다
+try{ render(); }catch(e){ setTimeout(function(){ try{ render(); }catch(e2){ try{ reportErr(e2,"시작 화면"); }catch(e3){} } },0); }
 showWarn();
 
 // ---- 오류 표시 ----
@@ -3506,7 +3509,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v124";
+var APP_VER="v126";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
@@ -4532,13 +4535,13 @@ function richText(t){
   var out="",i=0,k;
   while((k=t.indexOf("(반대말:",i))>-1){
     var e=closeParen(t,k); if(e<0) break;
-    out+=plainRich(t.slice(i,k))+'<span class="dant"><i>↔</i> '+plainRich(t.slice(k+5,e).trim())+'</span>';
+    out+=plainRich(t.slice(i,k))+'<span class="dant">(반대말: '+plainRich(t.slice(k+5,e).trim())+')</span>';
     i=e+1;
   }
   return out+plainRich(t.slice(i));
 }
 function plainRich(t){
-  return esc(t).replace(/\(같은 말: ([^()]*(?:\([^()]*\)[^()]*)*)\)/g,'<span class="deq">(= $1)</span>')
+  return esc(t).replace(/\(같은 말: ([^()]*(?:\([^()]*\)[^()]*)*)\)/g,'<span class="deq">(같은 말: $1)</span>')
     .replace(/(^|\s)(\d)\.(\s|(?=\())/g,function(m,sp,n,tl){ return (sp?'<br>':'')+'<b class="dnum">'+n+'.</b>'+(tl||''); });
 }
 function fmtLine(c){
