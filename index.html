@@ -2683,7 +2683,7 @@ else{
   })});
   if(n) save();
 }
-document.getElementById("verLine").textContent="v123 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
+document.getElementById("verLine").textContent="v124 · 내 단어 "+BANK_LIST.length+"개 · 예문+해석 내장";
 render();
 showWarn();
 
@@ -3506,7 +3506,7 @@ function openSync(){
 })();
 
 // ================= 자동 업데이트 확인 =================
-var APP_VER="v123";
+var APP_VER="v124";
 function checkUpdate(silent){
   try{
     if(location.protocol==="file:") return;
@@ -4521,7 +4521,7 @@ document.getElementById("fDetailBtn").addEventListener("click",function(){
   d.className=open?"":"hide";
   this.textContent=senseRich.fSenses?(open?"− 표현·혼동어 접기":"＋ 표현·혼동어"):(open?"− 상세 접기":"＋ 파생어·표현");
 });
-var REL_TAG={"반의어":"rel-a","관련어":"rel-r","동의어":"rel-s","참고":"rel-c"};
+function relCls(t){ return ({"반의어":"rel-a","관련어":"rel-r","동의어":"rel-s","참고":"rel-c"})[t]||"rel-c"; }   // 함수로: 앱 시작 직후 그릴 때도 쓸 수 있게
 function closeParen(t,i){ var d=0; for(var j=i;j<t.length;j++){ if(t.charAt(j)==="(") d++; else if(t.charAt(j)===")"){ d--; if(!d) return j; } } return -1; }
 function synChips(raw){
   return '<span class="fsyn">'+String(raw).split(/,\s*/).map(function(t){return t.trim()}).filter(Boolean)
@@ -4554,7 +4554,7 @@ function fmtLine(c){
   }
   if((m=c.match(/^\s*(\[[^\]가-힣]+\])/))){ ipa=m[1]; c=c.slice(m[0].length); }
   if((m=c.match(/^\s*\((명사|형용사|동사|부사|전치사)\)/))){ pos=m[1]; c=c.slice(m[0].length); }
-  return '<div class="dl'+(tag?' t-'+REL_TAG[tag]:'')+'">'+(tag?'<span class="dtag '+REL_TAG[tag]+'">'+tag+'</span>':'')+
+  return '<div class="dl'+(tag?' t-'+relCls(tag):'')+'">'+(tag?'<span class="dtag '+relCls(tag)+'">'+tag+'</span>':'')+
     (head?'<b class="dh">'+esc(head)+'</b>':'')+(ipa?'<span class="ipa">'+esc(ipa)+'</span>':'')+
     (pos?'<span class="spos">'+pos+'</span>':'')+'<span class="dm">'+richText(c.trim())+'</span>'+
     (syn?'<div class="dsyn"><span class="rellabel">유의</span>'+synChips(syn)+'</div>':'')+'</div>';
